@@ -1,0 +1,10 @@
+Todo for Bootforth
+------------------
+
+- more i/o primitives
+  - opening a file
+
+- more documentation
+  - code snippets + documentation
+    * how to write your own assembler
+    * etc.

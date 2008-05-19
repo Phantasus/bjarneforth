@@ -1,0 +1,14 @@
+Hints for designing a forth system
+----------------------------------
+
+
+Following words should be implemented as 
+primitives:
+
+if
+then
+repeat
+loop 
+does>
+;
+;;

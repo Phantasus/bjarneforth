@@ -1,0 +1,73 @@
+Documentation of Bootforth
+--------------------------
+
+The documentation of bootforth
+is splitted into different files
+in this directory(doc) and the
+source documentation.
+
+Sometimes you will find in the 
+documentation files(the files in 
+the doc directory) stuff which
+is also documented in the source,
+that's for redundancy.
+
+
+Source Documentation
+--------------------
+
+You can find documentation 
+related to structures, constants
+defines and macros in the headerfiles.
+
+Documentation about each function
+can be found in the .c files.
+There you have comments which have the
+word 'DOC:' in here, which means that the
+comment is a documentation comment, which
+describes the function.
+
+There is a speciality for forth primitives,
+which are the stack comments and the fname comments.
+
+/* ( before -- after ) */
+The stack comment is a comment which shows you the
+stack effect before and after an operation, normally
+they affect the data stack(dstack) but when explicitly
+mentioned in the comment the operation can also affect 
+other stacks.
+
+/* fname: name */
+A fname comment is just a hint for you how that primitive
+is normally called in Forth, that's also the reason why 
+it's called fname(forth name)
+
+
+Legend
+------
+
+Probably you see one or more of the following things in the documentation
+
+TOS
+Means Top Of Stack, which means the top of the data stack
+
+dstack
+Means data stack, that's the stack cell values are pushed on
+
+rstack
+Means return stack
+
+argfield
+Is the value of the argfield of a word
+
+dofield
+Is the value of the dofield of a word
+
+XT
+Means eXecution Token and is exactly a pointer to the executable 
+part of a word
+
+WT
+Means Word Token, it's a pointer to the beginning of a word
+
+

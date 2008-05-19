@@ -1,0 +1,164 @@
+Introduction to the dictionary
+------------------------------
+
+The dictionary in a Forth system
+is a list of units called words,
+which are compareable to functions
+in other programming languages.
+
+They differ from functions because 
+of the following points:
+- Words use explicitly a stack, functions like in C don't actually operate
+  on a stack explicitly.
+  - The data stack
+- Words have (normally) very short names
+- Word names can contain any character
+  - Even whitespaces, when there would
+    be a parser for it..
+
+
+Word layout in Bootforth
+------------------------
+
+A header of a word has in Bootforth the following
+memory layout: 
+
+    Width: 1 Cell
+    --------------
+1. |   Prev Word  |
+   ----------------
+2. |   Name       |
+   ----------------
+3. |   Dofield    |
+   ----------------
+4. |   Argfield   |
+    --------------
+
+Asuming that cell size is 4 Bytes the size of
+a word header is 16 Bytes
+
+1. Pointer to previous word
+   - Can be used to build nested blocks in the dictionary
+2. Pointer to a string which contains the name
+   of the word
+3. Pointer to machine code which does something
+   with the value stored in the argfield
+   - In bootforth a pointer(bf_prim) to a primitive
+4. The argfield can be a pointer or a literal(constant)
+   - The reason why it's called argfield ;-)
+
+The pointer to the previous word cell is (atleast) called
+in Bootforth a Word Token(WT).
+
+The pointer to the Dofield is called in Bootforth like
+in other implementations the eXecution Token(XT)
+
+
+Dofield primitives or word types
+--------------------------------
+
+doliteral 
+Pushs the value of the argfield to the data stack
+
+doprim
+Executes the primitive to which the argfield
+is pointing
+
+dolink
+Treats the argfield as a pointer to a link word
+and executes it.
+
+Link words are words which are defined with 
+the compiler word ':' it links together different
+words as a new word. 
+
+What the compiler word does
+depends on the Forth implementation, in the case of
+Bootforth it only places eXecution Tokens side by
+side at the current heap pointer address and then
+at word end it places a 0 there to mark the end of
+the word.
+
+
+Indirect threading
+------------------
+
+Bootforth uses a classic Forth technique called
+indirect threading, threading in that case doesn't
+mean a method for doing parallel execution of code,
+but a method for constructing a link word.
+
+The content of a link word, so the stuff which is
+pointed at by the argfield of a word, has in Bootforth
+the following layout:
+
+Each field is one cell wide
+ -----------------------
+| XT | XT | XT | XT | 0 |
+ -----------------------
+
+So the content of a link word is in Bootforth a list
+of eXecution Tokens which are terminated by a 0
+
+What happens when somebody calls the link word?
+
+1. Read first execution token, is it 0?
+   - yes, interpretation of the word ends
+   - no, push the next address on the return stack
+     and execute the eXecution Token
+2. Take the address from the return stack and start again
+   at 1.
+
+Those steps are performed by an interpreter, which is called
+normally the 'inner interpreter'. The inner interpreter is 
+exactly the 'dolink' word type
+
+
+Building the dictionary with the bf_ functions
+----------------------------------------------
+
+Bootforth has a couple of functions for 
+initialising the dictionary, with them
+you can define primitive words, literal
+words and imediate words.
+
+literal words are words which have in their
+argfield a constant and push that on the stack
+when they are executed. In compile mode their
+constant gets inlined into the definition of a 
+word
+
+primitives are words which contain a ptr to
+a piece of machine code which was written in
+another language than forth(or not) in the
+case of bootforth, that's the case(it's C).
+At runtime they are executed and at compile 
+time their XT is compiled into the current
+word definition.
+
+imediate words are words which do at runtime
+and compile time the same action. That makes
+sense for compile time calculations or 
+optimizations
+
+That are the only word types you can
+define within C, link words can only
+be defined within Forth itself(or by
+the programmer who likes to edit
+arrays by hand).
+
+So there are following functions:
+
+bf_def_stub - which lets you define a stub
+              of a word and fill it with 
+              values
+bf_def_word - this function defines a word for you
+              the selected primitive, argfield and the name
+              for you
+bf_def_prim - defines a primitive for you
+bf_def_literal - creates a new literal 
+bf_def_iprim - defines an imediate version of a primitive
+bf_def_iliteral - defines an imediate version of a literal
+
+
+

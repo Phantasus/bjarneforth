@@ -1,0 +1,73 @@
+Bootforth Streams
+-----------------
+
+The abstract concept of streams
+was introduced in bootforth, because of the
+need to read forth source code from different
+sources.
+
+So 'streams' were introduced, which doesn't
+make bootforth faster, but it's not intended
+to be very fast, but be portable. As it's
+intention is to only be base for your own
+Forth System compilation process.
+
+There are the following types of streams, 
+some of them are not very senseful.
+
+file stream
+A character stream out of a file
+
+std stream
+This is technically a file stream, but
+for the std files so stdin, stdout and
+stderr. The difference between a file
+stream and a std stream is that a std
+stream doesn't gets closed. That means
+it's all the time open. It was introduced
+because bf_stream_emptyit closes open streams
+and you don't want to close stdin or stdout.
+
+empty stream
+An empty stream type, well it does nothing,
+just a type to mark a stream as empty.
+Probably that type will be kicked out,
+because you could just check if there is
+a stream, if not, it's empty. Well..
+
+memory stream 
+When you want that a buffer(array) acts
+as the input from a file or from stdin, stdout
+or sterr, then this stream type is what you want.
+It was introduced to realise bf_eval
+
+
+Functions
+---------
+
+bf_stream_init(bf_stream *stream)
+Initializes an empty stream
+
+bf_free_stream(bf_stream *stream)
+Frees the stream, explicitly
+
+bf_stream_emptyit(bf_stream *stream)
+Looks if the stream is empty if not it
+reinitializes it(empty). Frees the stream
+implicitly
+
+bf_filestream(bf_stream *stream, FILE *file)
+Initialize a stream which points to the given file
+
+bf_memstream(bf_stream *stream, char *mem, cell length)
+A stream which points to a memory area
+
+bf_stdstream(bf_stream *stream, FILE *file)
+Associates one of stdin, stdout or stdout streams with
+the stream.
+
+bf_getc(bf_stream *stream)
+Reads one character from the stream
+
+bf_putc(bf_stream *stream, cell value)
+Puts one character(value) to the given stream

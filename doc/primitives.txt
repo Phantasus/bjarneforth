@@ -1,0 +1,290 @@
+Introduction
+------------
+
+Primitives are in Forth atomic(they can't be splitted)
+chunks of code which are implemented not in Forth itself
+normally for that task assembler is used.
+
+In Bootforth those primitives are implemented in C
+and then made accessible to the dictionary lookup
+mechanism of Bootforth.
+
+
+Nice to know
+------------
+
+Primitives are defined in bf_prim.h and implemented
+in bf_prim.h
+
+Primitives have the prototype form 
+void prim_<name of primitive>(bf_state *state)
+
+Bootforth uses the bf_prim type for function pointers 
+to primitives
+
+
+Primitives used in Bootforth
+----------------------------
+
+
+Stack primitives 
+----------------
+
+dup ( A -- A A )
+Duplicates the top of the stack
+
+drop ( A -- )
+Throws away the top of the stack
+
+nip ( A B -- B )
+Throws away the second element of the stack
+
+tuck ( A B -- B A B )
+Duplicates B and pushes it before A on the stack
+
+swap ( A B -- B A )
+Swaps the first two elements of the stack
+
+over ( A B -- A B A )
+Duplicates A and puts it on the top of the stack
+
+
+Arithmetic and logic primitives 
+-------------------------------
+
++ ( A B -- A+B )
+Adds B to A
+
+- ( A B -- A-B )
+Subtracts B from A
+
+* ( A B -- A*B )
+Multiplies A with B
+
+mod ( A B -- A%B )
+A modulo B and puts it on top of stack
+
+and ( A B -- A&B )
+Binary and 
+
+xor ( A B -- A^B )
+Binary xor
+
+or ( A B -- A|B )
+Binary or
+
+not ( A -- ~A )
+Binary not
+
+
+I/O primitives 
+--------------
+
+emit ( A -- )
+Displays the character on top of stack
+
+type ( string strlength -- )
+Prints the string on top of stack to
+output
+
+dots .s ( -- )
+Prints stack contents
+
+newline ( -- )
+Prints a newline to output
+
+dot .  ( value -- )
+Prints the top of stack to output
+
+space ( -- )
+Prints a space to output
+
+
+Memory primitives
+-----------------
+
+store @ ( adr value -- )
+Stores top of stack(value) at adr
+
+fetch ! ( adr -- value )
+Reads from adr a cell value and puts 
+it on top of stack
+
+bstore c! ( adr value -- )
+Stores top of stack as a byte at adr
+
+bfetch c@ ( adr -- value )
+Gets the byte value at adr and pushs
+it on top of stack
+
+allot ( size -- )
+Adds to the heap pointer here size 
+
+align ( adr -- adr )
+Aligns the adr at cell size
+
+astore ( adr -- )
+Stores adr to the address register
+
+afetch ( -- adr )
+Gets adr from the address register
+
+ainc ( -- )
+Increments the content of the 
+address register
+
+adec ( -- )
+Decrements the content of the address
+register
+
+copy ( from to count -- )
+Copies from the from address to the to
+address count bytes
+
+
+Dictionary primitives
+---------------------
+
+doprim ( argfield -- )
+Executes the primitive 
+
+doliteral ( argfield -- )
+Pushs the literal stored in 
+the argfield to stack
+
+dolink ( argfield -- )
+Executes the link word
+
+doprimcomp ( argfield -- )
+doliteralcomp 
+dolinkcomp
+pushliteral
+pushsliteral
+
+
+Interpreter primitives
+----------------------
+
+execute ( XT -- )
+Executes the eXecution Token
+on top of stack
+
+lookup ( string strlength -- XT )
+Lookups the string and returns
+the eXecution Token
+
+eval ( string strlength -- )
+Evaluates the string
+
+parse ( delimiter -- string strlength )
+Reads from input until delimiter
+gets read and push the read characters
+as a string. 
+It detects newlines
+and sets BF_FLAG_EOL to 1. 
+
+sparse ( string strlength -- )
+Reads from input until one character
+which is contained in the string gets
+read. Besides that it behaves like
+parse
+
+wsparse ( -- )
+Stops reading when it reads a whitespace.
+Behaves besides that like parse
+
+
+Compiler primitives
+-------------------
+
+inlinecell , ( value -- )
+Inlines value to here as a cell
+and increments here
+
+inlinebyte c, ( value -- )
+Inlines value to here as a byte 
+and increments here
+
+inlinestring ( string strlength -- )
+Inlines the string at here and 
+increments here
+
+compile : ( -- )
+Starts compiling
+
+endcompile ; ( -- )
+Ends compiling 
+
+
+Literal primitives(internal)
+----------------------------
+
+Are primitives which are involved
+with the internal implementation of
+pushing primitives from memory to stack
+
+pushliteral
+Pushs the next will be read cell on the stack
+
+pushsliteral
+Does the same like pushliteral only with a string,
+the difference is that the cell is a pointer to 
+a string and the primitive reads that pointer and
+reads out the actual string address and the length
+of the string.
+
+
+Virtual machine primitives(internal)
+------------------------------------
+
+This primitives are for internal use
+in Bootforth itself. They are used to
+simulate a cpu with some pseudoopcodes
+(this primitives) which act with the
+flags of the state and the return stack
+of the system.
+
+jmp 
+Performs a relative jump using the next
+cell 
+
+jmpiftrue
+Performs a relative jump if the BF_FLAG_TRUE
+is 1
+
+jmpiffalse
+Performs a relative jump if the BF_FLAG_TRUE
+is 0
+
+settrue
+Sets the flag BF_FLAG_TRUE to 1
+
+setfalse
+Sets the flag BF_FLAG_TRUE to 0
+
+setnegative
+Sets the flag BF_FLAG_NEG to 1
+
+setpositive
+Sets the flag BF_FLAG_NEG to 0
+
+
+String primitives
+-----------------
+
+isnumber ( string strlength -- string strlength )
+Tests if the string is a number if yes it sets
+the vm flag BF_FLAG_TRUE to 1(true)
+
+tonumber ( string strlength -- value )
+Converts the string to a number, when it's
+not a number the result will be bogus.
+
+System primitives
+-----------------
+
+bye ( -- )
+Normally ends the Forth system,
+but sets in Bootforth a flag the BF_FLAG_RUN
+to 0 which needs to get tested by the interpreter
+loop, so that it exits the Forth system
