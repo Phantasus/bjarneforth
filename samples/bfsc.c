@@ -91,10 +91,6 @@ void init_dict()
 	bf_eval(&state, ": constant create last @ :argfield ! ;");
 	bf_eval(&state, ": variable create 0 , ;");
 
-	bf_eval(&state, ": @alltime %d last @ :dofield ! ;", (int)&prim_dolink);
-	bf_eval(&state, ": @compiletime %d last @ :dofield ! ;", (int)&prim_doprim);
-	bf_eval(&state, ": @runtime %d last @ :dofield ! ;", (int)&prim_doprim);
-
 	bf_eval(&state, ": 2drop drop drop ;");
 
 	bf_eval(&state, ": ( %d  parse 2drop ;", ')'); /* comments */
