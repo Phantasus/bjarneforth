@@ -87,21 +87,20 @@ cell *bf_def_iliteral(bf_state *state, const char *name, cell value)
 	return bf_def_word(state, name, BF_WORD_NORMAL, &prim_doliteral, value);
 }
 
-/* DOC: evaluates the given Forth source string, with cool C replacement */
+/* DOC: evaluates the given Forth source string, with cool printf substitutions */
 void bf_eval(bf_state *state, char *string, ...)
 {
 	bf_stream buf;
-	char *out=(char *)state->vars.tib;
+	char *out=state->vars.tib;
 	va_list ap; 
 
 	#ifdef DEBUG_EVAL
-	printf("eval<# %s ", string);
+	printf("eval<# \"%s\" adr: %d<>", string, string);
 	#endif
 
 	va_start(ap, string);
 	vsprintf(out, string, ap);
 	va_end(ap);
-
 
 	memcpy((void *)&buf, (void *)&(state->input), sizeof(bf_stream));
 	cell len=(cell)strlen(out);
@@ -116,7 +115,7 @@ void bf_eval(bf_state *state, char *string, ...)
 	memcpy((void *)&(state->input), (void *)&buf, sizeof(bf_stream));
 
 	#ifdef DEBUG_EVAL
-	printf("#>\n");
+	printf("#> len: %d\n", len);
 	#endif
 }
 
@@ -766,7 +765,7 @@ void prim_eval(bf_state *state) /* ( str strlen -- ) */
 	char *str=(char *)bf_pop(&(state->dstack));
 
 	#ifdef DEBUG_EVAL
-	printf("EVAL: ");
+	printf("EVAL@%d: ", count);
 	for(i=0;i<count;i++) printf("%c", str[i]);
 	printf("\n");
 	i=0;

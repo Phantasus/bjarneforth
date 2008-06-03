@@ -82,7 +82,18 @@ cell bf_getc(bf_stream *stream)
 	}
 	stream->pos++;
 	
+	#ifdef DEBUG_EVAL
+	printf("buf: %d %c type: %d stream: %d len: %d\n", (int)buf, (int)buf, (int)stream->type, (int)stream->stream, (int)stream->length);
+	#endif
+
 	return buf;
+}
+
+int bf_feof(bf_stream *stream)
+{
+	if(stream->type==BF_STREAM_FILE) return feof((FILE *)stream->stream);
+	if(stream->pos>=stream->length) return 1;
+	return 0;
 }
 
 /* DOC: prints a value to the stream */

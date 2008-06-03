@@ -40,6 +40,7 @@ void bf_memstream(bf_stream *stream, char *mem, cell length);
 void bf_stdstream(bf_stream *stream, FILE *file);
 
 cell bf_getc(bf_stream *stream);
+int bf_feof(bf_stream *stream);
 void bf_putc(bf_stream *stream, cell value);
 
 #define BF_STREAMH
