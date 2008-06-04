@@ -50,9 +50,9 @@ void bf_inlinecell(bf_state *state, cell value)
         state->vars.here=(cell *)&state->vars.here[1];
 }
 
-void bf_inlinebyte(bf_state *state, char value)
+void bf_inlinebyte(bf_state *state, byte value)
 {
-	char *adr=(char *)state->vars.here;
+	byte *adr=(byte *)state->vars.here;
         adr[0]=value;
 
         if(state->vars.here<state->memory.end)

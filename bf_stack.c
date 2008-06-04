@@ -40,7 +40,6 @@ cell bf_pop(bf_stack *stack)
 	 * my hero of the day */
 	cell back=stack->items[stack->tos];
 	stack->items[stack->tos]=0;
-
 	stack->tos=(stack->tos-1)%BF_STACK_ITEMS;
 
 	return back;

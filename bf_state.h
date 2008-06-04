@@ -50,7 +50,7 @@ void bf_free_state(bf_state *state);
 
 /* convenient functions */
 void bf_inlinecell(bf_state *state, cell value);
-void bf_inlinebyte(bf_state *state, char value);
+void bf_inlinebyte(bf_state *state, byte value);
 void bf_allot(bf_state *state, cell size);
 
 /* memory protection */

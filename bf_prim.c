@@ -55,7 +55,7 @@ cell *bf_def_word(bf_state *state, const char *name, unsigned char flags, bf_pri
 	count=count&BF_WORD_LENMASK;
 	count=count|flags;
 
-	bf_inlinebyte(state, count);
+	bf_inlinebyte(state, (byte)count);
 	count=count&BF_WORD_LENMASK;
 	for(i=0;i<count;i++)
 	bf_inlinebyte(state, name[i]);
@@ -319,8 +319,8 @@ void prim_fetch(bf_state *state) /* ( adr -- value ) */
 /* fname: c! */
 void prim_bstore(bf_state *state) /* ( value adr -- ) */
 {
-        char *adr=(char *)bf_pop(&(state->dstack));
-        char value=(char)bf_pop(&(state->dstack));
+        byte *adr=(byte *)bf_pop(&(state->dstack));
+        byte value=(byte)bf_pop(&(state->dstack));
 
 	BF_INMEMORY(state, (cell *)adr)
         *adr=value;
@@ -329,10 +329,10 @@ void prim_bstore(bf_state *state) /* ( value adr -- ) */
 /* fname: c@ */
 void prim_bfetch(bf_state *state) /* ( adr -- value ) */
 {
-        char *adr=(char *)bf_pop(&(state->dstack));
+        byte *adr=(byte *)bf_pop(&(state->dstack));
 
 	BF_INMEMORY(state, (cell *)adr)
-        bf_push(&(state->dstack), *adr);
+        bf_push(&(state->dstack), (cell)*adr);
 	else bf_push(&(state->dstack), (cell)0);
 }
 
@@ -850,7 +850,8 @@ void prim_inlinecell(bf_state *state) /* ( num  -- ) */
 /* DOC: inline num as a byte/character to here */
 void prim_inlinebyte(bf_state *state) /* ( num -- ) */
 {
-	bf_inlinebyte(state, bf_pop(&(state->dstack)));
+	cell buf=bf_pop(&(state->dstack));
+	bf_inlinebyte(state, (byte)buf);
 }
 
 /* DOC: inline the string on TOS to there */
