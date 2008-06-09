@@ -1,0 +1,16 @@
+Install, well no..
+------------------
+
+First bootforth(when you know a better name, contact me(damn! normally 
+I have freaky names in my head for stuff, but when it comes to forth
+I don't have great ones in my mind)) is a FRAMEWORK a kit, perhaps 
+a library for putting together your own small forth system. 
+Which ISN'T FAST but for testing your ideas and IT'S SMALL. 
+So no application to install.
+
+Secondly it has some samples(well, one at the moment, sorry)
+for an interpreter.. So there isn't a main.c in the working
+directory. You just get into the samples directory and build
+the the version which you want through executing the specific
+Makefile with 'make` and then you got the result. That's all.
+
