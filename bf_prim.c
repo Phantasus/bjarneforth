@@ -39,7 +39,11 @@ cell *bf_def_stub(bf_state *state, cell *prev, char *name, bf_prim dofield, cell
         state->vars.last=last;
 	state->vars.dhere=state->vars.here;
 	state->vars.here=here;
-
+	
+	#ifdef DEBUG
+	printf("def name: %s do: %d arg: %d\n", name,(int)dofield,(int)argfield);
+	if(dofield==0 || argfield==0) printf("ZERO REF\n");
+	#endif
 	return last;
 }
 
@@ -59,6 +63,11 @@ cell *bf_def_word(bf_state *state, const char *name, unsigned char flags, bf_pri
 	count=count&BF_WORD_LENMASK;
 	for(i=0;i<count;i++)
 	bf_inlinebyte(state, name[i]);
+
+	/* alignment */
+	while((cell)(state->vars.here)%(sizeof(cell))>0) 
+	bf_inlinebyte(state, (byte)0);
+	
 
 	return bf_def_stub(state, state->vars.last, string, dofield, argfield);
 }
@@ -401,10 +410,16 @@ void prim_dolink(bf_state *state) /* ( -- ) */
 {
 	bf_push(&(state->rstack), (cell)state->IP);
 	state->IP=(cell *)state->W[1];
-	while((*state->IP)!=0)
+	#ifdef DEBUG
+	printf("link IP %d W %d :\n", (int)state->IP, (int)state->W);
+	#endif
+	while((state->IP[0])!=0)
 	{
 		state->W=(cell *)state->IP[0];
-		state->IP++;
+		state->IP=&state->IP[1];
+	        #ifdef DEBUG
+	        printf(" IP %d W %d\n", (int)state->IP, (int)state->W);
+        	#endif
 		bf_push(&(state->dstack), (cell)state->W);
 		prim_execute(state);
 	}
@@ -649,14 +664,23 @@ void prim_execute(bf_state *state) /* ( xt -- ) */
 	if(xts!=0) {
 	state->W=(cell *)xts;
 	#ifdef DEBUG	
-	printf("XT: do %d arg %d\n", (int)xts[0], (int)xts[1]);
+	printf("XT: %d do %d arg %d W %d ", (int)xts, (int)xts[0], (int)xts[1],(int)state->W);
 	#endif
 
 	BF_INMEMORY(state, (cell *)xts[0]) {
+	#ifdef DEBUG
+	printf("Inmemory - word\n");
+	#endif
+	bf_push(&(state->dstack), (cell)xts[1]);
 	bf_push(&(state->dstack), (cell)xts[0]);
 	prim_execute(state);
 	}
-	else xts[0](state);
+	else { 
+	#ifdef DEBUG
+	printf("Notinmemory - C prim\n");
+	#endif
+	xts[0](state); 
+	}
 	}
 	#ifdef DEBUG
 	prim_dots(state);
@@ -682,7 +706,7 @@ void prim_lookup(bf_state *state) /* ( sadr sc -- xt ) */
 		printf("\"");
                 for(i=0;i<strlength;i++)
                 printf("%c", str[i]);
-                printf("\"");
+                printf("\": ");
 		#endif
 
 		while(word!=0) 
@@ -702,6 +726,9 @@ void prim_lookup(bf_state *state) /* ( sadr sc -- xt ) */
 					if(i==strlength) {
 					state->vars.lastwt=(cell *)BF_WORD_WT(word);
 					bf_push(&(state->dstack), (cell)BF_WORD_XT(word));
+					#ifdef DEBUG
+					printf("XT: %d\n", (int)BF_WORD_XT(word));
+					#endif
 					return;
 					}
 				}

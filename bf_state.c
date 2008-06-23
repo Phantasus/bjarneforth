@@ -46,6 +46,11 @@ void bf_free_state(bf_state *state)
 void bf_inlinecell(bf_state *state, cell value)
 {
         state->vars.here[0]=value;
+	#ifdef DEBUG
+	printf("inlined: %d@%d\n", (int)state->vars.here[0],(int)state->vars.here);
+	if((cell)state->vars.here%(sizeof(cell))>0) 
+	printf("%d NOT ALIGNED\n", (int)state->vars.here);
+	#endif
         if(state->vars.here<state->memory.end)
         state->vars.here=(cell *)&state->vars.here[1];
 }
@@ -62,7 +67,7 @@ void bf_inlinebyte(bf_state *state, byte value)
 void bf_allot(bf_state *state, cell size)
 {
 	bf_allot_memory(&state->memory, size);
-	state->vars.here=state->memory.content;
-	state->vars.dhere=state->memory.content;
+	state->vars.here=state->memory.heap;
+	state->vars.dhere=state->memory.heap;
 }
 

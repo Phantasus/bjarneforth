@@ -70,7 +70,7 @@ void bf_memstream(bf_stream *stream, char *mem, cell length)
 /* DOC: reads a value from stream and returns it as a cell */ 
 cell bf_getc(bf_stream *stream)
 {
-	cell buf; 
+	cell buf=BF_STREAM_EMPTY; 
 
 	if((stream->type==BF_STREAM_FILE) || (stream->type==BF_STREAM_STD))
 	buf=(cell)getc((FILE *)stream->stream);

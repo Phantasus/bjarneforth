@@ -60,11 +60,6 @@ void init_dict()
 	bf_def_literal(&state, "here", (cell)&state.vars.here);
 	bf_def_literal(&state, "last", (cell)&state.vars.last);
 	bf_def_literal(&state, "cell", (cell)sizeof(cell));
-	bf_def_literal(&state, "doliteral", (cell)&prim_doliteralcomp);
-	bf_def_literal(&state, "doprim", (cell)&prim_doprimcomp);
-	bf_def_literal(&state, "doiliteral", (cell)&prim_doliteral);
-	bf_def_literal(&state, "doiprim", (cell)&prim_doprim);
-	bf_def_literal(&state, "lastwt", (cell)&state.vars.lastwt);
 
 	/* imediates */
 	bf_def_iprim(&state, ";", &prim_endcompile);
@@ -110,13 +105,16 @@ void classic_interpreter(bf_state *state, const char *prompt)
 
 int main(int argc, char **argv)
 {
-	bf_init_state(&(state)); 
-	bf_allot(&state, 1024*64);
+        const int kB=1024;
 
-	state.vars.tib=(char *)&state.memory.content[1024];
-	state.vars.tibsize=256;
-	state.vars.dhere=&state.memory.content[2048];
-	state.vars.here=&state.memory.content[5120];
+        bf_init_state(&(state));
+        bf_allot(&state, (64*kB)/sizeof(cell));
+
+        state.vars.tib=(char *)&state.memory.content[0]; 
+        state.vars.tibsize=kB;
+        state.vars.dhere=&state.memory.content[512];
+        state.vars.strs=&state.memory.content[2048];
+        state.vars.here=&state.memory.content[8192];
 	
 	bf_init_vm(&state);
 	
