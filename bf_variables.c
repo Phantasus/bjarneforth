@@ -40,7 +40,6 @@ int bf_init_variables(bf_variables *vars)
 	vars->ws=vars->def_ws;
 
 	vars->base=BF_BASE_DEC;
-
 	return 0;
 }
 

@@ -43,6 +43,11 @@ struct bf_variables
 	char *ws;          /* current whitespace string */
 
 	cell *lastwt;      /* word token of last looked up word */
+
+	struct {           /* internal variables don't touch them! */
+	char *evaltib;     /* for bf_eval */
+	} intern;
+
 };
 
 typedef struct bf_variables bf_variables;

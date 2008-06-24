@@ -100,7 +100,7 @@ cell *bf_def_iliteral(bf_state *state, const char *name, cell value)
 void bf_eval(bf_state *state, char *string, ...)
 {
 	bf_stream buf;
-	char *out=state->vars.tib;
+	char *out=state->vars.intern.evaltib;
 	va_list ap; 
 
 	#ifdef DEBUG_EVAL

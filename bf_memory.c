@@ -31,7 +31,6 @@ void bf_init_memory(bf_memory *memory) /* DOC: sets up a memory structure */
 void bf_allot_memory(bf_memory *memory, unsigned int size) /* DOC: allocates some memory */
 {
 	int i;
-	char *ptr;
 
 	memory->size=size;
 	memory->a_reg=0;
@@ -44,9 +43,8 @@ void bf_allot_memory(bf_memory *memory, unsigned int size) /* DOC: allocates som
 
 	memory->content=(cell *)malloc((sizeof(cell)*size));
 	memory->end=&memory->content[(size-1)];
-	ptr=(char *)memory->content;
-	while(((cell)ptr)%sizeof(cell)>0) ptr++;
-	memory->heap=(cell *)ptr;
+	memory->heap=memory->content;
+
 	for(i=0;i<size;i++) memory->content[i]=0;
 }
 

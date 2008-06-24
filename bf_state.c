@@ -67,6 +67,12 @@ void bf_inlinebyte(bf_state *state, byte value)
 void bf_allot(bf_state *state, cell size)
 {
 	bf_allot_memory(&state->memory, size);
+
+	/* for bf_eval */
+	state->vars.intern.evaltib=(char *)state->memory.content;
+	state->memory.heap=&state->memory.content[256];
+	/* end */
+
 	state->vars.here=state->memory.heap;
 	state->vars.dhere=state->memory.heap;
 }
