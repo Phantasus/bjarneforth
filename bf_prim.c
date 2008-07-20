@@ -827,6 +827,25 @@ void prim_eval(bf_state *state) /* ( str strlen -- ) */
 	}
 }
 
+/* DOC: pretty eval, evaluates a string and binds parsing to this string */
+void prim_peval(bf_state *state) /* ( str strlen -- ) */
+{
+        bf_stream buf;
+        cell len=bf_pop(&(state->dstack));
+        char *str=(char *)bf_pop(&(state->dstack));
+
+        memcpy((void *)&buf, (void *)&(state->input), sizeof(bf_stream));
+        bf_memstream(&(state->input), (char *)str, len);
+
+        while(state->input.pos<len)
+        {
+                prim_wsparse(state);
+                prim_eval(state);
+        }
+
+        memcpy((void *)&(state->input), (void *)&buf, sizeof(bf_stream));
+}
+
 /* DOC: classical Forth way of evaluating a word */
 void prim_eachword_classic(bf_state *state) /* ( str strlen -- ) */
 {

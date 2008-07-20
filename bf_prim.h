@@ -120,6 +120,7 @@ void prim_include(bf_state *state);
 void prim_towordtoken(bf_state *state);
 
 void prim_eval(bf_state *state);
+void prim_peval(bf_state *state);
 void prim_eachword_classic(bf_state *state);
 
 void prim_parse(bf_state *state);
