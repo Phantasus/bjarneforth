@@ -146,45 +146,49 @@ void bf_init_vm(bf_state *state)
 /* DOC: add the two numbers A and B together */
 void prim_add(bf_state *state) /* ( A B -- A+B ) */
 {
-        int b=bf_pop(&(state->dstack));
-        int a=bf_pop(&(state->dstack));
-        int result=a+b;
+        cell b=bf_pop(&(state->dstack));
+        cell a=bf_pop(&(state->dstack));
+        cell result=a+b;
+	int tresult=(int)result;
  
-        if(result<0) prim_setnegative(state);
-        bf_push(&(state->dstack), (cell)result);	
+        if(tresult<0) prim_setnegative(state);
+        bf_push(&(state->dstack), result);	
 }
 
 /* DOC: subtract B from A */
 void prim_sub(bf_state *state) /* ( A B -- A-B ) */
 {
-	int b=bf_pop(&(state->dstack));
-	int a=bf_pop(&(state->dstack));
-	int result=a-b;
+	cell b=bf_pop(&(state->dstack));
+	cell a=bf_pop(&(state->dstack));
+	cell result=a-b;
+	int tresult=(int)result;
 
-	if(result<0) prim_setnegative(state);
-	bf_push(&(state->dstack), (cell)result);
+	if(tresult<0) prim_setnegative(state);
+	bf_push(&(state->dstack), result);
 }
 
 /* DOC: multiply A and B */
 void prim_mul(bf_state *state) /* ( A B -- A*B) */
 {
-        int b=bf_pop(&(state->dstack));
-        int a=bf_pop(&(state->dstack));
-        int result=a*b;
- 
-        if(result<0) prim_setnegative(state);
-        bf_push(&(state->dstack), (cell)result);
+        cell b=bf_pop(&(state->dstack));
+        cell a=bf_pop(&(state->dstack));
+        cell result=a*b;
+ 	int tresult=(int)result;
+
+        if(tresult<0) prim_setnegative(state);
+        bf_push(&(state->dstack), result);
 }
 
 /* DOC: divide A through B */
 void prim_div(bf_state *state) /* ( A B -- A/B ) */
 {
-	int b=bf_pop(&(state->dstack));
-	int a=bf_pop(&(state->dstack));
-	int result=a/b;
-	
-	if(result<0) prim_setnegative(state);
-	bf_push(&(state->dstack), (cell)result);
+	cell b=bf_pop(&(state->dstack));
+	cell a=bf_pop(&(state->dstack));
+	cell result=a/b;
+	int tresult=(int)result;
+
+	if(tresult<0) prim_setnegative(state);
+	bf_push(&(state->dstack), result);
 }
 
 /* DOC: push the result of A modulo B on the stack */
@@ -688,7 +692,7 @@ void prim_execute(bf_state *state) /* ( xt -- ) */
 }
 
 /* DOC: lookups a word */
-void prim_lookup(bf_state *state) /* ( sadr sc -- xt ) */
+void prim_lookup(bf_state *state) /* ( str strlen -- xt ) */
 {
 	cell *word=state->vars.last;
 	cell strlength;
