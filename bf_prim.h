@@ -139,6 +139,7 @@ void prim_newword(bf_state *state);
 void prim_endcompile(bf_state *state);
 
 void prim_if(bf_state *state);
+void prim_ifneg(bf_state *state);
 void prim_else(bf_state *state);
 void prim_then(bf_state *state);
 
@@ -160,6 +161,8 @@ void prim_pushsliteral(bf_state *state);
 void prim_jmp(bf_state *state);
 void prim_jmpiftrue(bf_state *state);
 void prim_jmpiffalse(bf_state *state);
+void prim_jmpifpos(bf_state *state);
+void prim_jmpifneg(bf_state *state);
 
 void prim_settrue(bf_state *state);
 void prim_setfalse(bf_state *state);

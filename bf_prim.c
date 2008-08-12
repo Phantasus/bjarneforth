@@ -136,11 +136,13 @@ void bf_init_vm(bf_state *state)
 	bf_def_iprim(state, "jmp", &prim_jmp);
 	bf_def_iprim(state, "jmpiftrue", &prim_jmpiftrue);
 	bf_def_iprim(state, "jmpiffalse", &prim_jmpiffalse);
+	bf_def_iprim(state, "jmpifpos", &prim_jmpifpos);
+	bf_def_iprim(state, "jmpifneg", &prim_jmpifneg);
 	bf_def_iprim(state, "eachword", &prim_eachword_classic);
 	bf_def_iprim(state, "(does)", &prim_does);
 
 	state->vars.eachword=(cell)BF_VM_PRIM(state, BF_VM_EACHWORD);
-	state->vars.last=0; /* put it into their own vocabulary */
+	state->vars.last=0; /* put it into their own memory area */
 }
 
 /* DOC: add the two numbers A and B together */
@@ -991,11 +993,19 @@ void prim_endcompile(bf_state *state) /* ( -- ) */
 /* DOC: begin at compiletime an if statement */
 void prim_if(bf_state *state) /* ( -- adr ) */
 {
-	if(state->vars.state)
-	{
-		bf_inlinecell(state, (cell)BF_VM_PRIM(state, BF_VM_JMPIFFALSE));
-		bf_push(&(state->dstack), (cell)state->vars.here);
-		bf_inlinecell(state, (cell)0);
+	if(state->vars.state){
+	bf_inlinecell(state, (cell)BF_VM_PRIM(state, BF_VM_JMPIFFALSE));
+	bf_push(&(state->dstack), (cell)state->vars.here);
+	bf_inlinecell(state, (cell)0);
+	}
+}
+
+void prim_ifneg(bf_state *state)
+{
+	if(state->vars.state){
+        bf_inlinecell(state, (cell)BF_VM_PRIM(state, BF_VM_JMPIFNEG));
+        bf_push(&(state->dstack), (cell)state->vars.here);
+        bf_inlinecell(state, (cell)0);	
 	}
 }
 
@@ -1303,7 +1313,11 @@ void prim_tonumber(bf_state *state) /* ( str strlen -- num ) */
 	};
 
         buf=adr[start];
-        if(buf=='-') { start++; sign=-1; }
+        if(buf=='-') { 
+	start++; 
+	sign=-1;
+	prim_setnegative(state);
+	}
 	for(i=start;i<count;i++) 
 	{
 		/* that's fucking disgusting code, 
