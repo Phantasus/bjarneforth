@@ -1210,6 +1210,25 @@ void prim_jmpiffalse(bf_state *state) /* ( -- ) */
 	state->IP++;
 }
 
+/* DOC: (internal) performs a relative jmp if NEG flag is set */
+void prim_jmpifneg(bf_state *state) /* ( -- ) */
+{
+	if(state->flags&BF_FLAG_NEG)
+	prim_jmp(state);
+	else 
+	state->IP++;
+}
+
+/* DOC: (internal) performs a relative jmp if NEG flag isn't set */
+void prim_jmpifpos(bf_state *state) /* ( -- ) */
+{
+        if(!(state->flags&BF_FLAG_NEG))
+        prim_jmp(state);
+        else
+        state->IP++;
+}
+
+
 /* DOC: set the vm TRUE flag when the string is a number, without
  *      removing it from the dstack */
 void prim_isnumber(bf_state *state) /* ( str strlen -- str strlen ) */
