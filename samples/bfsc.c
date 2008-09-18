@@ -110,11 +110,11 @@ int main(int argc, char **argv)
         bf_init_state(&(state));
         bf_allot(&state, (64*kB)/sizeof(cell));
 
-        state.vars.tib=(char *)&state.memory.content[0]; 
+        state.vars.tib=(char *)&state.memory.heap[0]; 
         state.vars.tibsize=kB;
-        state.vars.dhere=&state.memory.content[512];
-        state.vars.strs=&state.memory.content[2048];
-        state.vars.here=&state.memory.content[8192];
+        state.vars.dhere=&state.memory.heap[512];
+        state.vars.strs=&state.memory.heap[2048];
+        state.vars.here=&state.memory.heap[8192];
 	
 	bf_init_vm(&state);
 	
