@@ -742,11 +742,6 @@ void prim_lookup(bf_state *state) /* ( str strlen -- xt ) */
 			word=(cell *)(word[BF_WORD_PREV]);   /* link ptr */
 		}
 	}
-	/* when word wasn't found*/
-	for(i=0;i<strlength;i++) {
-	bf_putc(&(state->output), (cell)str[i]);
-	}
-	bf_putc(&(state->output), '?');
 	bf_push(&(state->dstack), (cell)0);
 }
 
