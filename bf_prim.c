@@ -721,6 +721,15 @@ void prim_lookup(bf_state *state) /* ( str strlen -- xt ) */
 
 			if(!(sstr[0]&BF_WORD_HIDDEN))
 			{
+				/* D = Debug, P = Print */
+				/* prints the search, so all not-hidden words */
+				#ifdef D_PSEARCH
+				printf("checks: ");
+				for(i=1;i<(sstr[0]&BF_WORD_LENMASK);i++)
+				printf("%c",sstr[i]);
+				printf("\n");
+				#endif
+
 				if((sstr[0]&BF_WORD_LENMASK)==strlength)
 				{ 
 					sstr=&sstr[1];
@@ -728,7 +737,8 @@ void prim_lookup(bf_state *state) /* ( str strlen -- xt ) */
 					{
 						if(str[i]!=sstr[i]) 
 						break;
-					}
+					} 
+
 					if(i==strlength) {
 					state->vars.lastwt=(cell *)BF_WORD_WT(word);
 					bf_push(&(state->dstack), (cell)BF_WORD_XT(word));
