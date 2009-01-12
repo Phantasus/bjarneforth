@@ -140,8 +140,10 @@ void bf_init_vm(bf_state *state)
 	bf_def_iprim(state, "jmpifneg", &prim_jmpifneg);
 	bf_def_iprim(state, "eachword", &prim_eachword_classic);
 	bf_def_iprim(state, "(does)", &prim_does);
+	bf_def_iprim(state, "wordnotfound", &prim_defaultwordnotfound);
 
 	state->vars.eachword=(cell)BF_VM_PRIM(state, BF_VM_EACHWORD);
+	state->vars.wordnotfound=(cell)BF_VM_PRIM(state,BF_VM_WORDNOTFOUND);
 	state->vars.last=0; /* put it into their own memory area */
 }
 
@@ -725,7 +727,7 @@ void prim_lookup(bf_state *state) /* ( str strlen -- xt ) */
 				/* prints the search, so all not-hidden words */
 				#ifdef D_PSEARCH
 				printf("checks: ");
-				for(i=1;i<(sstr[0]&BF_WORD_LENMASK);i++)
+				for(i=1;i<=(sstr[0]&BF_WORD_LENMASK);i++)
 				printf("%c",sstr[i]);
 				printf("\n");
 				#endif
@@ -752,7 +754,22 @@ void prim_lookup(bf_state *state) /* ( str strlen -- xt ) */
 			word=(cell *)(word[BF_WORD_PREV]);   /* link ptr */
 		}
 	}
+	/* word not found */ 
+	bf_push(&(state->dstack), (cell)str);
+	bf_push(&(state->dstack), (cell)strlength);
+	bf_push(&(state->dstack), state->vars.wordnotfound);
+	prim_execute(state);
 	bf_push(&(state->dstack), (cell)0);
+}
+
+/* DOC: default word not found primitive */
+void prim_defaultwordnotfound(bf_state *state)
+{
+	cell strlength=bf_pop(&(state->dstack)), i;
+	char *str=(char *)bf_pop(&(state->dstack));
+	
+	for(i=0; i<strlength;i++) printf("%c", str[i]);
+	printf("?\n");
 }
 
 /* DOC: include the given file and evaluate it */

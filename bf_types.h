@@ -30,5 +30,6 @@ typedef unsigned char byte; /* a byte */
 
 /* internal use */
 typedef signed int scell;   /* a signed cell */
+
 #define BF_TYPESH
 #endif

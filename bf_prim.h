@@ -118,6 +118,7 @@ void prim_execute(bf_state *state);
 void prim_lookup(bf_state *state);
 void prim_include(bf_state *state);
 void prim_towordtoken(bf_state *state);
+void prim_defaultwordnotfound(bf_state *state);
 
 void prim_eval(bf_state *state);
 void prim_peval(bf_state *state);

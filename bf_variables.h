@@ -28,8 +28,11 @@ struct bf_variables
 	
 	cell state;  /* compiler state */
 	cell istate; /* interpreter state */
+
 	cell eachword; /* XT which gets executed at each read word */
-	
+	cell wordnotfound; /* XT which gets executed, when a word 
+			      wasn't found ( str len -- ) */
+
 	/* memory areas */
 	cell *last;  /* adr of last defined word */
 	cell *here;  /* adr of current free heap cell */
@@ -47,6 +50,7 @@ struct bf_variables
 	struct {           /* internal variables don't touch them! */
 	char *evaltib;     /* for bf_eval */
 	} intern;
+
 
 };
 
