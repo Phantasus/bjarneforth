@@ -140,10 +140,10 @@ void bf_init_vm(bf_state *state)
 	bf_def_iprim(state, "jmpifneg", &prim_jmpifneg);
 	bf_def_iprim(state, "eachword", &prim_eachword_classic);
 	bf_def_iprim(state, "(does)", &prim_does);
-	bf_def_iprim(state, "wordnotfound", &prim_defaultwordnotfound);
+	bf_def_iprim(state, "lookup", &prim_lookup);
 
 	state->vars.eachword=(cell)BF_VM_PRIM(state, BF_VM_EACHWORD);
-	state->vars.wordnotfound=(cell)BF_VM_PRIM(state,BF_VM_WORDNOTFOUND);
+	state->vars.lookup=(cell)BF_VM_PRIM(state,BF_VM_LOOKUP);
 	state->vars.last=0; /* put it into their own memory area */
 }
 
@@ -532,7 +532,9 @@ void prim_printtos(bf_state *state ) /* ( number -- ) */
 void prim_emit(bf_state *state) /* ( value -- ) */
 {
 	cell value=bf_pop(&(state->dstack));
-	bf_putc(&(state->output), value);
+/*	bf_putc(&(state->output), value);
+*/
+	printf("%c", (char)value);
 }
 
 /* DOC: prints a newline */
@@ -617,7 +619,9 @@ void prim_type(bf_state *state) /* ( str strlen -- ) */
 
 	for(i=0; i<count; i++)
 	{
-		bf_putc(&(state->output), (cell)text[i]);
+	/*	bf_putc(&(state->output), (cell)text[i]);
+	*/
+	printf("%c", text[i]);
 	}
 }
 
@@ -695,7 +699,10 @@ void prim_execute(bf_state *state) /* ( xt -- ) */
 	#endif
 }
 
-/* DOC: lookups a word */
+/* DOC: lookups a word(with no error) and returns the XT
+ *      if a word can't be found
+ *      then it pushes 0 on the stack
+ * */
 void prim_lookup(bf_state *state) /* ( str strlen -- xt ) */
 {
 	cell *word=state->vars.last;
@@ -754,11 +761,6 @@ void prim_lookup(bf_state *state) /* ( str strlen -- xt ) */
 			word=(cell *)(word[BF_WORD_PREV]);   /* link ptr */
 		}
 	}
-	/* word not found */ 
-	bf_push(&(state->dstack), (cell)str);
-	bf_push(&(state->dstack), (cell)strlength);
-	bf_push(&(state->dstack), state->vars.wordnotfound);
-	prim_execute(state);
 	bf_push(&(state->dstack), (cell)0);
 }
 
@@ -897,7 +899,9 @@ void prim_eachword_classic(bf_state *state) /* ( str strlen -- ) */
 	printf("STATE: %d\n", state->vars.state);
 	#endif
 	/* adding new word code */
-        prim_lookup(state);
+	bf_push(&(state->dstack), state->vars.lookup);
+	prim_execute(state);
+
 	prim_dup(state); 
 	buf=(cell *)bf_pop(&(state->dstack));
 	if(buf!=0)

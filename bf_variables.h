@@ -30,8 +30,8 @@ struct bf_variables
 	cell istate; /* interpreter state */
 
 	cell eachword; /* XT which gets executed at each read word */
-	cell wordnotfound; /* XT which gets executed, when a word 
-			      wasn't found ( str len -- ) */
+	cell lookup;  /* XT which gets executed if a word gets lookuped
+			     ( str len -- ) */
 
 	/* memory areas */
 	cell *last;  /* adr of last defined word */
