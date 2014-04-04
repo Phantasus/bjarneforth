@@ -19,6 +19,12 @@ idea.
 
 Currently known issues:
 
+4. Change code so that it reflects my current
+   C coding style.
+
+3. Change code so that it compiles under gcc 4.8.2 
+   with no warnings under -pedantic
+
 2. Documenting the many years untouched source code.
 
 1. Updating license comments so that it represents 
