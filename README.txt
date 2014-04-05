@@ -80,9 +80,6 @@ Licenses
 All the code of BootForth is under the GPL, that means the C source
 and header files in the current directory. 
 
-Forth Source Code snippets which are in the directory snippets
-are under the BSD License. So you can do whatever you want.
-
 
 Warranty/Guaranty
 -----------------
