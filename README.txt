@@ -34,8 +34,6 @@ Bootforth is:
     - Which puts automatically a nice size limit on it,
       so Bootforth can't grow over the size of understanability
       (Well yes it can, but then it's not understandable anymore)
-  - No GNU Makefile features
-    - Because that means it depends on gnu make
 
 Bootforth isn't:
 - A full blown Forth system
