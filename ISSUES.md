@@ -11,7 +11,7 @@ so that the first issue is at the bottom and the last
 defined at the top of this file.
 
 In a commit message, each issue is referenced by the
-prefix ISS+NUMBER+:. Where _NUMBER_ is the issue
+prefix ISS*NUMBER*:. Where _NUMBER_ is the issue
 number of this file. Multiple commits can belong to
 the same issue, why? Because splitting a large
 problem into small commits is in my opinion a good 
