@@ -22,44 +22,40 @@
 
 #include <bf_types.h>
 
-struct bf_variables
+typedef struct
 {
-	/* -- used by words/primitives -- */
+  /* -- used by words/primitives -- */
 
-	cell base;   /* current number base */
-	
-	cell state;  /* compiler state */
-	cell istate; /* interpreter state */
+  cell base;   /* current number base */
+  
+  cell state;  /* compiler state */
+  cell istate; /* interpreter state */
 
-	cell eachword; /* XT which gets executed at each read word */
-	cell lookup;  /* XT which gets executed if a word gets lookuped
-			     ( str len -- ) */
+  cell eachword; /* XT which gets executed at each read word */
+  cell lookup;  /* XT which gets executed if a word gets lookuped
+                   ( str len -- ) */
 
-	/* memory areas */
-	cell *last;  /* adr of last defined word */
-	cell *here;  /* adr of current free heap cell */
-	cell *dhere; /* next free cell in the dictionary */
-	cell *strs;  /* a memory area for strings */
+  /* memory areas */
+  cell *last;  /* adr of last defined word */
+  cell *here;  /* adr of current free heap cell */
+  cell *dhere; /* next free cell in the dictionary */
+  cell *strs;  /* a memory area for strings */
 
-	char *tib;         /* text input buffer adr */
-	cell tibsize;      /* size of the tib */ 
-	
-	char def_ws[4];    /* default whitespaces */
-	char *ws;          /* current whitespace string */
+  char *tib;         /* text input buffer adr */
+  cell tibsize;      /* size of the tib */ 
+  
+  char def_ws[4];    /* default whitespaces */
+  char *ws;          /* current whitespace string */
 
-	cell *lastwt;      /* word token of last looked up word */
+  cell *lastwt;      /* word token of last looked up word */
 
-	struct {           /* internal variables don't touch them! */
-	char *evaltib;     /* for bf_eval */
-	} intern;
+  struct {           /* internal variables don't touch them! */
+    char *evaltib;   /* for bf_eval */
+  } intern;
+} bf_variables;
 
-
-};
-
-typedef struct bf_variables bf_variables;
-
-int bf_init_variables(bf_variables *vars);
-int bf_free_variables(bf_variables *vars);
+int bf_init_variables (bf_variables *vars);
+int bf_free_variables (bf_variables *vars);
 
 
 #define BF_VARiABLESH

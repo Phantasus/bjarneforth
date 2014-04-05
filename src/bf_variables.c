@@ -20,11 +20,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <bf_defines.h>
 #include <bf_variables.h>
 
-int bf_init_variables(bf_variables *vars)
+int bf_init_variables (bf_variables *vars)
 {
 	vars->last=0;
 	vars->tib=0;
@@ -45,7 +46,9 @@ int bf_init_variables(bf_variables *vars)
 	return 0;
 }
 
-int bf_free_variables(bf_variables *vars)
+int bf_free_variables (bf_variables *p_vars)
 {
+  memset ((void *)p_vars, 0, sizeof (bf_variables));
+
 	return 0;
 }
