@@ -20,46 +20,44 @@
 
 #include <bf_memory.h>
 #include <bf_stack.h>
+#include <string.h>
 
 void bf_init_memory(bf_memory *memory) /* DOC: sets up a memory structure */
 {
-	memory->size=0;
-	memory->a_reg=0;
-	memory->content=0;
-	memory->heap=0;
-	memory->end=0;
+  memory->size    = 0;
+  memory->a_reg   = 0;
+  memory->content = NULL;
+  memory->heap    = 0;
+  memory->end     = NULL;
 }
 
 /* Allocates a bf_memory object with the given size of contained space */
 void bf_allot_memory (bf_memory *memory, size_t size) 
 {
-	int i;
+  memory->size=size;
+  memory->a_reg=0;
 
-	memory->size=size;
-	memory->a_reg=0;
+  if (memory->content!=0) 
+    free ((void *)memory->content);
 
-	if(memory->content!=0) 
-	free((void *)memory->content);
+  if (size<BF_MEMORY_MIN_SIZE) 
+    size = BF_MEMORY_MIN_SIZE;
 
-	if(size<BF_MEMORY_MIN_SIZE) 
-	size=BF_MEMORY_MIN_SIZE;
+  memory->content=(cell *)malloc ((sizeof(cell)*size));
+  memory->end=&memory->content[(size-1)];
+  memory->heap=memory->content;
 
-	memory->content=(cell *)malloc((sizeof(cell)*size));
-	memory->end=&memory->content[(size-1)];
-	memory->heap=memory->content;
-
-	for(i=0;i<size;i++) memory->content[i]=0;
   memset ((void *)memory->content, 0, size);
 }
 
-void bf_free_memory(bf_memory *memory) /* DOC: frees memory */
+void bf_free_memory (bf_memory *memory) /* DOC: frees memory */
 {
-	memory->size=0;
-	memory->end=0;
-	memory->a_reg=0;
+  memory->size  = 0;
+  memory->end   = NULL;
+  memory->a_reg = 0;
 
-	if(memory->content!=0) {
-	free((void * )memory->content);
-	bf_init_memory(memory);
-	}
+  if (memory->content!=0) {
+    free ((void * )memory->content);
+    bf_init_memory (memory);
+  }
 }
