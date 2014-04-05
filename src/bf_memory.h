@@ -23,7 +23,7 @@
 #include <bf_types.h>
 #include <stdlib.h>
 
-struct bf_memory
+typedef struct
 {
 	cell size;     /* memory size */
 	cell a_reg;    /* adress register */
@@ -31,15 +31,12 @@ struct bf_memory
 	cell *end;     /* last memory adr */
 
 	cell *heap;    /* start of heap */
-};
-
-typedef struct bf_memory bf_memory;
+} bf_memory;
 
 /* BootForth's memory functions */
-
-void bf_init_memory(bf_memory *memory);
-void bf_allot_memory(bf_memory *memory, unsigned int size);
-void bf_free_memory(bf_memory *memory);
+void bf_init_memory (bf_memory *memory);
+void bf_allot_memory (bf_memory *memory, size_t size);
+void bf_free_memory (bf_memory *memory);
 
 #define BF_MEMORYH
 #endif

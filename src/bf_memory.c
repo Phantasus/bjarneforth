@@ -30,7 +30,8 @@ void bf_init_memory(bf_memory *memory) /* DOC: sets up a memory structure */
 	memory->end=0;
 }
 
-void bf_allot_memory(bf_memory *memory, unsigned int size) /* DOC: allocates some memory */
+/* Allocates a bf_memory object with the given size of contained space */
+void bf_allot_memory (bf_memory *memory, size_t size) 
 {
 	int i;
 
@@ -48,6 +49,7 @@ void bf_allot_memory(bf_memory *memory, unsigned int size) /* DOC: allocates som
 	memory->heap=memory->content;
 
 	for(i=0;i<size;i++) memory->content[i]=0;
+  memset ((void *)memory->content, 0, size);
 }
 
 void bf_free_memory(bf_memory *memory) /* DOC: frees memory */
