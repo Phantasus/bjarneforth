@@ -18,20 +18,16 @@
  *                                                                           
  * ------------------------------------------------------------------------- */
 
-/*
- * types of bf
- * */
-
-
-
+/* types of bf */
 #ifndef BF_TYPESH
 #include <stdio.h>
+#include <stdint.h>
 
-typedef unsigned int cell;  /* a cell */
+typedef uintptr_t     cell; /* a cell */
 typedef unsigned char byte; /* a byte */
 
 /* internal use */
-typedef signed int scell;   /* a signed cell */
+typedef intptr_t scell;     /* a signed cell */
 
 #define BF_TYPESH
 #endif
