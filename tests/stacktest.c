@@ -18,22 +18,32 @@
  *                                                                           
  * ------------------------------------------------------------------------- */
 
+/**
+ * This unittest does check the stack primitives of bootforth
+ */
+
+
 #include <bf_stack.h>
 #include <stdio.h>
+#include "unittest.h"
 
-int main()
+int
+main ()
 {
-	cell i;
-	bf_stack stack;
-	bf_init_stack (&stack);
+  int i, last;
+  bf_stack stack;
+  bf_init_stack (&stack);
 
-	for (i=0; i<=BF_STACK_ITEMS+2; i++) {
-    printf ("%d IN: %d tos: %d\n", i, i, stack.tos);
-    bf_push (&stack, i);
-	}
-	
-	for (i=0; i<=BF_STACK_ITEMS+2; i++)
-    printf ("%d OUT: %d tos: %d\n",i, bf_pop(&stack), stack.tos);
-	
-	return 0;
+  for (i = 1; i < BF_STACK_ITEMS; i++)
+    {
+      bf_push_int (&stack, i);
+      ASSERT_EQUAL (i, stack.tos, "Stack pushing");
+    }
+
+  for (i = BF_STACK_ITEMS; i > 0; i--)
+    {
+      last = bf_pop_int (&stack);
+      ASSERT_EQUAL (last, (i - 1), "Stack popping");
+    }
+  return 0;
 }

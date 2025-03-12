@@ -1,3 +1,5 @@
+.PHONY: all
+
 CC=gcc # gcc compilation
 #CC=tcc # tcc compilation 
 
@@ -6,22 +8,32 @@ CFLAGS=-I..
 PRE=bf_
 #CFLAGS=-I..
 
-help: 
+all: unittest_selftest stacktest primtest parsetest inlinetest interp
 
-stacktest: stacktest.c
-	$(CC) stacktest.c ../$(PRE)stack.c $(CFLAGS) -o stacktest
+check: all
+	./unittest_selftest
+	./stacktest
+	./primtest
+	./parsetest
+	./inlinetest
 
-primtest: primtest.c ../*.c
-	$(CC) primtest.c ../$(PRE)stack.c ../$(PRE)state.c ../$(PRE)memory.c ../$(PRE)prim.c ../$(PRE)variables.c $(CFLAGS) -o primtest
+unittest_selftest: unittest_selftest.c unittest.c
+	$(CC) unittest.c unittest_selftest.c -o unittest_selftest
 
-parsetest: parsetest.c ../*.c
-	$(CC) parsetest.c ../$(PRE)stack.c ../$(PRE)state.c ../$(PRE)memory.c ../$(PRE)prim.c ../$(PRE)variables.c $(CFLAGS) -o parsetest
+stacktest: stacktest.c unittest.c
+	$(CC) unittest.c stacktest.c ../$(PRE)stack.c $(CFLAGS) -o stacktest
 
-inlinetest: inlinetest.c ../*.c
-	$(CC) inlinetest.c ../$(PRE)stack.c ../$(PRE)state.c ../$(PRE)stream.c ../$(PRE)memory.c ../$(PRE)prim.c ../$(PRE)variables.c $(CFLAGS) -o inlinetest
+primtest: primtest.c unittest.c ../*.c
+	$(CC) unittest.c primtest.c ../$(PRE)stack.c ../$(PRE)state.c ../$(PRE)memory.c ../$(PRE)prim.c ../$(PRE)variables.c $(CFLAGS) -o primtest
 
-deftest: deftest.c ../*.c
-	$(CC) deftest.c ../$(PRE)stack.c ../$(PRE)state.c ../$(PRE)stream.c ../$(PRE)memory.c ../$(PRE)prim.c ../$(PRE)variables.c $(CFLAGS) -o deftest
+parsetest: parsetest.c unittest.c ../*.c
+	$(CC) unittest.c parsetest.c ../$(PRE)stack.c ../$(PRE)state.c ../$(PRE)memory.c ../$(PRE)prim.c ../$(PRE)variables.c $(CFLAGS) -o parsetest
 
-interp: interp.c ../*.c
-	$(CC) interp.c ../$(PRE)stack.c ../$(PRE)state.c ../$(PRE)stream.c ../$(PRE)memory.c ../$(PRE)prim.c ../$(PRE)variables.c $(CFLAGS) -o interp
+inlinetest: inlinetest.c unittest.c ../*.c
+	$(CC) inlinetest.c unittest.c ../$(PRE)stack.c ../$(PRE)state.c ../$(PRE)stream.c ../$(PRE)memory.c ../$(PRE)prim.c ../$(PRE)variables.c $(CFLAGS) -o inlinetest
+
+deftest: deftest.c unittest.c ../*.c
+	$(CC) deftest.c unittest.c ../$(PRE)stack.c ../$(PRE)state.c ../$(PRE)stream.c ../$(PRE)memory.c ../$(PRE)prim.c ../$(PRE)variables.c $(CFLAGS) -o deftest
+
+interp: interp.c unittest.c ../*.c
+	$(CC) interp.c unittest.c ../$(PRE)stack.c ../$(PRE)state.c ../$(PRE)stream.c ../$(PRE)memory.c ../$(PRE)prim.c ../$(PRE)variables.c $(CFLAGS) -o interp

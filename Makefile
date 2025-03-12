@@ -19,7 +19,7 @@
 # ----------------------------------------------------------------------------
 
 SRC=src
-LIB=lib
+LIB=lib/libbootforth.so
 
 # GCC 4.8.2, C99 STD
 CFLAGS=-I$(SRC) --ansi -pedantic -std=c99 -Wall -Wextra -Werror
@@ -33,4 +33,4 @@ doc: Doxyfile src/*.c src/*.h
 	doxygen
 
 lib: src/*.c src/*.h 
-	$(CC) src/*.c -shared -o $(LIB)
+	$(CC) src/*.c -fPIC -shared -o $(LIB)

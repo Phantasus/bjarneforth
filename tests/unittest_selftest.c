@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------------- */
-/* Copyright 2007 -- 2014 Josef Philip Bernhart
+/* Copyright 2007 -- 2024 Josef Philip Bernhart
  *
  * This file is part of BootForth.
  *
@@ -18,16 +18,17 @@
  *                                                                           
  * ------------------------------------------------------------------------- */
 
-/* types of bf */
-#ifndef BF_TYPESH
-#include <stdio.h>
-#include <stdint.h>
+/**
+   This file does a selftest of the included unittesting framework
+ */
 
-typedef uintptr_t     cell; /* a cell */
-typedef unsigned char byte; /* a byte */
+#include "unittest.h"
 
-/* internal use */
-typedef intptr_t scell;     /* a signed cell */
+int
+main (int argc, char **argv)
+{
+  ASSERT_EQUAL (1, 1, "equality test");
+  ASSERT_UNEQUAL (1, 2, "inequality test");
 
-#define BF_TYPESH
-#endif
+  return 0;
+}

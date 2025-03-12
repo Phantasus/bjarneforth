@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------------- */
-/* Copyright 2007 -- 2014 Josef Philip Bernhart
+/* Copyright 2007 -- 2024 Josef Philip Bernhart
  *
  * This file is part of BootForth.
  *
@@ -18,32 +18,42 @@
  *                                                                           
  * ------------------------------------------------------------------------- */
 
-#ifndef BF_STREAMH
+/**
+ * This file describes a minimal unittesting framework
+ */
 
+#include "unittest.h"
 #include <stdio.h>
-#include <bf_types.h>
-#include <bf_defines.h>
+#include <stdlib.h>
+#include <stdarg.h>
 
-struct bf_stream
+int
+__unittest_pass (const char *message)
 {
-	cell type;        /* stream type */
-	cell length;      /* length of stream */
-	cell pos;         /* current position in stream */
-	char *stream;     /* stream */
-};
+  printf ("\033[32;1mPASS\033[0m .......... %s\n", message);
+  return 0;
+}
 
-typedef struct bf_stream bf_stream;
+int
+__unittest_fail (const char *message)
+{
+  printf ("\033[31;1mFAIL\033[0m .......... %s\n", message);
+  exit (1);
 
-void bf_init_stream(bf_stream *stream);
-void bf_free_stream(bf_stream *stream);
+  return 1;
+}
 
-void bf_filestream(bf_stream *stream, FILE *file);
-void bf_memstream(bf_stream *stream, char *mem, cell length);
-void bf_stdstream(bf_stream *stream, FILE *file);
+const char *
+__unittest_cast_message (const char *message, ...)
+{
+  static char messages[64][1024];
+  static int msg_idx = 0;
+  va_list args;
 
-cell bf_getc(bf_stream *stream);
-int bf_feof(bf_stream *stream);
-void bf_putc(bf_stream *stream, cell value);
+  int ref_i = msg_idx;
 
-#define BF_STREAMH
-#endif 
+  vsnprintf (&messages[ref_i][0], 1024, message, args);
+  msg_idx = (msg_idx + 1) % 64;
+
+  return &messages[ref_i][0];
+}

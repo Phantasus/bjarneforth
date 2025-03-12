@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------------- */
-/* Copyright 2007 -- 2014 Josef Philip Bernhart
+/* Copyright 2007 -- 2014, 2024, 2025 Josef Philip Bernhart
  *
  * This file is part of BootForth.
  *
@@ -14,14 +14,28 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.
- *                                                                           
- * ------------------------------------------------------------------------- */
+ * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.        */
+/* ------------------------------------------------------------------------- */
 
-#ifndef BF_DEBUGH
-#include <bf_state.h>
+/*
+ * types of bf
+ * */
 
-void bf_dump_memory(bf_state *state, const char *filename);
 
-#define BF_DEBUGH
-#endif 
+
+#ifndef BF_TYPESH
+#include <stdio.h>
+#include <stdint.h>
+
+typedef union {
+  signed int    signed_value;
+  unsigned int  unsigned_value;
+  float         float_value;
+  void         *ptr_value;
+  char         *byte_ptr;
+} cell; /* a cell */
+
+typedef unsigned char byte;	/* a byte */
+
+#define BF_TYPESH
+#endif

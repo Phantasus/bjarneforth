@@ -20,30 +20,37 @@
 
 
 #include <bf_state.h>
+#include <bf_prim.h>
+#include "unittest.h"
 
-int main()
+int
+main ()
 {
-	bf_state state;
-	cell i;
+  bf_state state;
+  cell i;
 
-	printf("init state\n");
-	bf_init_state(&state);
-	printf("allocate memory\n");
-	bf_allot(&state.memory, 512);
+  printf ("init state\n");
+  bf_init_state (&state);
 
-	printf("cell inline\n");
-	for(i=1;i<20;i++){
-	bf_inlinecell(&state, i);
-	}
+  printf ("allocate memory\n");
+  bf_allot (&state, 512);
 
-	printf("byte inline\n");
-	for(i=1;i<20;i++){
-	bf_inlinebyte(&state, (char)i);
-	}
-	bf_push(&state.dstack, (cell)state.vars.here);
-	dots(&state);
-	align(&state);
-	dots(&state);
+  printf ("cell inline\n");
+  for (i = 1; i < 20; i++)
+    {
+      bf_inlinecell (&state, i);
+    }
 
-	return 0;
+  printf ("byte inline\n");
+  for (i = 1; i < 20; i++)
+    {
+      bf_inlinebyte (&state, (char) i);
+    }
+  bf_push (&state.dstack, state.vars.here);
+
+  prim_dots (&state);
+  prim_align (&state);
+  prim_dots (&state);
+
+  return 0;
 }

@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------------- */
-/* Copyright 2007 -- 2014 Josef Philip Bernhart
+/* Copyright 2007 -- 2014, 2024, 2025 Josef Philip Bernhart
  *
  * This file is part of BootForth.
  *
@@ -14,29 +14,31 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.
- *                                                                           
- * ------------------------------------------------------------------------- */
+ * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.        */
+/* ------------------------------------------------------------------------- */
 
 #ifndef BF_MEMORYH
 
 #include <bf_types.h>
 #include <stdlib.h>
 
-typedef struct
+struct bf_memory
 {
-	cell size;     /* memory size */
-	cell a_reg;    /* adress register */
-	cell *content; /* memory area */
-	cell *end;     /* last memory adr */
+  cell size;			/* memory size */
+  cell a_reg;			/* adress register */
+  cell *content;		/* memory area */
+  cell *end;			/* last memory adr */
 
-	cell *heap;    /* start of heap */
-} bf_memory;
+  cell *heap;			/* start of heap */
+};
+
+typedef struct bf_memory bf_memory;
 
 /* BootForth's memory functions */
-void bf_init_memory (bf_memory *memory);
-void bf_allot_memory (bf_memory *memory, size_t size);
-void bf_free_memory (bf_memory *memory);
+
+void bf_init_memory (bf_memory * memory);
+void bf_allot_memory (bf_memory * memory, unsigned int size);
+void bf_free_memory (bf_memory * memory);
 
 #define BF_MEMORYH
 #endif

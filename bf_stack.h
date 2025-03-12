@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------------- */
-/* Copyright 2007 -- 2014 Josef Philip Bernhart
+/* Copyright 2007 -- 2014, 2024, 2025 Josef Philip Bernhart
  *
  * This file is part of BootForth.
  *
@@ -14,13 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.
- *                                                                           
- * ------------------------------------------------------------------------- */
+ * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.        */
+/* ------------------------------------------------------------------------- */
 
 /*
- * author: 
- *
  * bootforth data stack implementation
  * */
 
@@ -31,18 +28,24 @@
 
 struct bf_stack
 {
-	cell items[BF_STACK_ITEMS];
-	cell tos;  /* index for current tos */
+  cell items[BF_STACK_ITEMS];
+  int  tos;			/* index for current tos */
 };
 typedef struct bf_stack bf_stack;
 
 
 /* atom stack operators */
-void bf_init_stack(bf_stack *stack);
+void bf_init_stack (bf_stack *stack);
 
-cell bf_tos(bf_stack *stack);
-cell bf_pop(bf_stack *stack);
-void bf_push(bf_stack *stack, cell value);
+cell bf_tos (bf_stack *stack);
+cell bf_pop (bf_stack *stack);
+void bf_push (bf_stack *stack, cell value);
+
+void bf_push_int(bf_stack *stack, int value);
+void bf_push_uint(bf_stack *stack, unsigned int value);
+
+int          bf_pop_int(bf_stack *stack);
+unsigned int bf_pop_uint(bf_stack *stack);
 
 #define BF_STACKH
-#endif 
+#endif
