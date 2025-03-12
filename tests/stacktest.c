@@ -36,13 +36,13 @@ main ()
 
   for (i = 1; i < BF_STACK_ITEMS; i++)
     {
-      bf_push_int (&stack, i);
+      bf_stack_push_int (&stack, i);
       ASSERT_EQUAL (i, stack.tos, "Stack pushing");
     }
 
   for (i = BF_STACK_ITEMS; i > 0; i--)
     {
-      last = bf_pop_int (&stack);
+      last = bf_stack_pop_int (&stack);
       ASSERT_EQUAL (last, (i - 1), "Stack popping");
     }
   return 0;

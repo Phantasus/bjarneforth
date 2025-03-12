@@ -18,8 +18,15 @@
 /* ------------------------------------------------------------------------- */
 
 #include "bf_prim.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
 
+int
+bf_isnoitem (char *list, cell n, char value)
+{
+  int i = 0;
+  for (i = 0; i < n.signed_value; i++)
+    {
+      if (list[i] == value)
+	return 0;
+    }
+  return 1;
+}

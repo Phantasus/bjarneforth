@@ -37,15 +37,15 @@ typedef struct bf_stack bf_stack;
 /* atom stack operators */
 void bf_init_stack (bf_stack *stack);
 
-cell bf_tos (bf_stack *stack);
-cell bf_pop (bf_stack *stack);
-void bf_push (bf_stack *stack, cell value);
+cell bf_stack_tos (bf_stack *stack);
+cell bf_stack_pop (bf_stack *stack);
+void bf_stack_push (bf_stack *stack, cell value);
 
-void bf_push_int(bf_stack *stack, int value);
-void bf_push_uint(bf_stack *stack, unsigned int value);
+void bf_stack_push_int(bf_stack *stack, int value);
+void bf_stack_push_uint(bf_stack *stack, unsigned int value);
 
-int          bf_pop_int(bf_stack *stack);
-unsigned int bf_pop_uint(bf_stack *stack);
+int          bf_stack_pop_int(bf_stack *stack);
+unsigned int bf_stack_pop_uint(bf_stack *stack);
 
 #define BF_STACKH
 #endif

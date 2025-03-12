@@ -18,12 +18,12 @@
 
 #ifndef BF_STATEH
 
-#include <bf_config.h>
-#include <bf_types.h>
-#include <bf_stack.h>
-#include <bf_memory.h>
-#include <bf_variables.h>
-#include <bf_stream.h>
+#include "bf_config.h"
+#include "bf_types.h"
+#include "bf_stack.h"
+#include "bf_memory.h"
+#include "bf_variables.h"
+#include "bf_stream.h"
 
 struct bf_state
 {
