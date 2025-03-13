@@ -42,139 +42,139 @@ void bf_eval (bf_state * state, char *string, ...);
 void bf_init_vm (bf_state * state);
 
 /* arithmetic and binary logic primitives */
-void prim_add (bf_state * state);
-void prim_sub (bf_state * state);
-void prim_mul (bf_state * state);
-void prim_div (bf_state * state);
-void prim_mod (bf_state * state);
+void bf_prim_add (bf_state * state);
+void bf_prim_sub (bf_state * state);
+void bf_prim_mul (bf_state * state);
+void bf_prim_div (bf_state * state);
+void bf_prim_mod (bf_state * state);
 
-void prim_and (bf_state * state);
-void prim_or (bf_state * state);
-void prim_xor (bf_state * state);
-void prim_not (bf_state * state);
-void prim_lshift (bf_state * state);
-void prim_rshift (bf_state * state);
+void bf_prim_and (bf_state * state);
+void bf_prim_or (bf_state * state);
+void bf_prim_xor (bf_state * state);
+void bf_prim_not (bf_state * state);
+void bf_prim_lshift (bf_state * state);
+void bf_prim_rshift (bf_state * state);
 
 /* testing primitives */
-void prim_lower (bf_state * state);	/*  <  */
-void prim_greater (bf_state * state);	/*  >  */
-void prim_equal (bf_state * state);	/*  == */
-void prim_notequal (bf_state * state);	/*  != */
-void prim_loweq (bf_state * state);	/*  <= */
-void prim_greeq (bf_state * state);	/*  >= */
-void prim_opposite (bf_state * state);	/*  like in C the !  */
+void bf_prim_lower (bf_state * state);	/*  <  */
+void bf_prim_greater (bf_state * state);	/*  >  */
+void bf_prim_equal (bf_state * state);	/*  == */
+void bf_prim_notequal (bf_state * state);	/*  != */
+void bf_prim_loweq (bf_state * state);	/*  <= */
+void bf_prim_greeq (bf_state * state);	/*  >= */
+void bf_prim_opposite (bf_state * state);	/*  like in C the !  */
 
 /* memory primitives */
-void prim_store (bf_state * state);
-void prim_fetch (bf_state * state);
+void bf_prim_store (bf_state * state);
+void bf_prim_fetch (bf_state * state);
 
-void prim_bstore (bf_state * state);
-void prim_bfetch (bf_state * state);
+void bf_prim_bstore (bf_state * state);
+void bf_prim_bfetch (bf_state * state);
 
-void prim_allot (bf_state * state);
-void prim_align (bf_state * state);
+void bf_prim_allot (bf_state * state);
+void bf_prim_align (bf_state * state);
 
-void prim_astore (bf_state * state);
-void prim_afetch (bf_state * state);
-void prim_ainc (bf_state * state);
-void prim_adec (bf_state * state);
+void bf_prim_astore (bf_state * state);
+void bf_prim_afetch (bf_state * state);
+void bf_prim_ainc (bf_state * state);
+void bf_prim_adec (bf_state * state);
 
-void prim_copy (bf_state * state);
+void bf_prim_copy (bf_state * state);
 
 /* dictionary */
-void prim_doprim (bf_state * state);
-void prim_doliteral (bf_state * state);
-void prim_dolink (bf_state * state);
+void bf_prim_doprim (bf_state * state);
+void bf_prim_doliteral (bf_state * state);
+void bf_prim_dolink (bf_state * state);
 
-void prim_pushliteral (bf_state * state);
-void prim_pushsliteral (bf_state * state);
+void bf_prim_pushliteral (bf_state * state);
+void bf_prim_pushsliteral (bf_state * state);
 
-void prim_dodoes (bf_state * state);
+void bf_prim_dodoes (bf_state * state);
 
 /* stack primitives */
-void prim_dup (bf_state * state);
-void prim_swap (bf_state * state);
-void prim_nip (bf_state * state);
-void prim_tuck (bf_state * state);
-void prim_drop (bf_state * state);
-void prim_over (bf_state * state);
+void bf_prim_dup (bf_state * state);
+void bf_prim_swap (bf_state * state);
+void bf_prim_nip (bf_state * state);
+void bf_prim_tuck (bf_state * state);
+void bf_prim_drop (bf_state * state);
+void bf_prim_over (bf_state * state);
 
-void prim_tor (bf_state * state);
-void prim_fromr (bf_state * state);
-void prim_tosr (bf_state * state);
+void bf_prim_tor (bf_state * state);
+void bf_prim_fromr (bf_state * state);
+void bf_prim_tosr (bf_state * state);
 
 /* I/O primitives */
-void prim_space (bf_state * state);
-void prim_newline (bf_state * state);
-void prim_emit (bf_state * state);
-void prim_dot (bf_state * state);
-void prim_dots (bf_state * state);
-void prim_printtos (bf_state * state);
+void bf_prim_space (bf_state * state);
+void bf_prim_newline (bf_state * state);
+void bf_prim_emit (bf_state * state);
+void bf_prim_dot (bf_state * state);
+void bf_prim_dots (bf_state * state);
+void bf_prim_printtos (bf_state * state);
 
-void prim_type (bf_state * state);
-void prim_getkey (bf_state * state);
+void bf_prim_type (bf_state * state);
+void bf_prim_getkey (bf_state * state);
 
-void prim_write (bf_state * state);
-void prim_read (bf_state * state);
+void bf_prim_write (bf_state * state);
+void bf_prim_read (bf_state * state);
 
 /* interpreter */
-void prim_execute (bf_state * state);
-void prim_lookup (bf_state * state);
-void prim_include (bf_state * state);
-void prim_towordtoken (bf_state * state);
+void bf_prim_execute (bf_state * state);
+void bf_prim_lookup (bf_state * state);
+void bf_prim_include (bf_state * state);
+void bf_prim_towordtoken (bf_state * state);
 
-void prim_eval (bf_state * state);
-void prim_eachword_classic (bf_state * state);
+void bf_prim_eval (bf_state * state);
+void bf_prim_eachword_classic (bf_state * state);
 
-void prim_parse (bf_state * state);
-void prim_sparse (bf_state * state);
-void prim_wsparse (bf_state * state);
+void bf_prim_parse (bf_state * state);
+void bf_prim_sparse (bf_state * state);
+void bf_prim_wsparse (bf_state * state);
 
 /* compiler */
-void prim_inlinecell (bf_state * state);
-void prim_inlinebyte (bf_state * state);
-void prim_inlinestring (bf_state * state);
-void prim_inlineliteral (bf_state * state);
-void prim_inlinesliteral (bf_state * state);
+void bf_prim_inlinecell (bf_state * state);
+void bf_prim_inlinebyte (bf_state * state);
+void bf_prim_inlinestring (bf_state * state);
+void bf_prim_inlineliteral (bf_state * state);
+void bf_prim_inlinesliteral (bf_state * state);
 
-void prim_compile (bf_state * state);
-void prim_newword (bf_state * state);
-void prim_endcompile (bf_state * state);
+void bf_prim_compile (bf_state * state);
+void bf_prim_newword (bf_state * state);
+void bf_prim_endcompile (bf_state * state);
 
-void prim_if (bf_state * state);
-void prim_else (bf_state * state);
-void prim_then (bf_state * state);
+void bf_prim_if (bf_state * state);
+void bf_prim_else (bf_state * state);
+void bf_prim_then (bf_state * state);
 
-void prim_repeat (bf_state * state);
-void prim_loop (bf_state * state);
+void bf_prim_repeat (bf_state * state);
+void bf_prim_loop (bf_state * state);
 
-void prim_exitword (bf_state * state);
-void prim_does (bf_state * state);
-void prim_compdoes (bf_state * state);
+void bf_prim_exitword (bf_state * state);
+void bf_prim_does (bf_state * state);
+void bf_prim_compdoes (bf_state * state);
 
-void prim_setstate (bf_state * state);
-void prim_unsetstate (bf_state * state);
+void bf_prim_setstate (bf_state * state);
+void bf_prim_unsetstate (bf_state * state);
 
 /* literals */
-void prim_pushliteral (bf_state * state);
-void prim_pushsliteral (bf_state * state);
+void bf_prim_pushliteral (bf_state * state);
+void bf_prim_pushsliteral (bf_state * state);
 
 /* cpu emulation (internal use) */
-void prim_jmp (bf_state * state);
-void prim_jmpiftrue (bf_state * state);
-void prim_jmpiffalse (bf_state * state);
+void bf_prim_jmp (bf_state * state);
+void bf_prim_jmpiftrue (bf_state * state);
+void bf_prim_jmpiffalse (bf_state * state);
 
-void prim_settrue (bf_state * state);
-void prim_setfalse (bf_state * state);
-void prim_setnegative (bf_state * state);
-void prim_setpositive (bf_state * state);
+void bf_prim_settrue (bf_state * state);
+void bf_prim_setfalse (bf_state * state);
+void bf_prim_setnegative (bf_state * state);
+void bf_prim_setpositive (bf_state * state);
 
 /* strings */
-void prim_isnumber (bf_state * state);
-void prim_tonumber (bf_state * state);
+void bf_prim_isnumber (bf_state * state);
+void bf_prim_tonumber (bf_state * state);
 
 /* system */
-void prim_bye (bf_state * state);
+void bf_prim_bye (bf_state * state);
 
 #define BF_PRIMH
 #endif

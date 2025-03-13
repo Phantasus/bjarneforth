@@ -17,87 +17,83 @@
  * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.        */
 /* ------------------------------------------------------------------------- */
 
-#include "bf_state.h"
-#include "bf_prim.h"
-
 
 /* DOC: see stack comment */
 void
-bf_prim_dup (bf_state *state)	/* ( a -- a a ) */
+prim_dup (bf_state *state)	/* ( a -- a a ) */
 {
-  cell value = bf_pop_dstack (state);
-  
-  bf_push_dstack (state, value);
-  bf_push_dstack (state, value);
+  cell value = bf_pop (&(state->dstack));
+  bf_push (&(state->dstack), value);
+  bf_push (&(state->dstack), value);
 }
 
 /* DOC: see stack comment */
 void
-bf_prim_swap (bf_state *state)	/* ( a b -- b a ) */
+prim_swap (bf_state *state)	/* ( a b -- b a ) */
 {
-  cell a = bf_pop_dstack(state);
-  cell b = bf_pop_dstack(state);
+  cell a = bf_pop (&(state->dstack));
+  cell b = bf_pop (&(state->dstack));
 
-  bf_push_dstack (state, a);
-  bf_push_dstack (state, b);
+  bf_push (&(state->dstack), a);
+  bf_push (&(state->dstack), b);
 }
 
 /* DOC: see stack comment */
 void
-bf_prim_nip (bf_state *state)	/* ( a b -- b a b ) */
+prim_nip (bf_state *state)	/* ( a b -- b a b ) */
 {
-  bf_prim_swap (state);
-  bf_prim_drop (state);
+  prim_swap (state);
+  prim_drop (state);
 }
 
 /* DOC: see stack comment */
 void
-bf_prim_tuck (bf_state *state)	/* ( a b -- b ) */
+prim_tuck (bf_state *state)	/* ( a b -- b ) */
 {
-  bf_prim_swap (state);
-  bf_prim_over (state);
+  prim_swap (state);
+  prim_over (state);
 }
 
 /* DOC: see stack comment */
 void
-bf_prim_drop (bf_state *state)	/* ( a -- ) */
+prim_drop (bf_state *state)	/* ( a -- ) */
 {
-  bf_pop_dstack (state);
+  bf_pop (&(state->dstack));
 }
 
 /* DOC: see stack comment */
 void
-bf_prim_over (bf_state *state)	/* ( a b -- a b a ) */
+prim_over (bf_state *state)	/* ( a b -- a b a ) */
 {
-  cell a = bf_pop_dstack (state);
-  cell b = bf_pop_dstack (state);
+  cell a = bf_pop (&(state->dstack));
+  cell b = bf_pop (&(state->dstack));
 
-  bf_push_dstack (state, b);
-  bf_push_dstack (state, a);
-  bf_push_dstack (state, b);
+  bf_push (&(state->dstack), b);
+  bf_push (&(state->dstack), a);
+  bf_push (&(state->dstack), b);
 }
 
 /* fname: >r */
 /* DOC: pushes the TOS of dstack on the rstack */
 void
-bf_prim_tor (bf_state *state)	/* ( value -- Rstack:value ) */
+prim_tor (bf_state *state)	/* ( value -- Rstack:value ) */
 {
-  bf_push_rstack (state, bf_pop_dstack (state));
+  bf_push (&(state->rstack), bf_pop (&(state->dstack)));
 }
 
 /* fname: r> */
 /* DOC: pushes TOS from rstack to dstack */
 void
-bf_prim_fromr (bf_state *state)	/* ( Rstack:value -- value ) */
+prim_fromr (bf_state *state)	/* ( Rstack:value -- value ) */
 {
-  bf_push_dstack (state, bf_pop_rstack (state));
+  bf_push (&(state->dstack), bf_pop (&(state->rstack)));
 }
 
 /* fname: r r@ */
 /* DOC: pushes TOS of the rstack on the data stack, without
  * changing the rstack */
 void
-bf_prim_tosr (bf_state *state)	/* ( -- Rtos) */
+prim_tosr (bf_state *state)	/* ( -- Rtos) */
 {
-  bf_push_dstack (state, bf_tos_rstack(state));
+  bf_push (&(state->dstack), bf_tos (&(state->rstack)));
 }

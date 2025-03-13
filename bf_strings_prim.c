@@ -17,19 +17,24 @@
  * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.        */
 /* ------------------------------------------------------------------------- */
 
-
+#include "bf_prim.h"
+#include "bf_state.h"
 
 /* DOC: set the vm TRUE flag when the string is a number, without
  *      removing it from the dstack */
 void
-prim_isnumber (bf_state *state)	/* ( str strlen -- str strlen ) */
+bf_prim_isnumber(bf_state *state)	/* ( str strlen -- str strlen ) */
 {
-  cell i, count = bf_pop (&(state->dstack)), start = 0;
-  char *adr = (char *) bf_pop (&(state->dstack)), buf, bbuf =
-    state->vars.base;
+  cell i;
+  int count = bf_pop_dstack_int (state);
+  int start;
+  
+  char *adr = bf_pop_dstack_char_ptr(state);
+  char buf;
+  char bbuf = state->vars.base;
 
-  bf_push (&(state->dstack), (cell) adr);
-  bf_push (&(state->dstack), (cell) count);
+  bf_push_dstack_char_ptr (state, adr);
+  bf_push_dstack_int (state, count);
 
   if (count > 0)
     {
@@ -50,7 +55,7 @@ prim_isnumber (bf_state *state)	/* ( str strlen -- str strlen ) */
 	start++;
       if (start == count)
 	{
-	  prim_setfalse (state);
+	  bf_prim_setfalse (state);
 	  return;
 	}
       for (i = start; i < count; i++)
@@ -69,27 +74,27 @@ prim_isnumber (bf_state *state)	/* ( str strlen -- str strlen ) */
 
 		  if (!((buf > 64) && (buf < 71)))
 		    {
-		      prim_setfalse (state);
+		      bf_prim_setfalse (state);
 		      return;
 		    }
 		}
 	      else
 		{
-		  prim_setfalse (state);
+		  bf_prim_setfalse (state);
 		  return;
 		}
 	    }
 
 	}
-      prim_settrue (state);
+      bf_prim_settrue (state);
       return;
     }
-  prim_setfalse (state);
+  bf_prim_setfalse (state);
 }
 
 /* DOC: converts the given string to a number */
 void
-prim_tonumber (bf_state *state)	/* ( str strlen -- num ) */
+bf_prim_tonumber (bf_state *state)	/* ( str strlen -- num ) */
 {
   int number = 0;
   char *adr, buf;

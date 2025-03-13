@@ -26,7 +26,7 @@ if(((adr>=(cell *)state) && (adr<=(cell *)&BF_STATE_END(state))) || \
 
 /* fname: ! */
 void
-prim_store (bf_state *state)	/* ( value adr -- ) */
+bf_prim_store (bf_state *state)	/* ( value adr -- ) */
 {
   cell *adr = (cell *) bf_pop (&(state->dstack));
   cell value = bf_pop (&(state->dstack));
@@ -36,7 +36,7 @@ prim_store (bf_state *state)	/* ( value adr -- ) */
 
 /* fname: @ */
 void
-prim_fetch (bf_state *state)	/* ( adr -- value ) */
+bf_prim_fetch (bf_state *state)	/* ( adr -- value ) */
 {
   cell *adr = (cell *) bf_pop (&(state->dstack));
 
@@ -47,7 +47,7 @@ prim_fetch (bf_state *state)	/* ( adr -- value ) */
 
 /* fname: c! */
 void
-prim_bstore (bf_state *state)	/* ( value adr -- ) */
+bf_prim_bstore (bf_state *state)	/* ( value adr -- ) */
 {
   char *adr = (char *) bf_pop (&(state->dstack));
   char value = (char) bf_pop (&(state->dstack));
@@ -57,7 +57,7 @@ prim_bstore (bf_state *state)	/* ( value adr -- ) */
 
 /* fname: c@ */
 void
-prim_bfetch (bf_state *state)	/* ( adr -- value ) */
+bf_prim_bfetch (bf_state *state)	/* ( adr -- value ) */
 {
   char *adr = (char *) bf_pop (&(state->dstack));
 
@@ -68,7 +68,7 @@ prim_bfetch (bf_state *state)	/* ( adr -- value ) */
 
 /* fname: allot */
 void
-prim_allot (bf_state *state)	/* ( amount -- ) */
+bf_prim_allot (bf_state *state)	/* ( amount -- ) */
 {
   cell amount = bf_pop (&(state->dstack));
   state->vars.here += amount;
@@ -76,7 +76,7 @@ prim_allot (bf_state *state)	/* ( amount -- ) */
 
 /* fname: align */
 void
-prim_align (bf_state *state)	/* ( adr -- aligned ) */
+bf_prim_align (bf_state *state)	/* ( adr -- aligned ) */
 {
   char *adr = (char *) bf_pop (&(state->dstack));
   adr += ((cell) adr) % ((cell) (sizeof (cell)));
@@ -84,33 +84,33 @@ prim_align (bf_state *state)	/* ( adr -- aligned ) */
 }
 
 void
-prim_astore (bf_state *state)
+bf_prim_astore (bf_state *state)
 {
   cell a = bf_pop (&(state->dstack));
   state->memory.a_reg = a;
 }
 
 void
-prim_afetch (bf_state *state)
+bf_prim_afetch (bf_state *state)
 {
   bf_push (&(state->dstack), state->memory.a_reg);
 }
 
 void
-prim_ainc (bf_state *state)	/* ( -- ) */
+bf_prim_ainc (bf_state *state)	/* ( -- ) */
 {
   state->memory.a_reg++;
 }
 
 void
-prim_adec (bf_state *state)	/* ( -- ) */
+bf_prim_adec (bf_state *state)	/* ( -- ) */
 {
   state->memory.a_reg--;
 }
 
 /* DOC: copies the bytes from to to using count as a length */
 void
-prim_copy (bf_state *state)	/* ( from count to -- ) */
+bf_prim_copy (bf_state *state)	/* ( from count to -- ) */
 {
   char *to = (char *) bf_pop (&(state->dstack));
   cell count = (cell) bf_pop (&(state->dstack));

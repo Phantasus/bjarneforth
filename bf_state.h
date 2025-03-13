@@ -51,7 +51,27 @@ void bf_free_state (bf_state * state);
 /* convenient functions */
 void bf_inlinecell (bf_state * state, cell value);
 void bf_inlinebyte (bf_state * state, char value);
-void bf_allot (bf_state * state, cell size);
+void bf_allot (bf_state * state, size_t size);
+
+/* data stack manipulator functions */
+void bf_push_dstack(bf_state *state, cell value);
+void bf_push_dstack_int(bf_state *state, signed int value);
+void bf_push_dstack_uint(bf_state *state, unsigned int value);
+void bf_push_dstack_char_ptr(bf_state *state, char *value);
+
+cell          bf_pop_dstack(bf_state *state);
+int           bf_pop_dstack_int(bf_state *state);
+char         *bf_pop_dstack_char_ptr(bf_state *state);
+unsigned int  bf_pop_dstack_uint(bf_state *state);
+
+cell          bf_tos_dstack(bf_state *state);
+int           bf_tos_dstack_int(bf_state *state);
+unsigned int  bf_tos_dstack_uint(bf_state *state);
+
+/* return stack manipulator functions */
+void bf_push_rstack(bf_state *state, cell value);
+cell bf_pop_rstack(bf_state *state);
+cell bf_tos_rstack(bf_state *state);
 
 /* memory protection */
 #define BF_STATE_END(state) state->output

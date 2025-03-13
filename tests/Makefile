@@ -17,14 +17,17 @@ check: all
 	./stacktest
 	./prim_stack_test
 
-unittest_selftest: unittest_selftest.c unittest.c
+lib.o : ../*.c
+	$(CC) -c $^ $(CFLAGS) -o $@
+
+unittest_selftest: unittest_selftest.c unittest.c 
 	$(CC) $^ $(CFLAGS) -o $@
 
-stacktest: stacktest.c unittest.c bf_stack.c
+stacktest: stacktest.c unittest.c bf_stack.c lib.o
 	$(CC) $^ $(CFLAGS) -o $@
 
 prim_tests: prim_stack_test
 	./prim_stack_test
 
-prim_stack_test: prim_stack_test.c ../bf_stack_prim.c
+prim_stack_test: prim_stack_test.c lib.o
 	$(CC) $^ $(CFLAGS) -o $@

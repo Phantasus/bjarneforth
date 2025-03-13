@@ -22,7 +22,7 @@
 
 /* DOC: evals a string */
 void
-prim_eval (bf_state *state)	/* ( str strlen -- ) */
+bf_prim_eval (bf_state *state)	/* ( str strlen -- ) */
 {
   cell count = bf_pop (&(state->dstack));
   cell i = 0;
@@ -55,7 +55,7 @@ prim_eval (bf_state *state)	/* ( str strlen -- ) */
 		{
 		  bf_push (&(state->dstack), (cell) strc);
 		  bf_push (&(state->dstack), (cell) state->vars.eachword);
-		  prim_execute (state);
+		  bf_prim_execute (state);
 		}
 	      strc = 0;
 	    }
@@ -65,14 +65,14 @@ prim_eval (bf_state *state)	/* ( str strlen -- ) */
 	{
 	  bf_push (&(state->dstack), (cell) strc);
 	  bf_push (&(state->dstack), (cell) state->vars.eachword);
-	  prim_execute (state);
+	  bf_prim_execute (state);
 	}
     }
 }
 
 /* DOC: include the given file and evaluate it */
 void
-prim_include (bf_state *state)	/* ( str strlen -- ) */
+bf_prim_include (bf_state *state)	/* ( str strlen -- ) */
 {
   bf_stream buf;
 
@@ -95,8 +95,8 @@ prim_include (bf_state *state)	/* ( str strlen -- ) */
 
       while (!feof ((FILE *) state->input.stream))
 	{
-	  prim_wsparse (state);
-	  prim_eval (state);
+	  bf_prim_wsparse (state);
+	  bf_prim_eval (state);
 	}
       memcpy ((void *) &(state->input), (void *) &buf, sizeof (bf_stream));
       fclose (file);
@@ -106,7 +106,7 @@ prim_include (bf_state *state)	/* ( str strlen -- ) */
 
 /* DOC: executes a xt */
 void
-prim_execute (bf_state *state)	/* ( xt -- ) */
+bf_prim_execute (bf_state *state)	/* ( xt -- ) */
 {
   bf_prim *xts;
   xts = (bf_prim *) bf_pop (&(state->dstack));
@@ -121,19 +121,19 @@ prim_execute (bf_state *state)	/* ( xt -- ) */
       BF_INMEMORY (state, (cell *) xts[0])
       {
 	bf_push (&(state->dstack), (cell) xts[0]);
-	prim_execute (state);
+	bf_prim_execute (state);
       }
       else
       xts[0] (state);
     }
 #ifdef DEBUG
-  prim_dots (state);
+  bf_prim_dots (state);
 #endif
 }
 
 /* DOC: lookups a word */
 void
-prim_lookup (bf_state *state)	/* ( sadr sc -- xt ) */
+bf_prim_lookup (bf_state *state)	/* ( sadr sc -- xt ) */
 {
   cell *word = state->vars.last;
   cell strlength;
@@ -212,8 +212,8 @@ bf_eval (bf_state *state, char *string, ...)
 
   while (state->input.pos < len)
     {
-      prim_wsparse (state);
-      prim_eval (state);
+      bf_prim_wsparse (state);
+      bf_prim_eval (state);
     }
 
   memcpy ((void *) &(state->input), (void *) &buf, sizeof (bf_stream));
@@ -225,7 +225,7 @@ bf_eval (bf_state *state, char *string, ...)
 
 /* DOC: reads a string from input to first occurence of delimiter */
 void
-prim_parse (bf_state *state)	/* ( delimiter -- str strlen ) */
+bf_prim_parse (bf_state *state)	/* ( delimiter -- str strlen ) */
 {
   cell end = bf_pop (&(state->dstack));
   cell i = 0, buf;
@@ -251,7 +251,7 @@ prim_parse (bf_state *state)	/* ( delimiter -- str strlen ) */
 /* DOC: reads a string from input until a character in string matches
  *      matches one input character */
 void
-prim_sparse (bf_state *state)	/* ( str strlen -- str strlen ) */
+bf_prim_sparse (bf_state *state)	/* ( str strlen -- str strlen ) */
 {
   cell i = 0, buf;
 

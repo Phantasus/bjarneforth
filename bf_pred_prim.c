@@ -20,17 +20,17 @@
 #include "bf_prim.h"
 
 #define BF_TEST_TWO_ITEMS(state, expression) \
-  cell b = bf_pop(&(state->dstack)); \
-  cell a = bf_pop(&(state->dstack)); \
+  cell b = bf_pop_dstack(state); \
+  cell a = bf_pop_dstack(state); \
   if(expression) \
-    prim_settrue(state); \
+    bf_prim_settrue(state); \
   else \
-    prim_setfalse(state);
+    bf_prim_setfalse(state);
 
 /* fname: < */
 /* DOC: tests if A is lower than B */
 void
-prim_lower (bf_state *state)	/* ( a b  --  ) */
+bf_prim_lower (bf_state *state)	/* ( a b  --  ) */
 {
   BF_TEST_TWO_ITEMS (state, a.signed_value < b.signed_value)
 }
@@ -38,7 +38,7 @@ prim_lower (bf_state *state)	/* ( a b  --  ) */
 /* fname: > */
 /* DOC: tests if B is greater than A */
 void
-prim_greater (bf_state *state)	/* ( a b --  ) */
+bf_prim_greater (bf_state *state)	/* ( a b --  ) */
 {
   BF_TEST_TWO_ITEMS(state, a.signed_value > b.signed_value)
 }
@@ -46,7 +46,7 @@ prim_greater (bf_state *state)	/* ( a b --  ) */
 /* fname: = */
 /* DOC: tests if A and B are equal */
 void
-prim_equal (bf_state *state)	/* ( a b -- ) */
+bf_prim_equal (bf_state *state)	/* ( a b -- ) */
 {
   BF_TEST_TWO_ITEMS(state, a.signed_value == b.signed_value)
 }
@@ -54,7 +54,7 @@ prim_equal (bf_state *state)	/* ( a b -- ) */
 /* fname: <= */
 /* DOC: tests if B is lower or equal to A */
 void
-prim_loweq (bf_state *state)	/* ( a b -- ) */
+bf_prim_loweq (bf_state *state)	/* ( a b -- ) */
 {
   BF_TEST_TWO_ITEMS(state, a.signed_value <= b.signed_value)
 }
@@ -62,14 +62,14 @@ prim_loweq (bf_state *state)	/* ( a b -- ) */
 /* fname: >= */
 /* DOC: tests if A is greater or equal to B */
 void
-prim_greeq (bf_state *state)	/* ( a b -- ) */
+bf_prim_greeq (bf_state *state)	/* ( a b -- ) */
 {
   BF_TEST_TWO_ITEMS(state, a.signed_value >= b.signed_value)
 }
 
 /* DOC: tests if A and B are not equal */
 void
-prim_notequal (bf_state *state)	/* ( a b -- ) */
+bf_prim_notequal (bf_state *state)	/* ( a b -- ) */
 {
   BF_TEST_TWO_ITEMS(state, a.signed_value != b.signed_value)
 }
