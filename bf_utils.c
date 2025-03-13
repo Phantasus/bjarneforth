@@ -17,37 +17,16 @@
  * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.        */
 /* ------------------------------------------------------------------------- */
 
-/*
- * bootforth data stack implementation
- * */
+#include "bf_prim.h"
 
-#ifndef BF_STACKH
-#include <bf_types.h>
-#include <bf_defines.h>
-
-
-struct bf_stack
+int
+bf_isnoitem (char *list, cell n, char value)
 {
-  cell items[BF_STACK_ITEMS];
-  int  tos;			/* index for current tos */
-};
-typedef struct bf_stack bf_stack;
-
-
-/* atom stack operators */
-void bf_init_stack (bf_stack *stack);
-
-cell bf_stack_tos (bf_stack *stack);
-cell bf_stack_pop (bf_stack *stack);
-void bf_stack_push (bf_stack *stack, cell value);
-
-void bf_stack_push_int(bf_stack *stack, int value);
-void bf_stack_push_uint(bf_stack *stack, unsigned int value);
-void bf_stack_push_char_ptr(bf_stack *stack, char *ptr);
-
-int          bf_stack_pop_int(bf_stack *stack);
-unsigned int bf_stack_pop_uint(bf_stack *stack);
-char        *bf_stack_pop_char_ptr(bf_stack *stack);
-
-#define BF_STACKH
-#endif
+  int i = 0;
+  for (i = 0; i < n.signed_value; i++)
+    {
+      if (list[i] == value)
+	return 0;
+    }
+  return 1;
+}

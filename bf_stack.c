@@ -31,13 +31,13 @@ bf_init_stack (bf_stack *stack)
 }
 
 cell
-bf_tos (bf_stack *stack)
+bf_stack_tos (bf_stack *stack)
 {
   return (stack->items[stack->tos]);
 }
 
 cell
-bf_pop (bf_stack *stack)
+bf_stack_pop (bf_stack *stack)
 {
   /* thanks to gargaj, for his code snippet, modulo
    * is really really useful. and I didn't found it myself.
@@ -52,42 +52,42 @@ bf_pop (bf_stack *stack)
 }
 
 int
-bf_pop_int (bf_stack *stack)
+bf_stack_pop_int (bf_stack *stack)
 {
-  cell tos = bf_pop(stack);
+  cell tos = bf_stack_pop(stack);
 
   return tos.signed_value;
 }
 
 unsigned int
-bf_pop_uint (bf_stack *stack)
+bf_stack_pop_uint (bf_stack *stack)
 {
-  cell tos = bf_pop(stack);
+  cell tos = bf_stack_pop(stack);
 
   return tos.unsigned_value;
 }
 
 void
-bf_push (bf_stack *stack, cell value)
+bf_stack_push (bf_stack *stack, cell value)
 {
   stack->tos = (stack->tos + 1) % BF_STACK_ITEMS;
   stack->items[stack->tos] = value;
 }
 
 void
-bf_push_int (bf_stack *stack, signed int value)
+bf_stack_push_int (bf_stack *stack, signed int value)
 {
   cell stack_value ;
   stack_value.signed_value = value;
   
-  bf_push(stack, stack_value);
+  bf_stack_push(stack, stack_value);
 }
 
 void
-bf_push_uint (bf_stack *stack, unsigned int value)
+bf_stack_push_uint (bf_stack *stack, unsigned int value)
 {
   cell stack_value ;
   stack_value.unsigned_value = value;
   
-  bf_push(stack, stack_value);
+  bf_stack_push(stack, stack_value);
 }

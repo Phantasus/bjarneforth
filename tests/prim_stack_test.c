@@ -17,37 +17,43 @@
  * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.        */
 /* ------------------------------------------------------------------------- */
 
-/*
- * bootforth data stack implementation
- * */
+#include <bf_state.h>
+#include <bf_prim.h>
+#include <stdio.h>
+#include "unittest.h"
 
-#ifndef BF_STACKH
-#include <bf_types.h>
-#include <bf_defines.h>
-
-
-struct bf_stack
+int
+test_stackprims (bf_state *state)
 {
-  cell items[BF_STACK_ITEMS];
-  int  tos;			/* index for current tos */
-};
-typedef struct bf_stack bf_stack;
+  printf ("push: 1 2 3 \n");
+  bf_init_state (state);
 
+  bf_prim_newline (state);
+  bf_push_dstack_int (state, 1);
+  bf_push_dstack_int (state, 2);
+  bf_push_dstack_int (state, 3);
 
-/* atom stack operators */
-void bf_init_stack (bf_stack *stack);
+  printf ("over; expected result: 1 2 3 2 \n");
+  bf_prim_over (state);
+  bf_prim_dots (state);
+  bf_prim_newline (state);
 
-cell bf_stack_tos (bf_stack *stack);
-cell bf_stack_pop (bf_stack *stack);
-void bf_stack_push (bf_stack *stack, cell value);
+  printf ("TOS: %d\n", bf_pop_dstack_int (state));
+  printf ("TOS: %d\n", bf_pop_dstack_int (state));
+  printf ("TOS: %d\n", bf_pop_dstack_int (state));
+  printf ("TOS: %d\n", bf_pop_dstack_int (state));
+  printf ("TOS: %d\n", bf_pop_dstack_int (state));
+  printf ("TOS: %d\n", bf_pop_dstack_int (state));
+  printf ("TOS: %d\n", bf_pop_dstack_int (state));
 
-void bf_stack_push_int(bf_stack *stack, int value);
-void bf_stack_push_uint(bf_stack *stack, unsigned int value);
-void bf_stack_push_char_ptr(bf_stack *stack, char *ptr);
+  return 0;
+}
 
-int          bf_stack_pop_int(bf_stack *stack);
-unsigned int bf_stack_pop_uint(bf_stack *stack);
-char        *bf_stack_pop_char_ptr(bf_stack *stack);
+int
+main ()
+{
+  bf_state state;
+  bf_init_state (&state);
 
-#define BF_STACKH
-#endif
+  test_stackprims (&state);
+}

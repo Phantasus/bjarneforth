@@ -19,16 +19,16 @@
 
 #ifndef BF_MEMORYH
 
-#include <bf_types.h>
+#include "bf_types.h"
 #include <stdlib.h>
 
 struct bf_memory
 {
-  cell size;			/* memory size */
+  size_t size;			/* memory size */
   cell a_reg;			/* adress register */
+  
   cell *content;		/* memory area */
   cell *end;			/* last memory adr */
-
   cell *heap;			/* start of heap */
 };
 

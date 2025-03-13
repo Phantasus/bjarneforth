@@ -17,8 +17,8 @@
  * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.        */
 /* ------------------------------------------------------------------------- */
 
-#include <bf_memory.h>
-#include <bf_stack.h>
+#include "bf_memory.h"
+#include "bf_stack.h"
 
 void
 bf_init_memory (bf_memory *memory)	/* DOC: sets up a memory structure */
