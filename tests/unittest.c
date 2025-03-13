@@ -26,6 +26,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
+
+#define __unittest_equal_fail_msg  "%s\n  %d = %d\n  at line %d"
+#define __unittest_unequal_fail_msg "%s\n  %d != %d \n  at line %d"
+
 
 int
 __unittest_pass (const char *message)
@@ -44,11 +49,10 @@ __unittest_fail (const char *message)
 }
 
 const char *
-__unittest_cast_message (const char *message, ...)
+__unittest_cast_message (const char *message, va_list args)
 {
   static char messages[64][1024];
   static int msg_idx = 0;
-  va_list args;
 
   int ref_i = msg_idx;
 
@@ -56,4 +60,93 @@ __unittest_cast_message (const char *message, ...)
   msg_idx = (msg_idx + 1) % 64;
 
   return &messages[ref_i][0];
+}
+
+void
+__unittest_assert_equal_int (long long int a, long long int b,
+			     long unsigned int line, const char *message, ...)
+{
+  char fail_message[512];
+
+  va_list args;
+
+  const char *pass_message = __unittest_cast_message (message, args);
+
+  snprintf (fail_message,
+	    sizeof (fail_message),
+	    __unittest_equal_fail_msg, pass_message, a, b, line);
+
+  if (a == b)
+    __unittest_pass (pass_message);
+  else
+    __unittest_fail (fail_message);
+}
+
+void
+__unittest_assert_equal_char_ptr (char *a, char *b,
+			     long unsigned int line, const char *message, ...)
+{
+  char fail_message[512];
+
+  va_list args;
+
+  const char *pass_message = __unittest_cast_message (message, args);
+
+  snprintf (fail_message,
+	    sizeof (fail_message),
+	    __unittest_equal_fail_msg,
+            pass_message,
+            a,
+            b,
+            line);
+
+  if (strcmp(a, b))
+    __unittest_fail (fail_message);
+  else
+    __unittest_pass (pass_message);
+}
+
+void
+__unittest_assert_unequal_char_ptr (char *a, char *b,
+			     long unsigned int line, const char *message, ...)
+{
+  char fail_message[512];
+
+  va_list args;
+
+  const char *pass_message = __unittest_cast_message (message, args);
+
+  snprintf (fail_message,
+	    sizeof (fail_message),
+	    __unittest_equal_fail_msg,
+            pass_message,
+            a,
+            b,
+            line);
+
+  if (strcmp(a, b))
+    __unittest_pass (pass_message);
+  else
+    __unittest_fail (fail_message);
+}
+
+void
+__unittest_assert_unequal_int (long long int a, long long int b,
+			       long unsigned int line, const char *message,
+			       ...)
+{
+  char fail_message[512];
+
+  va_list args;
+
+  const char *pass_message = __unittest_cast_message (message, args);
+
+  snprintf (fail_message,
+	    sizeof (fail_message),
+	    __unittest_equal_fail_msg, pass_message, a, b, line);
+
+  if (a == b)
+    __unittest_fail (fail_message);
+  else
+    __unittest_pass (pass_message);
 }

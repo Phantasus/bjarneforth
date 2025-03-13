@@ -31,7 +31,7 @@ bf_init_memory (bf_memory *memory)	/* DOC: sets up a memory structure */
 }
 
 void
-bf_allot_memory (bf_memory *memory, unsigned int size)	/* DOC: allocates some memory */
+bf_allot_memory (bf_memory *memory, size_t size)	/* DOC: allocates some memory */
 {
   int i;
 
@@ -48,7 +48,7 @@ bf_allot_memory (bf_memory *memory, unsigned int size)	/* DOC: allocates some me
   memory->end = &memory->content[(size - 1)];
   memory->heap = memory->content;
   for (i = 0; i < size; i++)
-    memory->content[i] = 0;
+    BF_CLEAR_CELL(memory->content[i]);
 }
 
 void

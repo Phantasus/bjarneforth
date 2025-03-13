@@ -20,91 +20,91 @@
 #include <bf_stream.h>
 
 void
-bf_init_stream (bf_stream *stream)
+bf_clear_stream (bf_stream *stream)
 {
-  stream->type = BF_STREAM_EMPTY;
-  stream->length = 0;
-  stream->stream = 0;
-  stream->pos = 0;
+  stream->type = bf_empty_stream;
+  
+  stream->length      = 0;
+  stream->file_ptr    = NULL;
+  stream->content_ptr = NULL;
+  stream->pos         = 0;
 }
 
 void
-bf_free_stream (bf_stream *stream)
+bf_close_stream (bf_stream *stream)
 {
-  if (stream->type == BF_STREAM_FILE)
-    fclose ((FILE *) stream->stream);
+  if (stream->type == bf_file_stream)
+    fclose (stream->file_ptr);
+
+  bf_clear_stream(stream);
 }
 
+/* DOC: associates a stdio stream(stdin, stdout, stderror) */
 void
-bf_filestream (bf_stream *stream, FILE *file)
+bf_open_stdstream (bf_stream *stream, FILE *file)
 {
-  stream->type = BF_STREAM_FILE;
-  stream->stream = (char *) file;
-  stream->length = 0;
-  stream->pos = 0;
-}
+  stream->type = bf_stdio_stream;
 
-/* DOC: associates a std stream(stdin, stdout, stderror) */
-void
-bf_stdstream (bf_stream *stream, FILE *file)
-{
-  stream->type = BF_STREAM_STD;
-
-  if (file == stdout)
-    stream->stream = (char *) file;
-
-  if (file == stdin)
-    stream->stream = (char *) file;
-
-  if (file == stderr)
-    stream->stream = (char *) file;
-
-  stream->length = 0;
-  stream->pos = 0;
+  stream->file_ptr = file;
+  stream->length   = -1;    /* these streams have an unknown size */
+  stream->pos      = 0;
 }
 
 /* DOC: */
 void
-bf_memstream (bf_stream *stream, char *mem, cell length)
+bf_open_memstream (bf_stream *stream, char *mem, size_t length)
 {
-  stream->type = BF_STREAM_MEM;
-  stream->stream = mem;
-  stream->length = length;
-  stream->pos = 0;
+  stream->type        = bf_memory_stream;
+  stream->content_ptr = mem;
+  stream->length      = length;
+  stream->pos         = 0;
 }
 
 /* DOC: reads a value from stream and returns it as a cell */
 cell
 bf_getc (bf_stream *stream)
 {
-  cell buf;
+  int buf;
+  cell read_char;
 
-  if ((stream->type == BF_STREAM_FILE) || (stream->type == BF_STREAM_STD))
-    buf = (cell) getc ((FILE *) stream->stream);
+  read_char.signed_value = 0;
+  
+  switch (stream->type) {
+  case bf_stdio_stream:
+    buf = getc (stream->file_ptr);
 
-  if (stream->type == BF_STREAM_MEM)
-    {
-      if (stream->pos < stream->length)
-	buf = (cell) (stream->stream[stream->pos]);
-      else
-	buf = (cell) EOF;
-    }
-  stream->pos++;
+    if (buf == EOF)
+      stream->length = stream->pos;
+    else
+      stream->pos++;
 
-  return buf;
+    break;
+  case bf_memory_stream:
+    if (stream->pos < stream->length)
+      buf = stream->content_ptr[stream->pos];
+    else
+      buf = EOF;
+    
+    if (stream->pos < stream->length)
+      stream->pos++;
+  }
+
+  read_char.signed_value = buf;
+  
+  return read_char;
 }
 
 /* DOC: prints a value to the stream */
 void
 bf_putc (bf_stream *stream, cell value)
 {
-  if ((stream->type == BF_STREAM_FILE) || (stream->type == BF_STREAM_STD))
-    putc ((int) value, (FILE *) stream->stream);
-
-  if (stream->type == BF_STREAM_MEM)
-    {
-      if (stream->pos < stream->length)
-	stream->stream[stream->pos] = (char) value;
-    }
+  switch (stream->type) {
+  case bf_stdio_stream:
+    putc (value.signed_value, stream->file_ptr);
+    break;
+  case  bf_memory_stream:
+    stream->content_ptr[stream->pos] = (char) value.unsigned_value;
+  }
+  
   stream->pos++;
 }

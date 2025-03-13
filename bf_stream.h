@@ -20,24 +20,22 @@
 
 #include <stdio.h>
 #include <bf_types.h>
-#include <bf_defines.h>
 
-struct bf_stream
+typedef struct
 {
-  cell type;			/* stream type */
-  cell length;			/* length of stream */
-  cell pos;			/* current position in stream */
-  char *stream;			/* stream */
-};
+  enum bf_stream_type type;	/* stream type */
+  int  length;		        /* length of stream */
+  unsigned int pos;             /* current position in stream */
+  
+  char *content_ptr;		/* stream content for memory stream */
+  FILE *file_ptr;		/* stream content for file stream */
+} bf_stream;
 
-typedef struct bf_stream bf_stream;
+void bf_clear_stream (bf_stream * stream);
+void bf_close_stream (bf_stream * stream);
 
-void bf_init_stream (bf_stream * stream);
-void bf_free_stream (bf_stream * stream);
-
-void bf_filestream (bf_stream * stream, FILE * file);
-void bf_memstream (bf_stream * stream, char *mem, cell length);
-void bf_stdstream (bf_stream * stream, FILE * file);
+void bf_open_memstream (bf_stream * stream, char *mem, size_t length);
+void bf_open_stdstream (bf_stream * stream, FILE * file);
 
 cell bf_getc (bf_stream * stream);
 void bf_putc (bf_stream * stream, cell value);

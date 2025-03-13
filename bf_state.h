@@ -22,8 +22,8 @@
 #include "bf_types.h"
 #include "bf_stack.h"
 #include "bf_memory.h"
-#include "bf_variables.h"
 #include "bf_stream.h"
+
 
 struct bf_state
 {
@@ -32,9 +32,26 @@ struct bf_state
   bf_stack dstack;		/* data stack */
   bf_stack rstack;		/* return stack */
 
-  bf_variables vars;		/* variables */
+  /* -- used by words/primitives -- */
+  size_t base;			/* current number base */
 
-  cell flags;			/* flags register */
+  int state;			/* compiler state */
+  cell eachword;		/* XT which gets executed at each read word */
+
+  /* memory areas */
+  cell *last;			/* address of last defined word */
+  cell *here;			/* address of current free heap cell */
+  cell *dhere;			/* next free cell in the dictionary */
+  char *strs;			/* a memory area for strings */
+
+  char *tib;			/* text input buffer address */
+  size_t tibsize;		/* size of the tib */
+
+  char *whitespaces;     	/* current whitespace string */
+  cell *lastwt;			/* word token of last looked up word */
+
+  enum bf_vm_flag flags;	/* flags register */
+
   cell *vmprims;		/* vm primitives */
   cell *IP;			/* interpreter pointer */
   cell *W;			/* work pointer */
@@ -63,15 +80,17 @@ cell          bf_pop_dstack(bf_state *state);
 int           bf_pop_dstack_int(bf_state *state);
 char         *bf_pop_dstack_char_ptr(bf_state *state);
 unsigned int  bf_pop_dstack_uint(bf_state *state);
+size_t        bf_size_dstack(bf_state *state);
 
 cell          bf_tos_dstack(bf_state *state);
 int           bf_tos_dstack_int(bf_state *state);
 unsigned int  bf_tos_dstack_uint(bf_state *state);
 
 /* return stack manipulator functions */
-void bf_push_rstack(bf_state *state, cell value);
-cell bf_pop_rstack(bf_state *state);
-cell bf_tos_rstack(bf_state *state);
+void    bf_push_rstack(bf_state *state, cell value);
+cell    bf_pop_rstack(bf_state *state);
+cell    bf_tos_rstack(bf_state *state);
+size_t  bf_size_rstack(bf_state *state);
 
 /* memory protection */
 #define BF_STATE_END(state) state->output

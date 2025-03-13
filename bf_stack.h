@@ -23,7 +23,6 @@
 
 #ifndef BF_STACKH
 #include <bf_types.h>
-#include <bf_defines.h>
 
 
 struct bf_stack
@@ -44,6 +43,9 @@ void bf_stack_push (bf_stack *stack, cell value);
 void bf_stack_push_int(bf_stack *stack, int value);
 void bf_stack_push_uint(bf_stack *stack, unsigned int value);
 void bf_stack_push_char_ptr(bf_stack *stack, char *ptr);
+
+size_t       bf_stack_size(bf_stack *stack);
+cell         bf_stack_get_at(bf_stack *stack, size_t index);
 
 int          bf_stack_pop_int(bf_stack *stack);
 unsigned int bf_stack_pop_uint(bf_stack *stack);

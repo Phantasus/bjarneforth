@@ -67,6 +67,14 @@ bf_stack_pop_uint (bf_stack *stack)
   return tos.unsigned_value;
 }
 
+char *
+bf_stack_pop_char_ptr (bf_stack *stack)
+{
+  cell tos = bf_stack_pop(stack);
+
+  return tos.char_ptr;
+}
+
 void
 bf_stack_push (bf_stack *stack, cell value)
 {
@@ -90,4 +98,35 @@ bf_stack_push_uint (bf_stack *stack, unsigned int value)
   stack_value.unsigned_value = value;
   
   bf_stack_push(stack, stack_value);
+}
+
+void
+bf_stack_push_char_ptr (bf_stack *stack, char *value)
+{
+  cell stack_value ;
+  stack_value.char_ptr = value;
+  
+  bf_stack_push(stack, stack_value);
+}
+
+size_t
+bf_stack_size (bf_stack *stack)
+{
+  if (stack->tos > 0)
+    return (size_t)stack->tos;
+  
+  return 0;
+}
+
+cell
+bf_stack_get_at(bf_stack *stack, size_t index)
+{
+  cell empty_value;
+
+  BF_CLEAR_CELL(empty_value);
+
+  if (bf_stack_size(stack) > index)
+    return stack->items[index];
+  else
+    return empty_value;
 }

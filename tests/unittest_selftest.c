@@ -30,5 +30,8 @@ main (int argc, char **argv)
   ASSERT_EQUAL (1, 1, "equality test");
   ASSERT_UNEQUAL (1, 2, "inequality test");
 
+  ASSERT_STR_EQUAL ("abc", "abc", "equality with string test");
+  ASSERT_STR_UNEQUAL ("abc1", "abc", "inequality with string test");
+
   return 0;
 }

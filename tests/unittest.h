@@ -29,54 +29,39 @@
 
 int __unittest_pass (const char *message);
 int __unittest_fail (const char *message);
-const char *__unittest_cast_message (const char *message, ...);
+const char *__unittest_cast_message (const char *message, va_list args);
 
-#define __unittest_equal_fail_msg  \
-  "%s\n  %ll = %ll\n  at line %ll"
-#define __unittest_unequal_fail_msg \
-  "%s\n  %ll != %ll \n  at line %ll"
+void __unittest_assert_equal_int (long long int value_a,
+				  long long int value_b,
+				  long unsigned int line, const char *message,
+				  ...);
 
-#define ASSERT_EQUAL(value_a, value_b, ...) \
-  { \
-    long long a = (long long)value_a; \
-    long long b = (long long)value_b; \
-    char fail_message[512];  \
-    const char *pass_message =__unittest_cast_message(__VA_ARGS__); \
-    \
-    snprintf(fail_message, \
-             sizeof(fail_message), \
-             __unittest_equal_fail_msg, \
-             pass_message, \
-             a, \
-             b, \
-             __LINE__); \
-    \
-    if (a == b) \
-      __unittest_pass(pass_message); \
-    else \
-      __unittest_fail(fail_message); \
-  }
+void __unittest_assert_equal_char_ptr (char *value_a,
+                                       char *value_b,
+                                       long unsigned int line, const char *message,
+                                       ...);
 
-#define ASSERT_UNEQUAL(value_a, value_b, ...) \
-  { \
-    char fail_message[512];  \
-    const char *pass_message =__unittest_cast_message(__VA_ARGS__); \
-    long long a = (long long)value_a; \
-    long long b = (long long)value_b; \
-    \
-    snprintf(fail_message, \
-             sizeof(fail_message), \
-             __unittest_unequal_fail_msg, \
-             pass_message, \
-             a, \
-             b, \
-             __LINE__); \
-    \
-    if (a == b) \
-      __unittest_fail(fail_message); \
-    else \
-      __unittest_pass(pass_message); \
-  }
+void __unittest_assert_unequal_int (long long int value_a,
+				    long long int value_b,
+				    long unsigned int line,
+				    const char *message, ...);
+
+void __unittest_assert_unequal_char_ptr (char *value_a,
+                                         char *value_b,
+                                         long unsigned int line,
+                                         const char *message, ...);
+
+#define ASSERT_STR_EQUAL(actual, expected, ...) \
+  __unittest_assert_equal_char_ptr(actual, expected, __LINE__, __VA_ARGS__)
+
+#define ASSERT_STR_UNEQUAL(actual, expected, ...) \
+  __unittest_assert_unequal_char_ptr(actual, expected, __LINE__, __VA_ARGS__)
+
+#define ASSERT_EQUAL(actual, expected, ...) \
+  __unittest_assert_equal_int(actual, expected, __LINE__, __VA_ARGS__)
+
+#define ASSERT_UNEQUAL(actual, expected, ...)            \
+  __unittest_assert_unequal_int(actual, expected, __LINE__, __VA_ARGS__)
 
 #define BF_UNITTESTH
 #endif

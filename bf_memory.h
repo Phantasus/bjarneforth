@@ -25,7 +25,7 @@
 struct bf_memory
 {
   size_t size;			/* memory size */
-  cell a_reg;			/* adress register */
+  cell *a_reg;			/* adress register */
   
   cell *content;		/* memory area */
   cell *end;			/* last memory adr */
@@ -37,7 +37,7 @@ typedef struct bf_memory bf_memory;
 /* BootForth's memory functions */
 
 void bf_init_memory (bf_memory * memory);
-void bf_allot_memory (bf_memory * memory, unsigned int size);
+void bf_allot_memory (bf_memory * memory, size_t size);
 void bf_free_memory (bf_memory * memory);
 
 #define BF_MEMORYH

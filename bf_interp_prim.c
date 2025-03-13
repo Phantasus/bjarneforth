@@ -42,14 +42,7 @@ bf_prim_eval (bf_state *state)	/* ( str strlen -- ) */
     {
       while (i < count)
 	{
-	  if (bf_isnoitem (&state->vars.ws[1], state->vars.ws[0], str[i]))
-	    {
-
-	      if (strc == 0)
-		bf_push (&(state->dstack), (cell) & str[i]);
-	      strc++;
-	    }
-	  else
+	  if (char_isincluded (&state->vars.ws[1], state->vars.ws[0], str[i]))
 	    {
 	      if (strc > 0)
 		{
@@ -58,6 +51,12 @@ bf_prim_eval (bf_state *state)	/* ( str strlen -- ) */
 		  bf_prim_execute (state);
 		}
 	      strc = 0;
+	    }
+	  else
+	    {
+	      if (strc == 0)
+		bf_push (&(state->dstack), (cell) & str[i]);
+	      strc++;
 	    }
 	  i++;
 	}
@@ -248,32 +247,14 @@ bf_prim_parse (bf_state *state)	/* ( delimiter -- str strlen ) */
   bf_push (&(state->dstack), i);
 }
 
-/* DOC: reads a string from input until a character in string matches
- *      matches one input character */
-void
-bf_prim_sparse (bf_state *state)	/* ( str strlen -- str strlen ) */
+static int
+char_isincluded (char *list, cell length, char value)
 {
-  cell i = 0, buf;
-
-  cell count = bf_pop (&(state->dstack));
-  char *adr = (char *) bf_pop (&(state->dstack));
-
-  bf_push (&(state->dstack), (cell) state->vars.tib);
-
-  if (state->vars.istate & BF_FLAG_EOL)
-    state->vars.istate = state->vars.istate & (~BF_FLAG_EOL);
-
-  buf = bf_getc (&(state->input));
-  while ((bf_isnoitem (adr, count, buf)) && (i < state->vars.tibsize)
-	 && (buf != EOF))
+  int i = 0;
+  for (i = 0; i < length.signed_value; i++)
     {
-      state->vars.tib[i] = (char) buf;
-      i++;
-      buf = bf_getc (&(state->input));
+      if (list[i] == value)
+	return 1;
     }
-
-  if (buf == '\n')
-    state->vars.istate |= BF_FLAG_EOL;
-
-  bf_push (&(state->dstack), i);
+  return 0;
 }

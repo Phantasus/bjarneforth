@@ -17,17 +17,22 @@ check: all
 	./stacktest
 	./prim_stack_test
 
-lib.o : ../*.c
-	$(CC) -c $^ $(CFLAGS) -o $@
+#libtest.a : ../*.c
+#	$(CC) -c $^ $(CFLAGS)
+#	ar rcs libtest.a ../*.o
+#	rm ../*.o
 
 unittest_selftest: unittest_selftest.c unittest.c 
 	$(CC) $^ $(CFLAGS) -o $@
 
-stacktest: stacktest.c unittest.c bf_stack.c lib.o
+stacktest: stacktest.c unittest.c bf_stack.c
+	$(CC) $^ $(CFLAGS) -o $@
+
+streamtest: streamtest.c unittest.c bf_state.c bf_stream.c bf_stack.c bf_memory.c
 	$(CC) $^ $(CFLAGS) -o $@
 
 prim_tests: prim_stack_test
 	./prim_stack_test
 
-prim_stack_test: prim_stack_test.c lib.o
+prim_stack_test: prim_stack_test.c bf_stack.c bf_state.c bf_memory.c bf_stream.c bf_io_prim.c bf_stack_prim.c
 	$(CC) $^ $(CFLAGS) -o $@
