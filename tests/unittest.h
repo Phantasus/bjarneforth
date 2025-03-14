@@ -52,16 +52,21 @@ void __unittest_assert_unequal_char_ptr (char *value_a,
                                          const char *message, ...);
 
 #define ASSERT_STR_EQUAL(actual, expected, ...) \
-  __unittest_assert_equal_char_ptr(actual, expected, __LINE__, __VA_ARGS__)
+  __unittest_assert_equal_char_ptr((char *)actual, (char *)expected, __LINE__, __VA_ARGS__)
 
 #define ASSERT_STR_UNEQUAL(actual, expected, ...) \
-  __unittest_assert_unequal_char_ptr(actual, expected, __LINE__, __VA_ARGS__)
+  __unittest_assert_unequal_char_ptr((char *)actual, (char *)expected, __LINE__, __VA_ARGS__)
 
 #define ASSERT_EQUAL(actual, expected, ...) \
-  __unittest_assert_equal_int(actual, expected, __LINE__, __VA_ARGS__)
+  __unittest_assert_equal_int((long long)actual, (long long)expected, __LINE__, __VA_ARGS__)
 
 #define ASSERT_UNEQUAL(actual, expected, ...)            \
-  __unittest_assert_unequal_int(actual, expected, __LINE__, __VA_ARGS__)
+  __unittest_assert_unequal_int((long long)actual, (long long)expected, __LINE__, __VA_ARGS__)
+
+#define BEGIN_TEST \
+  printf ("----------------------- %s -----------------------\n", __FUNCTION__)
+
+#define END_TEST
 
 #define BF_UNITTESTH
 #endif

@@ -88,13 +88,14 @@ enum bf_word_flag
   BF_WORD_LENMASK = 63
 };
 
+/* defined for 64bit on x86 */
 typedef union {
-  signed int    signed_value;
-  unsigned int  unsigned_value;
-  float         float_value;
-  void         *ptr_value;
-  char         *char_ptr;
-} cell; /* a cell */
+  intptr_t      signed_value;    /* 8 bytes */
+  uintptr_t     unsigned_value;  /* 8 bytes */
+  double        float_value;     /* 8 bytes */
+  void         *ptr_value;       /* 8 bytes */
+  char         *char_ptr;        /* 8 bytes */
+} cell; /* a cel, should fit into 8 bytes on 64bit */
 
 typedef unsigned char byte;	/* a byte */
 
@@ -102,9 +103,6 @@ typedef unsigned char byte;	/* a byte */
 
 #define BF_CLEAR_CELL(cell_name) \
   memset(&cell_name, 0, sizeof(cell))
-
-/* memory related constants */
-#define BF_MEMORY_MIN_SIZE 512
 
 /* stack related constants */
 #define BF_STACK_ITEMS 64

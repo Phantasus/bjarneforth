@@ -69,7 +69,7 @@ void
 bf_inlinecell (bf_state *state, cell value)
 {
   state->here[0] = value;
-  if (state->here < state->memory.end)
+  if (state->here <= state->memory.last_useable)
     state->here = (cell *) & state->here[1];
 }
 
@@ -79,7 +79,7 @@ bf_inlinebyte (bf_state *state, char value)
   char *addr = (char *) state->here;
   addr[0] = value;
 
-  if (state->here < state->memory.end)
+  if (state->here <= state->memory.last_useable)
     state->here = (cell *) & addr[1];
 }
 

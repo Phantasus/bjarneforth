@@ -25,11 +25,9 @@
 struct bf_memory
 {
   size_t size;			/* memory size */
-  cell *a_reg;			/* adress register */
   
   cell *content;		/* memory area */
-  cell *end;			/* last memory adr */
-  cell *heap;			/* start of heap */
+  cell *last_useable;		/* last writeable/readable address of cell */
 };
 
 typedef struct bf_memory bf_memory;
@@ -39,6 +37,10 @@ typedef struct bf_memory bf_memory;
 void bf_init_memory (bf_memory * memory);
 void bf_allot_memory (bf_memory * memory, size_t size);
 void bf_free_memory (bf_memory * memory);
+
+/* inline functions */
+void bf_memory_inlinecell (bf_memory *memory, cell **here_ptr, cell value);
+void bf_memory_inlinebyte (bf_memory *memory, cell **here_ptr, char value);
 
 #define BF_MEMORYH
 #endif
