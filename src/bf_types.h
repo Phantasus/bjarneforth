@@ -88,13 +88,17 @@ enum bf_word_flag
   BF_WORD_LENMASK = 63
 };
 
+typedef intptr_t bf_int;
+typedef uintptr_t bf_uint;
+typedef bf_uint bf_offset;
+
 /* defined for 64bit on x86 */
 typedef union {
-  intptr_t      signed_value;    /* 8 bytes */
-  uintptr_t     unsigned_value;  /* 8 bytes */
-  double        float_value;     /* 8 bytes */
-  void         *ptr_value;       /* 8 bytes */
-  char         *char_ptr;        /* 8 bytes */
+  bf_int      signed_value;    /* 8 bytes */
+  bf_uint     unsigned_value;  /* 8 bytes */
+  double      float_value;     /* 8 bytes */
+  void        *ptr_value;       /* 8 bytes */
+  char        *char_ptr;        /* 8 bytes */
 } cell; /* a cel, should fit into 8 bytes on 64bit */
 
 typedef unsigned char byte;	/* a byte */

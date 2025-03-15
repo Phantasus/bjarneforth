@@ -4,17 +4,19 @@ CC=gcc # gcc compilation
 #CC=tcc # tcc compilation 
 
 
-CFLAGS=-I.. 
+CFLAGS=-I../src 
 PRE=bf_
 #CFLAGS=-I..
 
-VPATH=..:.
+VPATH=../src:.
 
-all: unittest_selftest stacktest prim_tests
+all: unittest_selftest stacktest memorytest streamtest prim_stack_test
 
 check: all
 	./unittest_selftest
 	./stacktest
+	./memorytest
+	./streamtest
 	./prim_stack_test
 
 #libtest.a : ../*.c
@@ -29,6 +31,9 @@ stacktest: stacktest.c unittest.c bf_stack.c
 	$(CC) $^ $(CFLAGS) -o $@
 
 streamtest: streamtest.c unittest.c bf_state.c bf_stream.c bf_stack.c bf_memory.c
+	$(CC) $^ $(CFLAGS) -o $@
+
+memorytest: memorytest.c unittest.c bf_state.c bf_stream.c bf_stack.c bf_memory.c
 	$(CC) $^ $(CFLAGS) -o $@
 
 prim_tests: prim_stack_test

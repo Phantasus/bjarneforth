@@ -66,6 +66,8 @@ test_allocating_memory()
     }
   ASSERT_EQUAL (count, 10, "All cells should be initialized to zero");
 
+  bf_free_memory (&mem);
+
   END_TEST;
 }
 
@@ -156,6 +158,9 @@ test_inlining_cells_into_memory()
   
   /* nothing should be moved */
   ASSERT_EQUAL ((uintptr_t)myhere - (uintptr_t)mem.content, sizeof(cell) * 2, "here should not move");
+
+  bf_free_memory (&mem);
+  
   END_TEST;
 }
 
@@ -218,9 +223,116 @@ test_inlining_bytes_into_memory()
   ASSERT_EQUAL (bytes[5], 50, "Little-endian Byte[5] = 0");
   ASSERT_EQUAL (bytes[6], 30, "Little-endian Byte[6] = 0");
   ASSERT_EQUAL (bytes[7], 14, "Little-endian Byte[7] = 0");
+  
   END_TEST;
 }
 
+void
+test_storing_into_memory ()
+{
+  BEGIN_TEST;
+
+  bf_memory memory;
+
+  bf_init_memory (&memory);
+  bf_allot_memory (&memory, 10);
+  bf_memory_store_int (&memory, 13, 9);
+  
+  ASSERT_EQUAL (13, bf_memory_fetch_int (&memory, 9), "Storing of int works");
+
+  bf_free_memory (&memory);
+  
+  END_TEST;
+}
+
+void
+test_comparing_memories ()
+{
+  BEGIN_TEST;
+
+  bf_memory memory_a;
+  bf_memory memory_b;
+
+  bf_init_memory (&memory_a);
+  bf_init_memory (&memory_b);
+  
+  ASSERT_EQUAL (true, bf_cmp_memory(&memory_a, &memory_b), "Initialized memory is equal");
+  
+  bf_allot_memory (&memory_a, 10);
+  ASSERT_UNEQUAL (true, bf_cmp_memory(&memory_a, &memory_b), "If one has attached content, then it's unequal");
+
+  bf_allot_memory (&memory_b, 10);
+  ASSERT_EQUAL (true, bf_cmp_memory(&memory_a, &memory_b), "Two allocated memories of same size are equal");
+
+  bf_memory_store_int (&memory_a, 30, 5);
+  ASSERT_UNEQUAL (true, bf_cmp_memory(&memory_a, &memory_b), "If content is unequal, they are unequal");
+  
+  bf_memory_store_int (&memory_b, 30, 5);
+  ASSERT_EQUAL (true, bf_cmp_memory(&memory_a, &memory_b), "If content is equal, they are equal");
+
+  bf_free_memory (&memory_a);
+  bf_free_memory (&memory_b);
+
+  END_TEST;
+}
+
+void
+test_resizing_memories ()
+{
+  BEGIN_TEST;
+  bf_memory memory;
+  
+  bf_init_memory (&memory);
+  bf_allot_memory (&memory, 2);
+
+  bf_memory_store_byte (&memory, 0xff, (sizeof (cell) * 2) - 1);
+  ASSERT_EQUAL (bf_memory_fetch_byte (&memory, (sizeof (cell) * 2) - 1), (char)0xff, "Should read end marker");
+  
+  bf_memory_resize (&memory, 512);
+  ASSERT_EQUAL (memory.size, 512, "Should change the size");
+  ASSERT_EQUAL ((uintptr_t)memory.last_useable - (uintptr_t)memory.content, 511 * sizeof(cell), "Should change the last_useable address");
+
+  ASSERT_EQUAL (bf_memory_fetch_byte (&memory, (sizeof (cell) * 100)), 0, "Should be zero in new alloc/1");
+  ASSERT_EQUAL (bf_memory_fetch_byte (&memory, (sizeof (cell) * 200)), 0, "Should be zero in new alloc/2");
+  ASSERT_EQUAL (bf_memory_fetch_byte (&memory, (sizeof (cell) * 400)), 0, "Should be zero in new alloc/3");
+  ASSERT_EQUAL (bf_memory_fetch_byte (&memory, (sizeof (cell) * 2) - 1), (char)0xff,  "Should read end marker, it should not be overwritten");
+
+  bf_free_memory (&memory);
+  END_TEST;
+}
+
+void
+test_restoring_memories ()
+{
+  BEGIN_TEST;
+  
+  bf_memory memory_a;
+  bf_memory memory_b;
+  FILE *file;
+
+  bf_init_memory (&memory_a);
+  bf_init_memory (&memory_b);
+
+  bf_allot_memory (&memory_a, 500);
+
+  for (int i = 0; i < 500; i++)
+    bf_memory_store_int (&memory_a, random(), i);
+
+  file = fopen("./fixtures/restore.dump", "w");
+  bf_memory_dump (&memory_a, file);
+  fclose (file);
+
+  file = fopen("./fixtures/restore.dump", "r");
+  bf_memory_restore (&memory_b, file);
+  fclose (file);
+
+  ASSERT_EQUAL (memory_b.size, memory_a.size, "Should have the same size");
+  ASSERT_EQUAL (bf_cmp_memory(&memory_a, &memory_b), true, "Should be the equal memory");
+
+  bf_free_memory (&memory_a);
+  bf_free_memory (&memory_b);
+  END_TEST;
+}
 
 int
 main ()
@@ -229,6 +341,10 @@ main ()
   test_allocating_memory();
   test_inlining_cells_into_memory();
   test_inlining_bytes_into_memory();
+  test_storing_into_memory();
+  test_comparing_memories ();
+  test_resizing_memories ();
+  test_restoring_memories ();
   
   return 0;
 }

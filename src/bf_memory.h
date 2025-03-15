@@ -21,6 +21,7 @@
 
 #include "bf_types.h"
 #include <stdlib.h>
+#include <stdbool.h>
 
 struct bf_memory
 {
@@ -32,15 +33,37 @@ struct bf_memory
 
 typedef struct bf_memory bf_memory;
 
+#define BF_MEMORY_MAGIC 0x08090a0b0c0d0e0f
+
 /* BootForth's memory functions */
 
 void bf_init_memory (bf_memory * memory);
 void bf_allot_memory (bf_memory * memory, size_t size);
 void bf_free_memory (bf_memory * memory);
 
+/* store/fetch functions */
+void bf_memory_store (bf_memory *memory, cell value, bf_offset pos);
+cell bf_memory_fetch (bf_memory *memory, bf_offset pos);
+
+void   bf_memory_store_int (bf_memory *memory, bf_int value, bf_offset pos);
+bf_int bf_memory_fetch_int (bf_memory *memory, bf_offset pos);
+
+void bf_memory_store_byte (bf_memory *memory, char value, bf_offset pos);
+char bf_memory_fetch_byte (bf_memory *memory, bf_offset pos);
+
 /* inline functions */
 void bf_memory_inlinecell (bf_memory *memory, cell **here_ptr, cell value);
 void bf_memory_inlinebyte (bf_memory *memory, cell **here_ptr, char value);
+
+/* comparing memories */
+bool bf_cmp_memory (bf_memory *memory_a, bf_memory *memory_b);
+
+/* memory dumping/restoring */
+void bf_memory_dump (bf_memory *memory, FILE *file);
+void bf_memory_restore (bf_memory *memory, FILE *file);
+
+/* sizing */
+void bf_memory_resize (bf_memory *memory, size_t size);
 
 #define BF_MEMORYH
 #endif
