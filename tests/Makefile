@@ -45,7 +45,7 @@ prim_tests: prim_stack_test
 prim_dict_test: prim_dict_test.c unittest.c bf_stack.c bf_state.c bf_memory.c bf_stream.c bf_io_prim.c bf_stack_prim.c
 	$(CC) $^ $(CFLAGS) -o $@
 
-prim_stack_test: prim_stack_test.c bf_stack.c bf_state.c bf_memory.c bf_stream.c bf_io_prim.c bf_stack_prim.c
+prim_stack_test: prim_stack_test.c unittest.c bf_stack.c bf_state.c bf_memory.c bf_stream.c bf_io_prim.c bf_stack_prim.c
 	$(CC) $^ $(CFLAGS) -o $@
 
 prim_io_test: prim_io_test.c unittest.c bf_stack.c bf_state.c bf_memory.c bf_stream.c bf_io_prim.c bf_stack_prim.c

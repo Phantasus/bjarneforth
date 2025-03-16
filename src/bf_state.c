@@ -166,16 +166,64 @@ bf_push_rstack(bf_state *state, cell value)
   bf_stack_push(&(state->rstack), value);
 }
 
+void
+bf_push_rstack_int(bf_state *state, int value)
+{
+  bf_stack_push_int(&(state->rstack), value);
+}
+
+void
+bf_push_rstack_uint(bf_state *state, unsigned int value)
+{
+  bf_stack_push_uint(&(state->rstack), value);
+}
+
+void
+bf_push_rstack_char_ptr(bf_state *state, char *value)
+{
+  bf_stack_push_char_ptr(&(state->rstack), value);
+}
+
 cell
 bf_pop_rstack(bf_state *state)
 {
   return bf_stack_pop(&(state->rstack));
 }
 
+int
+bf_pop_rstack_int(bf_state *state)
+{
+  return bf_stack_pop_int(&(state->rstack));
+}
+
+unsigned int
+bf_pop_rstack_uint(bf_state *state)
+{
+  return bf_stack_pop_uint(&(state->rstack));
+}
+
+char *
+bf_pop_rstack_char_ptr(bf_state *state)
+{
+  return bf_stack_pop_char_ptr(&(state->rstack));
+}
+
 cell
 bf_tos_rstack(bf_state *state)
 {
   return bf_stack_tos(&(state->rstack));
+}
+
+int
+bf_tos_rstack_int(bf_state *state)
+{
+  return bf_tos_rstack(state).signed_value;
+}
+
+unsigned int
+bf_tos_rstack_uint(bf_state *state)
+{
+  return bf_tos_rstack(state).unsigned_value;
 }
   
 size_t

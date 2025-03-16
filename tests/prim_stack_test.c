@@ -22,38 +22,176 @@
 #include <stdio.h>
 #include "unittest.h"
 
-int
-test_stackprims (bf_state *state)
+void
+test_prim_tuck()
 {
-  printf ("push: 1 2 3 \n");
-  bf_init_state (state);
+  bf_state state;
 
-  bf_prim_newline (state);
-  bf_push_dstack_int (state, 1);
-  bf_push_dstack_int (state, 2);
-  bf_push_dstack_int (state, 3);
+  BEGIN_TEST;
+  
+  bf_init_state (&state);
 
-  printf ("over; expected result: 1 2 3 2 \n");
-  bf_prim_over (state);
-  bf_prim_dots (state);
-  bf_prim_newline (state);
+  bf_push_dstack_int (&state, 1);
+  bf_push_dstack_int (&state, 2);
+  ASSERT_EQUAL (bf_size_dstack(&state), 2, "Stack should be two items");
 
-  printf ("TOS: %d\n", bf_pop_dstack_int (state));
-  printf ("TOS: %d\n", bf_pop_dstack_int (state));
-  printf ("TOS: %d\n", bf_pop_dstack_int (state));
-  printf ("TOS: %d\n", bf_pop_dstack_int (state));
-  printf ("TOS: %d\n", bf_pop_dstack_int (state));
-  printf ("TOS: %d\n", bf_pop_dstack_int (state));
-  printf ("TOS: %d\n", bf_pop_dstack_int (state));
+  bf_prim_nip (&state);
+  ASSERT_EQUAL (bf_size_dstack(&state), 3, "Stack should be three items");
 
-  return 0;
+  ASSERT_EQUAL (bf_pop_dstack_int(&state), 2, "Should be 2");
+  ASSERT_EQUAL (bf_pop_dstack_int(&state), 1, "Should be 1");
+  ASSERT_EQUAL (bf_pop_dstack_int(&state), 2, "Should be 2");
+
+  END_TEST;
 }
 
+void
+test_prim_nip()
+{
+  bf_state state;
+
+  BEGIN_TEST;
+  
+  bf_init_state (&state);
+
+  bf_push_dstack_int (&state, 1);
+  bf_push_dstack_int (&state, 2);
+  ASSERT_EQUAL (bf_size_dstack(&state), 2, "Stack should be two items");
+
+  bf_prim_nip (&state);
+  ASSERT_EQUAL (bf_size_dstack(&state), 1, "Stack should be three items");
+
+  ASSERT_EQUAL (bf_pop_dstack_int(&state), 2, "Should be 2");
+
+  END_TEST;
+}
+
+void
+test_prim_dup()
+{
+  bf_state state;
+
+  BEGIN_TEST;
+  
+  bf_init_state (&state);
+
+  ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be zero");
+  bf_push_dstack_int (&state, 1);
+  bf_prim_dup (&state);
+  
+  ASSERT_EQUAL (bf_size_dstack(&state), 2, "Stack should be two items");
+
+  ASSERT_EQUAL (bf_pop_dstack_int(&state), 1, "Should be 1");
+  ASSERT_EQUAL (bf_pop_dstack_int(&state), 1, "Should be 1");
+
+  END_TEST;
+}
+
+void
+test_prim_drop()
+{
+  bf_state state;
+
+  BEGIN_TEST;
+  
+  bf_init_state (&state);
+
+  ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be zero");
+  bf_push_dstack_int (&state, 1);
+
+  ASSERT_EQUAL (bf_size_dstack(&state), 1, "Stack should be zero");
+  bf_prim_drop (&state);
+  
+  ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be zero");
+
+  END_TEST;
+}
+
+
+void
+test_prim_swap()
+{
+  bf_state state;
+
+  BEGIN_TEST;
+  
+  bf_init_state (&state);
+
+  ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be zero");
+  bf_push_dstack_int (&state, 1);
+  bf_push_dstack_int (&state, 2);
+  ASSERT_EQUAL (bf_size_dstack(&state), 2, "Stack should be two items");
+
+  bf_prim_swap (&state);
+  ASSERT_EQUAL (bf_size_dstack(&state), 2, "Stack should be two items");
+
+  ASSERT_EQUAL (bf_pop_dstack_int(&state), 1, "Should be 1");
+  ASSERT_EQUAL (bf_pop_dstack_int(&state), 2, "Should be 2");
+
+  END_TEST;
+}
+
+void
+test_prim_over()
+{
+  bf_state state;
+
+  BEGIN_TEST;
+  
+  bf_init_state (&state);
+
+  ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be zero");
+  bf_push_dstack_int (&state, 1);
+  bf_push_dstack_int (&state, 2);
+  bf_push_dstack_int (&state, 3);
+  ASSERT_EQUAL (bf_size_dstack(&state), 3, "Stack should be three items");
+
+  bf_prim_over (&state);
+  
+  ASSERT_EQUAL (bf_size_dstack(&state), 4, "Should after over have four items");
+  ASSERT_EQUAL (bf_pop_dstack_int(&state),  2, "Should be  2");
+  ASSERT_EQUAL (bf_pop_dstack_int(&state),  3, "Should be  3");
+  ASSERT_EQUAL (bf_pop_dstack_int(&state),  2, "Should be  2");
+  ASSERT_EQUAL (bf_pop_dstack_int(&state),  1, "Should be  1");
+
+  END_TEST;
+}
+
+void
+test_rstack ()
+{
+  bf_state state;
+
+  BEGIN_TEST;
+
+  bf_init_state (&state);
+  ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be empty");
+  ASSERT_EQUAL (bf_size_rstack(&state), 0, "Return Stack should be empty");
+
+  bf_push_dstack_int (&state, 199);
+  ASSERT_EQUAL (bf_size_dstack(&state), 1, "Stack should be one item");
+
+  bf_prim_tor (&state);
+  ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be empty");
+  ASSERT_EQUAL (bf_size_rstack(&state), 1, "Return Stack should now have one item");
+  ASSERT_EQUAL (bf_tos_rstack_int (&state), 199, "Item should now be on the return stack");
+  
+  bf_prim_fromr (&state);
+  ASSERT_EQUAL (bf_size_dstack(&state), 1, "Stack should now have one item");
+  ASSERT_EQUAL (bf_size_rstack(&state), 0, "Return Stack should now be empty again");
+  ASSERT_EQUAL (bf_pop_dstack_int(&state), 199, "Stack should now be 199");
+
+  END_TEST;
+}
+  
 int
 main ()
 {
-  bf_state state;
-  bf_init_state (&state);
+  test_prim_dup ();
+  test_prim_swap ();
+  test_prim_drop ();
+  test_prim_nip ();
+  test_rstack ();
 
-  test_stackprims (&state);
+  test_prim_over ();
 }

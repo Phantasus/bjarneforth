@@ -44,7 +44,7 @@ bf_prim_swap (bf_state *state)	/* ( a b -- b a ) */
 
 /* DOC: see stack comment */
 void
-bf_prim_nip (bf_state *state)	/* ( a b -- b a b ) */
+bf_prim_nip (bf_state *state) /* ( a b -- b ) */ 
 {
   bf_prim_swap (state);
   bf_prim_drop (state);
@@ -52,7 +52,7 @@ bf_prim_nip (bf_state *state)	/* ( a b -- b a b ) */
 
 /* DOC: see stack comment */
 void
-bf_prim_tuck (bf_state *state)	/* ( a b -- b ) */
+bf_prim_tuck (bf_state *state) /* ( a b -- b a b ) */
 {
   bf_prim_swap (state);
   bf_prim_over (state);
