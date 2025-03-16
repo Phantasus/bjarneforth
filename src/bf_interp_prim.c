@@ -206,8 +206,8 @@ bf_eval (bf_state *state, char *string, ...)
 
 
   memcpy ((void *) &buf, (void *) &(state->input), sizeof (bf_stream));
-  cell len = (cell) strlen (out);
-  bf_memstream (&(state->input), (char *) out, len);
+  size_t len = (cell) strlen (out);
+  bf_open_memstream (&(state->input), (char *) out, len);
 
   while (state->input.pos < len)
     {

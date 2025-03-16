@@ -76,7 +76,7 @@ bf_prim_rshift (bf_state *state)	/* ( A B -- A>>B ) */
 
 /* DOC: negates the result of a true/false operation */
 void
-bf_prim_opposite (bf_state *state)	/* ( a b -- ) */
+bf_prim_negate (bf_state *state)	/* ( a b -- ) */
 {
   state->flags ^= BF_FLAG_TRUE;
 }

@@ -56,13 +56,13 @@ void bf_prim_lshift (bf_state * state);
 void bf_prim_rshift (bf_state * state);
 
 /* testing primitives */
-void bf_prim_lower (bf_state * state);	/*  <  */
-void bf_prim_greater (bf_state * state);	/*  >  */
-void bf_prim_equal (bf_state * state);	/*  == */
-void bf_prim_notequal (bf_state * state);	/*  != */
-void bf_prim_loweq (bf_state * state);	/*  <= */
-void bf_prim_greeq (bf_state * state);	/*  >= */
-void bf_prim_opposite (bf_state * state);	/*  like in C the !  */
+void bf_prim_lower (bf_state * state);	  /*  <  */
+void bf_prim_greater (bf_state * state);  /*  >  */
+void bf_prim_equal (bf_state * state);	  /*  == */
+void bf_prim_notequal (bf_state * state); /*  != */
+void bf_prim_loweq (bf_state * state);	  /*  <= */
+void bf_prim_greeq (bf_state * state);	  /*  >= */
+void bf_prim_negate (bf_state * state);   /*  like in C the !  */
 
 /* memory primitives */
 void bf_prim_store (bf_state * state);
@@ -104,11 +104,7 @@ void bf_prim_fromr (bf_state * state);
 void bf_prim_tosr (bf_state * state);
 
 /* I/O primitives */
-void bf_prim_space (bf_state * state);
-void bf_prim_newline (bf_state * state);
 void bf_prim_emit (bf_state * state);
-void bf_prim_dot (bf_state * state);
-void bf_prim_dots (bf_state * state);
 void bf_prim_printtos (bf_state * state);
 
 void bf_prim_type (bf_state * state);
@@ -126,9 +122,10 @@ void bf_prim_towordtoken (bf_state * state);
 void bf_prim_eval (bf_state * state);
 void bf_prim_eachword_classic (bf_state * state);
 
+/* parsing */
 void bf_prim_parse (bf_state * state);
 void bf_prim_sparse (bf_state * state);
-void bf_prim_wsparse (bf_state * state);
+void bf_prim_parse_name (bf_state * state);
 
 /* compiler */
 void bf_prim_inlinecell (bf_state * state);
@@ -152,8 +149,8 @@ void bf_prim_exitword (bf_state * state);
 void bf_prim_does (bf_state * state);
 void bf_prim_compdoes (bf_state * state);
 
-void bf_prim_setstate (bf_state * state);
-void bf_prim_unsetstate (bf_state * state);
+void bf_prim_enable_compilation (bf_state * state);
+void bf_prim_disable_compilation (bf_state * state);
 
 /* literals */
 void bf_prim_pushliteral (bf_state * state);

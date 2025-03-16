@@ -36,7 +36,7 @@ init_variables(bf_state *state)
   state->strs = 0;
 
   state->whitespaces = default_whitespaces;
-  state->base = BF_BASE_DEC;
+  state->base        = 10;
 }
 
 void
@@ -48,9 +48,6 @@ bf_init_state (bf_state *state)
   bf_init_stack (&(state->rstack));
   bf_clear_stream (&(state->input));
   bf_clear_stream (&(state->output));
-
-  bf_open_stdstream (&(state->input), stdin);
-  bf_open_stdstream (&(state->output), stdout);
 
   init_variables (state);
 

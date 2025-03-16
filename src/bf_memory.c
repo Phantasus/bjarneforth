@@ -207,7 +207,7 @@ void
 bf_memory_dump (bf_memory *memory, FILE *file)
 {
   char *addr  = (char *)memory->content;
-  char field[8];
+  char field[sizeof(cell)];
   cell magic;
 
   /* writing endian check */
@@ -232,7 +232,7 @@ bf_memory_dump (bf_memory *memory, FILE *file)
 }
 
 static void
-print_cell(char *bytes, size_t size)
+inspect_memory (char *bytes, size_t size)
 {
   for (int i = 1; i <= size; i++)
     {
@@ -249,13 +249,13 @@ print_cell(char *bytes, size_t size)
 static void
 reverse_cell (char *field)
 {
-  char addr[sizeof(cell)];
+  char buffer[sizeof(cell)];
 
   for (int i = 0; i < sizeof(cell); i++)
     {
-      addr[sizeof(cell) - (i + 1)] = (char)field[i];
+      buffer[sizeof(cell) - (i + 1)] = (char)field[i];
     }
-  memcpy (field, addr, sizeof(cell));
+  memcpy (field, buffer, sizeof(cell));
 }
 
 void

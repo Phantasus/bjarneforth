@@ -18,6 +18,7 @@
 /* ------------------------------------------------------------------------- */
 
 #include <bf_stream.h>
+#include <bf_memory.h>
 
 void
 bf_clear_stream (bf_stream *stream)
@@ -50,7 +51,7 @@ bf_open_stdstream (bf_stream *stream, FILE *file)
   stream->pos      = 0;
 }
 
-/* DOC: */
+/* DOC: opens a memory stream on the given memory area */
 void
 bf_open_memstream (bf_stream *stream, char *mem, size_t length)
 {
@@ -58,6 +59,13 @@ bf_open_memstream (bf_stream *stream, char *mem, size_t length)
   stream->content_ptr = mem;
   stream->length      = length;
   stream->pos         = 0;
+}
+
+/* DOC: opens a bf_memory stream on the given bf_memory */
+void
+bf_open_memory_stream (bf_stream *stream, bf_memory *memory)
+{
+  bf_open_memstream (stream, (char *)memory->content, memory->size * sizeof (cell));
 }
 
 /* DOC: reads a value from stream and returns it as a cell */

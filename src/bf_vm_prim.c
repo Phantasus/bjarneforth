@@ -72,7 +72,7 @@ bf_prim_dolink (bf_state *state)	/* ( -- ) */
 /* fname: ] */
 /* DOC: turns compilation on */
 void
-bf_prim_setstate (bf_state *state)
+bf_prim_enable_compilation (bf_state *state)
 {
   state->vars.state = 1;
 }
@@ -80,7 +80,7 @@ bf_prim_setstate (bf_state *state)
 /* fname: [ */
 /* DOC: turns compilation mode off */
 void
-bf_prim_unsetstate (bf_state *state)
+bf_prim_disable_compilation (bf_state *state)
 {
   state->vars.state = 0;
 }

@@ -61,15 +61,6 @@ enum BF_WORD_INDEXES
   BF_WORD_SIZE
 };
 
-/* base values */
-enum BF_BASE_VALUES
-{
-  BF_BASE_DEC = 10,
-  BF_BASE_HEX = 16,
-  BF_BASE_BIN = 2,
-  BF_BASE_OCT = 8
-};
-
 /* stream types */
 enum bf_stream_type
 {

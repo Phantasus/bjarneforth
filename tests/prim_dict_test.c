@@ -17,11 +17,14 @@
  * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.        */
 /* ------------------------------------------------------------------------- */
 
+#include <bf_state.h>
+#include <bf_prim.h>
+#include <stdio.h>
+#include "unittest.h"
+#include <string.h>
 
-/* DOC: converts a xt to a word token (wt) */
-void
-bf_prim_towordtoken (bf_state *state)	/* ( xt -- wt ) */
+int
+main ()
 {
-  cell top = bf_pop (&(state->dstack));
-  bf_push (&(state->dstack), top - (2 * sizeof (cell)));
+  return 0;
 }

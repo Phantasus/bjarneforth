@@ -20,46 +20,12 @@
 #include "bf_state.h"
 #include "bf_prim.h"
 
-/* fname: space */
-/* DOC: prints a space */
-void
-bf_prim_space (bf_state *state)	/* ( -- ) */
-{
-  bf_push_dstack_int (state, BF_CHAR_SPACE);
-  bf_prim_emit (state);
-}
-
-/* fname: . */
-/* DOC: prints TOS as a number with a following space */
-void
-bf_prim_dot (bf_state *state)	/* ( number -- ) */
-{
-  cell value = bf_pop_dstack (state);
-  printf ("%d ", value.signed_value);
-}
-
-/* DOC: prints TOS as a number without a following space */
-void
-bf_prim_printtos (bf_state *state)	/* ( number -- ) */
-{
-  cell value = bf_pop_dstack (state);
-  printf ("%d", value.signed_value);
-}
-
 /* DOC: prints the character which is matching to value */
 void
 bf_prim_emit (bf_state *state)	/* ( value -- ) */
 {
   cell value = bf_pop_dstack (state);
   bf_putc (&(state->output), value);
-}
-
-/* DOC: prints a newline */
-void
-bf_prim_newline (bf_state *state)	/* ( -- ) */
-{
-  bf_push_dstack_int (state, BF_CHAR_NEWLINE);
-  bf_prim_emit (state);
 }
 
 /* DOC: prints the given string */
@@ -90,32 +56,9 @@ bf_prim_getkey (bf_state *state)	/* ( -- keyvalue ) */
   bf_push_dstack (state, key);
 }
 
-/* fname: .s */
-/* DOC: prints elements on the stack,
- *      without removing them from the stack */
-void
-bf_prim_dots (bf_state *state)	/* ( -- ) */
-{
-  size_t i;
-  cell value;
-  size_t stack_size = bf_size_dstack(state);
-
-  for (i = 0; i < stack_size; i++)
-    {
-      value = bf_stack_get_at(&state->dstack, i);
-      bf_push_dstack (state, value);
-      bf_prim_dot (state);
-    }
-  fflush (stdout);
-
-#ifdef DEBUG
-  printf ("\n");
-#endif
-}
-
 /* DOC: reads a string from input until it finds a whitespace character */
 void
-bf_prim_wsparse (bf_state *state)	/* ( -- ) */
+bf_prim_parse_name (bf_state *state)	/* ( -- ) */
 {
   cell value;
 

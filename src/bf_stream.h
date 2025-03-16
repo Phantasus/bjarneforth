@@ -19,7 +19,8 @@
 #ifndef BF_STREAMH
 
 #include <stdio.h>
-#include <bf_types.h>
+#include "bf_types.h"
+#include "bf_memory.h"
 
 typedef struct
 {
@@ -36,6 +37,7 @@ void bf_close_stream (bf_stream * stream);
 
 void bf_open_memstream (bf_stream * stream, char *mem, size_t length);
 void bf_open_stdstream (bf_stream * stream, FILE * file);
+void bf_open_memory_stream (bf_stream *stream, bf_memory *memory);
 
 cell bf_getc (bf_stream * stream);
 void bf_putc (bf_stream * stream, cell value);
