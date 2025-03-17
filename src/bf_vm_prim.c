@@ -18,6 +18,7 @@
 /* ------------------------------------------------------------------------- */
 
 #include "bf_state.h"
+#include "bf_dict.h"
 #include "bf_prim.h"
 
 
@@ -25,23 +26,26 @@
 void
 bf_init_vm (bf_state *state)
 {
-  state->vmprims = bf_def_iprim (state, "pushliteral", &bf_prim_pushliteral);
-  bf_def_iprim (state, "pushsliteral", &bf_prim_pushsliteral);
-  bf_def_iprim (state, "jmp", &bf_prim_jmp);
-  bf_def_iprim (state, "jmpiftrue", &bf_prim_jmpiftrue);
-  bf_def_iprim (state, "jmpiffalse", &bf_prim_jmpiffalse);
-  bf_def_iprim (state, "eachword", &bf_prim_eachword_classic);
-  bf_def_iprim (state, "(does)", &bf_prim_does);
+  state->vmprims = bf_define_iprim (state, "pushliteral", &bf_prim_pushliteral);
+  
+  bf_define_iprim (state, "pushsliteral", &bf_prim_pushsliteral);
+  bf_define_iprim (state, "jmp",          &bf_prim_jmp);
+  bf_define_iprim (state, "jmpiftrue",    &bf_prim_jmpiftrue);
+  bf_define_iprim (state, "jmpiffalse",   &bf_prim_jmpiffalse);
+  bf_define_iprim (state, "eachword",     &bf_prim_eachword_classic);
+  bf_define_iprim (state, "(does)",       &bf_prim_does);
 
-  state->vars.eachword = (cell) BF_VM_PRIM (state, BF_VM_EACHWORD);
-  state->vars.last = 0;		/* put it into their own vocabulary */
+  state->eachword = (cell) BF_VM_PRIM (state, BF_VM_EACHWORD);
+  state->last = 0;		/* put it into their own vocabulary */
 }
 
 /* DOC: executes the primitive */
 void
 bf_prim_doprim (bf_state *state)	/* ( -- ) */
 {
-  bf_prim prim = (bf_prim) state->W[1];
+  cell value   = state->W[1];
+  bf_prim prim = value.prim_ptr;
+    
   prim (state);
 }
 
@@ -56,17 +60,22 @@ bf_prim_doliteral (bf_state *state)	/* ( -- ) */
 void
 bf_prim_dolink (bf_state *state)	/* ( -- ) */
 {
-  bf_stack_push (&(state->rstack), (cell) state->IP);
-  state->IP = (cell *) state->W[1];
+  cell value;
+  
+  bf_push_rstack (state, (cell) state->IP);
 
-  while ((*state->IP) != 0)
+  value = state->W[1];
+  state->IP = value.cell_ptr;
+
+  while (((*state->IP).cell_ptr) != NULL)
     {
-      state->W = (cell *) state->IP[0];
+      state->W = (*state->IP).cell_ptr;
       state->IP++;
-      bf_stack_push (&(state->dstack), (cell) state->W);
+      
+      bf_push_dstack (state, (cell) state->W);
       bf_prim_execute (state);
     }
-  state->IP = (cell *) bf_stack_pop (&(state->rstack));
+  state->IP = (cell *) bf_pop_rstack (state).cell_ptr;
 }
 
 /* fname: ] */
@@ -74,7 +83,7 @@ bf_prim_dolink (bf_state *state)	/* ( -- ) */
 void
 bf_prim_enable_compilation (bf_state *state)
 {
-  state->vars.state = 1;
+  state->state = 1;
 }
 
 /* fname: [ */
@@ -82,7 +91,7 @@ bf_prim_enable_compilation (bf_state *state)
 void
 bf_prim_disable_compilation (bf_state *state)
 {
-  state->vars.state = 0;
+  state->state = 0;
 }
 
 /* DOC: (internal) pushes a literal value to dstack */
@@ -97,9 +106,11 @@ bf_prim_pushliteral (bf_state *state)	/* ( -- literal ) */
 void
 bf_prim_pushsliteral (bf_state *state)	/* ( -- str strlen ) */
 {
-  char *str = (char *) *(state->IP);
-  bf_stack_push (&state->dstack, (cell) & str[1]);
-  bf_stack_push (&state->dstack, (cell) str[0]);
+  cell value = *state->IP;
+  char *str  = value.char_ptr;
+
+  bf_push_dstack_char_ptr (state, &str[1]);
+  bf_push_dstack_int (state, str[0]);
 
   state->IP++;
 }
@@ -112,9 +123,12 @@ bf_prim_dodoes (bf_state *state)
   printf ("DODOES\n");
 #endif
 
-  cell *arg = (cell *) state->W[1];
-  bf_stack_push (&(state->dstack), (cell) arg[0]);
+  cell value = state->W[1];
+  cell *arg  = value.cell_ptr;
+  
+  bf_push_dstack (state, (cell) arg[0]);
   state->W = arg;
+  
   bf_prim_dolink (state);
 }
 
@@ -139,7 +153,7 @@ bf_prim_settrue (bf_state *state)	/* ( -- ) */
 #ifdef DEBUG
   printf ("->true\n");
 #endif
-  state->flags = state->flags | BF_FLAG_TRUE;
+  state->flags = state->flags | flag_true;
 }
 
 /* DOC: unsets the vmflag TRUE */
@@ -150,28 +164,14 @@ bf_prim_setfalse (bf_state *state)	/* ( -- ) */
   printf ("->false\n");
 #endif
 
-  state->flags = state->flags & (~BF_FLAG_TRUE);
-}
-
-/* DOC: sets the vm flag NEG */
-void
-bf_prim_setnegative (bf_state *state)	/* ( -- ) */
-{
-  state->flags = state->flags | BF_FLAG_NEG;
-}
-
-/* DOC: unsets the vm flag NEG */
-void
-bf_prim_setpositive (bf_state *state)	/* ( -- ) */
-{
-  state->flags = state->flags & (~BF_FLAG_NEG);
+  state->flags = state->flags & (~flag_true);
 }
 
 /* DOC: (internal) perfrom a relative jmp if TRUE flag is set */
 void
 bf_prim_jmpiftrue (bf_state *state)	/* ( -- ) */
 {
-  if (state->flags & BF_FLAG_TRUE)
+  if (state->flags & flag_true)
     bf_prim_jmp (state);
   else
     state->IP++;
@@ -181,7 +181,7 @@ bf_prim_jmpiftrue (bf_state *state)	/* ( -- ) */
 void
 bf_prim_jmpiffalse (bf_state *state)	/* ( -- ) */
 {
-  if (!(state->flags & BF_FLAG_TRUE))
+  if (!(state->flags & flag_true))
     bf_prim_jmp (state);
   else
     state->IP++;
@@ -191,21 +191,22 @@ bf_prim_jmpiffalse (bf_state *state)	/* ( -- ) */
 void
 bf_prim_bye (bf_state *state)	/* ( -- ) */
 {
-  state->vars.istate = state->vars.istate & (~BF_FLAG_RUN);
+  state->flags = state->flags & (~flag_running);
 }
 
 /* DOC: classical Forth way of evaluating a word */
 void
 bf_prim_eachword_classic (bf_state *state)	/* ( str strlen -- ) */
 {
+  cell value;
   cell *buf;
   char *data;
 
   bf_prim_isnumber (state);
-  if (state->flags & BF_FLAG_TRUE)
+  if (state->flags & flag_true)
     {
       bf_prim_tonumber (state);
-      if (state->vars.state)
+      if (state->state)
 	{
 #ifdef DEBUG
 	  printf (",pshlit\n");
@@ -217,24 +218,27 @@ bf_prim_eachword_classic (bf_state *state)	/* ( str strlen -- ) */
   else
     {
 #ifdef DEBUG
-      printf ("STATE: %d\n", state->vars.state);
+      printf ("STATE: %d\n", state->state);
 #endif
 
       /* adding new word code */
       bf_prim_lookup (state);
       bf_prim_dup (state);
-      buf = (cell *) bf_stack_pop (&(state->dstack));
 
-      if (buf != 0)
+      value = bf_pop_dstack (state);
+      buf   = value.cell_ptr;
+
+      if (buf)
 	{
 	  buf--;
-	  data = (char *) *buf;
+          value = *buf;
+	  data  = value.char_ptr;
 
 	  if (data[0] & BF_WORD_ALLTIME)
 	    bf_prim_execute (state);
 	  else
 	    {
-	      if (state->vars.state)
+	      if (state->state)
 		bf_prim_inlinecell (state);
 	      else
 		bf_prim_execute (state);

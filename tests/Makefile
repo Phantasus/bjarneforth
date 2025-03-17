@@ -10,7 +10,8 @@ PRE=bf_
 
 VPATH=../src:.
 
-all: unittest_selftest stacktest memorytest streamtest prim_stack_test prim_io_test prim_dict_test prim_math_test
+all: unittest_selftest stacktest memorytest streamtest dict_test \
+	prim_stack_test prim_io_test prim_math_test
 
 check: all
 	./unittest_selftest
@@ -20,7 +21,7 @@ check: all
 	./prim_stack_test
 	./prim_io_test
 	./prim_math_test
-	./prim_dict_test
+	./dict_test
 
 #libtest.a : ../*.c
 #	$(CC) -c $^ $(CFLAGS)
@@ -39,10 +40,13 @@ streamtest: streamtest.c unittest.c bf_state.c bf_stream.c bf_stack.c bf_memory.
 memorytest: memorytest.c unittest.c bf_state.c bf_stream.c bf_stack.c bf_memory.c
 	$(CC) $^ $(CFLAGS) -o $@
 
+dict_test: dict_test.c unittest.c bf_state.c bf_stream.c bf_stack.c bf_memory.c bf_dict.c bf_stack_prim.c bf_compiler_prim.c bf_vm_prim.c
+	$(CC) $^ $(CFLAGS) -o $@
+
 prim_tests: prim_stack_test
 	./prim_stack_test
 
-prim_dict_test: prim_dict_test.c unittest.c bf_stack.c bf_state.c bf_memory.c bf_stream.c bf_io_prim.c bf_stack_prim.c
+prim_dict_test: prim_dict_test.c unittest.c bf_dict.c bf_stack.c bf_state.c bf_memory.c bf_stream.c bf_io_prim.c bf_stack_prim.c
 	$(CC) $^ $(CFLAGS) -o $@
 
 prim_stack_test: prim_stack_test.c unittest.c bf_stack.c bf_state.c bf_memory.c bf_stream.c bf_io_prim.c bf_stack_prim.c
@@ -51,5 +55,5 @@ prim_stack_test: prim_stack_test.c unittest.c bf_stack.c bf_state.c bf_memory.c 
 prim_io_test: prim_io_test.c unittest.c bf_stack.c bf_state.c bf_memory.c bf_stream.c bf_io_prim.c bf_stack_prim.c
 	$(CC) $^ $(CFLAGS) -o $@
 
-prim_math_test: prim_math_test.c unittest.c bf_stack.c bf_state.c bf_memory.c bf_stream.c bf_io_prim.c bf_stack_prim.c 
+prim_math_test: prim_math_test.c unittest.c bf_stack.c bf_state.c bf_memory.c bf_stream.c bf_math_prim.c bf_io_prim.c bf_stack_prim.c 
 	$(CC) $^ $(CFLAGS) -o $@

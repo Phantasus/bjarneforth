@@ -24,65 +24,75 @@
 void
 bf_prim_add (bf_state *state)	/* ( A B -- A+B ) */
 {
-  int b = bf_pop_dstack_int(state);
-  int a = bf_pop_dstack_int(state);
-  int result = a + b;
+  cell b = bf_pop_dstack (state);
+  cell a = bf_pop_dstack (state);
+  cell result;
 
-  if (result < 0)
-    bf_prim_setnegative (state);
+  result.signed_value = a.signed_value + b.signed_value;
 
-  bf_push_dstack_int(state, result);
+  if (result.signed_value < 0)
+    bf_set_negative (state);
+
+  bf_push_dstack (state, result);
 }
 
 /* DOC: subtract B from A */
 void
 bf_prim_sub (bf_state *state)	/* ( A B -- A-B ) */
 {
-  int b = bf_pop (&(state->dstack));
-  int a = bf_pop (&(state->dstack));
-  int result = a - b;
+  cell b = bf_pop_dstack (state);
+  cell a = bf_pop_dstack (state);
+  cell result;
 
-  if (result < 0)
-    bf_prim_setnegative (state);
+  result.signed_value = a.signed_value - b.signed_value;
 
-  bf_push (&(state->dstack), (cell) result);
+  if (result.signed_value < 0)
+    bf_set_negative (state);
+
+  bf_push_dstack (state, result);
 }
 
 /* DOC: multiply A and B */
 void
 bf_prim_mul (bf_state *state)	/* ( A B -- A*B) */
 {
-  int b = bf_pop (&(state->dstack));
-  int a = bf_pop (&(state->dstack));
-  int result = a * b;
+  cell b = bf_pop_dstack (state);
+  cell a = bf_pop_dstack (state);
+  cell result;
 
-  if (result < 0)
-    bf_prim_setnegative (state);
+  result.signed_value = a.signed_value * b.signed_value;
 
-  bf_push (&(state->dstack), (cell) result);
+  if (result.signed_value < 0)
+    bf_set_negative (state);
+
+  bf_push_dstack (state, result);
 }
 
 /* DOC: divide A through B */
 void
 bf_prim_div (bf_state *state)	/* ( A B -- A/B ) */
 {
-  int b = bf_pop_dstack_int(state);
-  int a = bf_pop_dstack_int(state);
-  int result = a / b;
+  cell b = bf_pop_dstack (state);
+  cell a = bf_pop_dstack (state);
+  cell result;
 
-  if (result < 0)
-    bf_prim_setnegative (state);
+  result.signed_value = a.signed_value / b.signed_value;
 
-  bf_push (&(state->dstack), (cell) result);
+  if (result.signed_value < 0)
+    bf_set_negative (state);
+
+  bf_push_dstack (state, result);
 }
 
 /* DOC: push the result of A modulo B on the stack */
 void
 bf_prim_mod (bf_state *state)	/* ( A B -- A%B ) */
 {
-  int b = bf_pop_dstack_int(state);
-  int a = bf_pop_dstack_int(state);
-  int result = a % b;
+  cell b = bf_pop_dstack (state);
+  cell a = bf_pop_dstack (state);
+  cell result;
 
-  bf_push_dstack_int(state, result);
+  result.signed_value = a.signed_value % b.signed_value;
+
+  bf_push_dstack (state, result);
 }

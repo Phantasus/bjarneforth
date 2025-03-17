@@ -17,12 +17,33 @@
  * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.        */
 /* ------------------------------------------------------------------------- */
 
-/* configuartion specification file */
+#include <bf_state.h>
+#include <bf_dict.h>
+#include <bf_prim.h>
+#include <stdio.h>
+#include "unittest.h"
+#include <string.h>
 
-#ifndef BF_CONFIGH
+void
+test_defining_words ()
+{
+  bf_state state;
+  bf_word word;
+  
+  BEGIN_TEST;
+  
+  bf_init_state (&state);
+  
 
-/* string related configurations */
-#define BF_USE_STRS
+  bf_free_state (&state);
+  
+  END_TEST;
+}
 
-#define BF_CONFIGH
-#endif
+int
+main ()
+{
+  test_defining_words ();
+  
+  return 0;
+}

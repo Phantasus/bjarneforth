@@ -23,19 +23,7 @@
 #include <bf_state.h>
 #include <bf_memory.h>
 
-typedef void (*bf_prim) (bf_state * state);	/* pointer to primitives */
-
 /* Bootforths convenient functions */
-cell *bf_def_stub (bf_state * state, cell * prev, char *name, bf_prim dofield,
-		   cell argfield);
-cell *bf_def_word (bf_state * state, const char *name, unsigned char flags,
-		   bf_prim dofield, cell argfield);
-cell *bf_def_prim (bf_state * state, const char *name, bf_prim primitive);
-cell *bf_def_literal (bf_state * state, const char *name, cell value);
-
-cell *bf_def_iprim (bf_state * state, const char *name, bf_prim primitive);
-cell *bf_def_iliteral (bf_state * state, const char *name, cell value);
-
 void bf_eval (bf_state * state, char *string, ...);
 
 /* virtual machine stuff */
@@ -81,7 +69,7 @@ void bf_prim_adec (bf_state * state);
 
 void bf_prim_copy (bf_state * state);
 
-/* dictionary */
+/* vm */
 void bf_prim_doprim (bf_state * state);
 void bf_prim_doliteral (bf_state * state);
 void bf_prim_dolink (bf_state * state);

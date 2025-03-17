@@ -18,7 +18,6 @@
 
 #ifndef BF_STATEH
 
-#include "bf_config.h"
 #include "bf_types.h"
 #include "bf_stack.h"
 #include "bf_memory.h"
@@ -61,6 +60,7 @@ struct bf_state
 };
 
 typedef struct bf_state bf_state;
+typedef void (*bf_prim) (bf_state * state);	/* pointer to primitives */
 
 void bf_init_state (bf_state * state);
 void bf_free_state (bf_state * state);
@@ -102,6 +102,10 @@ int           bf_tos_rstack_int(bf_state *state);
 unsigned int  bf_tos_rstack_uint(bf_state *state);
 
 size_t  bf_size_rstack(bf_state *state);
+
+/* flag setters */
+void bf_set_negative (bf_state *state);
+void bf_set_positive (bf_state *state);
 
 /* memory protection */
 #define BF_STATE_END(state) state->output

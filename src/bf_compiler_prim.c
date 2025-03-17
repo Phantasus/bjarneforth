@@ -17,6 +17,9 @@
  * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.        */
 /* ------------------------------------------------------------------------- */
 
+#include "bf_state.h"
+#include "bf_prim.h"
+
 
 /* DOC: inline num as a cell to here */
 void
@@ -40,19 +43,15 @@ prim_inlinestring (bf_state *state)	/* ( str strlen -- ) */
   cell count = bf_pop (&(state->dstack)), i;
   adr = (char *) bf_pop (&(state->dstack));
 
-#ifdef BF_USE_STRS
-  cell *here = state->vars.here;
-  state->vars.here = state->vars.strs;
-#endif
+  cell *here = state->here;
+  state->here = state->strs;
 
   bf_inlinebyte (state, count);
   for (i = 0; i < count; i++)
     bf_inlinebyte (state, (cell) adr[i]);
 
-#ifdef BF_USE_STRS
-  state->vars.strs = state->vars.here;
-  state->vars.here = here;
-#endif
+  state->strs = state->vars.here;
+  state->here = here;
 }
 
 /* fnames: literal, lit, */
@@ -74,26 +73,20 @@ prim_inlinesliteral (bf_state *state)	/* ( cstr --  ) */
 
 /* DOC: create a link word and start compilation */
 void
-prim_compile (bf_state *state)	/* ( -- ) */
+prim_begin_compile (bf_state *state)	/* ( -- ) */
 {
   char *name;
 
   prim_wsparse (state);
   state->vars.state = 1;
 
-#ifdef BF_USE_STRS
   name = (char *) state->vars.strs;
-#endif
-
-#ifndef BF_USE_STRS
-  name = (char *) state->vars.here;
-#endif
 
   prim_inlinestring (state);
   name[0] = name[0] & BF_WORD_LENMASK;
   name[0] |= (BF_WORD_NORMAL | BF_WORD_HIDDEN);
 
-  bf_def_stub (state, state->vars.last, name, &prim_dolink,
+  bf_inline_word (state, state->vars.last, name, &prim_dolink,
 	       (cell) state->vars.here);
 }
 
@@ -102,13 +95,19 @@ void
 prim_newword (bf_state *state)	/* ( str-adr -- ) */
 {
   char *name = (char *) bf_pop (&(state->dstack));
-  bf_def_stub (state, state->vars.last, name, &prim_doliteral,
-	       (cell) state->vars.here);
+  bf_word word;
+
+  word.prev = state->vars.last;
+  word.name = (cell) name;
+  word.dofield = &prim_doliteral;
+  word.arfield = state->vars.here;
+  
+  bf_inline_word (state, &word);
 }
 
 /* DOC: end the the word and stop compilation, at runtime it does nothing */
 void
-prim_endcompile (bf_state *state)	/* ( -- ) */
+prim_end_compile (bf_state *state)	/* ( -- ) */
 {
   char *data = (char *) state->vars.last[BF_WORD_NAME];
 
@@ -123,4 +122,40 @@ prim_endcompile (bf_state *state)	/* ( -- ) */
       printf ("END");
 #endif
     }
+}
+
+/* fname: (does) */
+/* DOC: turns the latest defined word into a 'does' */
+void
+prim_does(bf_state *state) /* ( lasthere -- ) */
+{
+  /* not the elegant version (more a dirty hack), sorry */
+
+#ifdef DEBUG
+  printf("(does)\n");
+#endif
+  cell *lasthere=(cell *)bf_pop(&(state->dstack));
+  cell *last=(cell *)state->vars.last;
+  cell *here=state->vars.here;
+  char *data=(char *)last[BF_WORD_ARGF];
+  
+  cell size=((char *)here-data), i;
+	
+  /* inline data location */
+  if(size>0)
+    bf_inlinecell(state, (cell)&here[2]);
+  else bf_inlinecell(state, (cell)data); 
+  
+  /* inline code location */
+  bf_inlinecell(state, (cell)lasthere);
+  last[BF_WORD_DOF]=(cell)&prim_dodoes;
+  last[BF_WORD_ARGF]=(cell)here;
+
+  /* copy old content to new location */
+  if(size>0) {
+    for(i=0;i<size;i++)
+      bf_inlinebyte(state, data[i]);
+  }
+
+  /* TODO: overwriting & realigning old content */
 }

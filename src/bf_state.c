@@ -231,3 +231,17 @@ bf_size_rstack(bf_state *state)
 {
   return bf_stack_size(&state->rstack);
 }
+
+/* DOC: sets the vm flag NEG  */
+void
+bf_set_negative (bf_state *state)	/* ( -- ) */
+{
+  state->flags = state->flags | flag_negative;
+}
+
+/* DOC: unsets the vm flag NEG */
+void
+bf_set_positive (bf_state *state)	/* ( -- ) */
+{
+  state->flags = state->flags & (~flag_negative);
+}

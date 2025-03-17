@@ -32,7 +32,8 @@ enum bf_vm_flag {
   flag_true       = 1,
   flag_negative   = 2,
   flag_running    = 4,
-  flag_eol        = 8 /* end of line */
+  flag_eol        = 8, /* end of line */
+  flag_debug      = 16
 };
 
 /* true/false values */
@@ -71,25 +72,31 @@ enum bf_stream_type
 };
 
 /* word flags */
-enum bf_word_flag
+typedef enum
 {
   BF_WORD_NORMAL = 0,
   BF_WORD_HIDDEN = 128,
   BF_WORD_ALLTIME = 64,
   BF_WORD_LENMASK = 63
-};
+} bf_word_flag;
 
 typedef intptr_t bf_int;
 typedef uintptr_t bf_uint;
 typedef bf_uint bf_offset;
 
+struct bf_state;
+typedef struct bf_state bf_state;
+typedef void (*bf_prim) (bf_state * state);	/* pointer to primitives */
+
 /* defined for 64bit on x86 */
-typedef union {
+typedef union cell {
   bf_int      signed_value;    /* 8 bytes */
   bf_uint     unsigned_value;  /* 8 bytes */
   double      float_value;     /* 8 bytes */
   void        *ptr_value;       /* 8 bytes */
   char        *char_ptr;        /* 8 bytes */
+  union cell  *cell_ptr;        /* 8 bytes, a pointer to a cell*/
+  bf_prim      prim_ptr;        /* 8 bytes, points to a prim */
 } cell; /* a cel, should fit into 8 bytes on 64bit */
 
 typedef unsigned char byte;	/* a byte */
