@@ -18,144 +18,154 @@
 /* ------------------------------------------------------------------------- */
 
 #include "bf_state.h"
+#include "bf_dict.h"
 #include "bf_prim.h"
 
 
 /* DOC: inline num as a cell to here */
 void
-prim_inlinecell (bf_state *state)	/* ( num  -- ) */
+bf_prim_inlinecell (bf_state *state)	/* ( num  -- ) */
 {
-  bf_inlinecell (state, bf_pop (&(state->dstack)));
+  bf_inlinecell (state, bf_pop_dstack (state));
 }
 
 /* DOC: inline num as a byte/character to here */
 void
-prim_inlinebyte (bf_state *state)	/* ( num -- ) */
+bf_prim_inlinebyte (bf_state *state)	/* ( num -- ) */
 {
-  bf_inlinebyte (state, bf_pop (&(state->dstack)));
+  bf_inlinebyte (state, (char)bf_pop_dstack_int (state));
 }
 
 /* DOC: inline the string on TOS to there */
 void
-prim_inlinestring (bf_state *state)	/* ( str strlen -- ) */
+bf_prim_inlinestring (bf_state *state)	/* ( str strlen -- ) */
 {
-  char *adr;
-  cell count = bf_pop (&(state->dstack)), i;
-  adr = (char *) bf_pop (&(state->dstack));
-
+  char *addr = bf_pop_dstack_char_ptr (state);
+  cell count = bf_pop_dstack (state);
   cell *here = state->here;
-  state->here = state->strs;
+  
+  bf_memory_inlinebyte (&state->memory, &here, (char)count.signed_value);
+  for (size_t i = 0; i < count.unsigned_value; i++)
+    bf_memory_inlinebyte (&state->memory, &here, addr[i]);
 
-  bf_inlinebyte (state, count);
-  for (i = 0; i < count; i++)
-    bf_inlinebyte (state, (cell) adr[i]);
-
-  state->strs = state->vars.here;
-  state->here = here;
+  state->strs = (char *)here;
 }
 
 /* fnames: literal, lit, */
 /* DOC: inlines a literal */
 void
-prim_inlineliteral (bf_state *state)	/* ( value -- ) */
+bf_prim_inlineliteral (bf_state *state)	/* ( value -- ) */
 {
-  bf_inlinecell (state, (cell) BF_VM_PRIM (state, BF_VM_PUSHLIT));
-  prim_inlinecell (state);
+  bf_inlinecell (state, (cell) bf_get_vmprimitive (state, BF_VM_PUSHLIT));
+  bf_prim_inlinecell (state);
 }
 
 /* DOC: inlines a string literal */
 void
-prim_inlinesliteral (bf_state *state)	/* ( cstr --  ) */
+bf_prim_inlinesliteral (bf_state *state)	/* ( cstr --  ) */
 {
-  bf_inlinecell (state, (cell) BF_VM_PRIM (state, BF_VM_PUSHSLIT));
-  prim_inlinecell (state);
+  bf_inlinecell (state, (cell) bf_get_vmprimitive (state, BF_VM_PUSHSLIT));
+  bf_prim_inlinecell (state);
 }
 
 /* DOC: create a link word and start compilation */
 void
-prim_begin_compile (bf_state *state)	/* ( -- ) */
+bf_prim_begin_compile (bf_state *state)	/* ( -- ) */
 {
   char *name;
+  bf_word newword;
 
-  prim_wsparse (state);
-  state->vars.state = 1;
+  bf_prim_parse_name (state);
+  state->flags |= flag_compiling;
 
-  name = (char *) state->vars.strs;
+  name = (char *) state->strs;
 
-  prim_inlinestring (state);
-  name[0] = name[0] & BF_WORD_LENMASK;
-  name[0] |= (BF_WORD_NORMAL | BF_WORD_HIDDEN);
+  bf_prim_inlinestring (state);
+  
+  newword.flags.unsigned_value = (normal_word | hidden_word);
+  newword.prev.cell_ptr        = state->last;
+  newword.name.char_ptr        = name;
+  newword.dofield.prim_ptr     = &bf_prim_dolink;
+  newword.argfield.cell_ptr    = state->here;
 
-  bf_inline_word (state, state->vars.last, name, &prim_dolink,
-	       (cell) state->vars.here);
+  bf_inline_word (state, &newword);
 }
 
 /* DOC: new empty word with the given name */
 void
-prim_newword (bf_state *state)	/* ( str-adr -- ) */
+bf_prim_newword (bf_state *state)	/* ( str-adr -- ) */
 {
-  char *name = (char *) bf_pop (&(state->dstack));
-  bf_word word;
+  char *name = bf_pop_dstack_char_ptr (state);
+  bf_word newword;
 
-  word.prev = state->vars.last;
-  word.name = (cell) name;
-  word.dofield = &prim_doliteral;
-  word.arfield = state->vars.here;
+  newword.prev.cell_ptr        = state->last;
+  newword.flags.unsigned_value = normal_word;
+  newword.name.char_ptr        = name;
+  newword.dofield.prim_ptr     = &bf_prim_doliteral;
+  newword.argfield.cell_ptr    = state->here;
   
-  bf_inline_word (state, &word);
+  bf_inline_word (state, &newword);
 }
 
 /* DOC: end the the word and stop compilation, at runtime it does nothing */
 void
-prim_end_compile (bf_state *state)	/* ( -- ) */
+bf_prim_end_compile (bf_state *state)	/* ( -- ) */
 {
-  char *data = (char *) state->vars.last[BF_WORD_NAME];
+  bf_word *last_word = (bf_word *)state->last;
+  char *data = (last_word->name).char_ptr;
+  cell value;
 
-  if (state->vars.state)
+  if (state->flags & flag_compiling)
     {
-      state->vars.state = 0;
-      bf_inlinecell (state, (cell) 0);
+      value.unsigned_value = 0;
+      bf_inlinecell (state, value);
 
-      data[0] &= ~BF_WORD_HIDDEN;
-
-#ifdef DEBUG
-      printf ("END");
-#endif
+      last_word->flags.unsigned_value &= ~hidden_word;
+      state->flags &= ~flag_compiling;
     }
 }
 
 /* fname: (does) */
 /* DOC: turns the latest defined word into a 'does' */
 void
-prim_does(bf_state *state) /* ( lasthere -- ) */
+bf_prim_does (bf_state *state) /* ( lasthere -- ) */
 {
   /* not the elegant version (more a dirty hack), sorry */
 
 #ifdef DEBUG
   printf("(does)\n");
 #endif
-  cell *lasthere=(cell *)bf_pop(&(state->dstack));
-  cell *last=(cell *)state->vars.last;
-  cell *here=state->vars.here;
-  char *data=(char *)last[BF_WORD_ARGF];
+  cell tos       = bf_pop_dstack (state); /* lasthere */
+  cell *lasthere = tos.cell_ptr;
+  bf_word *last_word = (bf_word *)state->last;
+
+  /*
+  cell *here = state->here;
+  char *data = last_word->argfield.char_ptr;
   
-  cell size=((char *)here-data), i;
+  cell size = ((char *)here-data);
+  */
 	
   /* inline data location */
-  if(size>0)
-    bf_inlinecell(state, (cell)&here[2]);
-  else bf_inlinecell(state, (cell)data); 
+  /*
+  if (size > 0)
+    bf_inlinecell (state, (cell)&here[2]);
+  else
+    bf_inlinecell (state, (cell)data); 
+  */
   
   /* inline code location */
-  bf_inlinecell(state, (cell)lasthere);
-  last[BF_WORD_DOF]=(cell)&prim_dodoes;
-  last[BF_WORD_ARGF]=(cell)here;
+  /*bf_inlinecell (state, (cell)lasthere);
 
+  last_word.dofield.prim_ptr  = &bf_prim_dodoes;
+  last_word.argfield.cell_ptr = here;
+
+  */
   /* copy old content to new location */
-  if(size>0) {
-    for(i=0;i<size;i++)
-      bf_inlinebyte(state, data[i]);
-  }
+  /*if (size > 0) {
+    for (size_t i = 0; i < size; i++)
+      bf_inlinebyte (state, data[i]);
+      } */
 
   /* TODO: overwriting & realigning old content */
 }

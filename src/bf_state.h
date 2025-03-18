@@ -23,7 +23,6 @@
 #include "bf_memory.h"
 #include "bf_stream.h"
 
-
 struct bf_state
 {
   bf_memory memory;		/* the memory */
@@ -33,8 +32,6 @@ struct bf_state
 
   /* -- used by words/primitives -- */
   size_t base;			/* current number base */
-
-  int state;			/* compiler state */
   cell eachword;		/* XT which gets executed at each read word */
 
   /* memory areas */
@@ -51,7 +48,7 @@ struct bf_state
 
   enum bf_vm_flag flags;	/* flags register */
 
-  cell *vmprims;		/* vm primitives */
+  bf_word *vmprims;		/* vm primitives */
   cell *IP;			/* interpreter pointer */
   cell *W;			/* work pointer */
 
@@ -106,9 +103,6 @@ size_t  bf_size_rstack(bf_state *state);
 /* flag setters */
 void bf_set_negative (bf_state *state);
 void bf_set_positive (bf_state *state);
-
-/* memory protection */
-#define BF_STATE_END(state) state->output
 
 #define BF_STATEH
 #endif

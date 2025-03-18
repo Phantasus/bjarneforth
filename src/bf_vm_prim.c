@@ -26,6 +26,7 @@
 void
 bf_init_vm (bf_state *state)
 {
+  /*
   state->vmprims = bf_define_iprim (state, "pushliteral", &bf_prim_pushliteral);
   
   bf_define_iprim (state, "pushsliteral", &bf_prim_pushsliteral);
@@ -34,8 +35,10 @@ bf_init_vm (bf_state *state)
   bf_define_iprim (state, "jmpiffalse",   &bf_prim_jmpiffalse);
   bf_define_iprim (state, "eachword",     &bf_prim_eachword_classic);
   bf_define_iprim (state, "(does)",       &bf_prim_does);
+  
 
   state->eachword = (cell) BF_VM_PRIM (state, BF_VM_EACHWORD);
+  */
   state->last = 0;		/* put it into their own vocabulary */
 }
 
@@ -53,7 +56,7 @@ bf_prim_doprim (bf_state *state)	/* ( -- ) */
 void
 bf_prim_doliteral (bf_state *state)	/* ( -- ) */
 {
-  bf_stack_push (&(state->dstack), (cell) state->W[1]);
+  bf_push_dstack (state, (cell) state->W[1]);
 }
 
 /* DOC: just execute the link word */
@@ -83,7 +86,7 @@ bf_prim_dolink (bf_state *state)	/* ( -- ) */
 void
 bf_prim_enable_compilation (bf_state *state)
 {
-  state->state = 1;
+  state->flags |= flag_compiling ;
 }
 
 /* fname: [ */
@@ -91,7 +94,7 @@ bf_prim_enable_compilation (bf_state *state)
 void
 bf_prim_disable_compilation (bf_state *state)
 {
-  state->state = 0;
+  state->flags |= ~flag_compiling ;
 }
 
 /* DOC: (internal) pushes a literal value to dstack */
@@ -119,10 +122,6 @@ bf_prim_pushsliteral (bf_state *state)	/* ( -- str strlen ) */
 void
 bf_prim_dodoes (bf_state *state)
 {
-#ifdef DEBUG
-  printf ("DODOES\n");
-#endif
-
   cell value = state->W[1];
   cell *arg  = value.cell_ptr;
   
@@ -140,19 +139,12 @@ bf_prim_jmp (bf_state *state)	/* ( -- ) */
   int offset = (int) adr[0];
   adr += offset;
   state->IP = (cell *) adr;
-
-#ifdef DEBUG
-  printf ("JMP to: %d\n", offset);
-#endif
 }
 
 /* DOC: sets the vm flag TRUE */
 void
 bf_prim_settrue (bf_state *state)	/* ( -- ) */
 {
-#ifdef DEBUG
-  printf ("->true\n");
-#endif
   state->flags = state->flags | flag_true;
 }
 
@@ -160,10 +152,6 @@ bf_prim_settrue (bf_state *state)	/* ( -- ) */
 void
 bf_prim_setfalse (bf_state *state)	/* ( -- ) */
 {
-#ifdef DEBUG
-  printf ("->false\n");
-#endif
-
   state->flags = state->flags & (~flag_true);
 }
 
@@ -194,7 +182,9 @@ bf_prim_bye (bf_state *state)	/* ( -- ) */
   state->flags = state->flags & (~flag_running);
 }
 
-/* DOC: classical Forth way of evaluating a word */
+/* DOC: classical Forth way of evaluating a word
+   using threaded code
+ */
 void
 bf_prim_eachword_classic (bf_state *state)	/* ( str strlen -- ) */
 {
@@ -206,21 +196,15 @@ bf_prim_eachword_classic (bf_state *state)	/* ( str strlen -- ) */
   if (state->flags & flag_true)
     {
       bf_prim_tonumber (state);
-      if (state->state)
+      if (state->flags & flag_compiling)
 	{
-#ifdef DEBUG
-	  printf (",pshlit\n");
-#endif
-	  bf_inlinecell (state, (cell) BF_VM_PRIM (state, BF_VM_PUSHLIT));
+	  bf_inlinecell (state, bf_get_vmprimitive (state, BF_VM_PUSHLIT));
 	  bf_prim_inlinecell (state);
 	}
     }
   else
     {
-#ifdef DEBUG
-      printf ("STATE: %d\n", state->state);
-#endif
-
+      
       /* adding new word code */
       bf_prim_lookup (state);
       bf_prim_dup (state);
@@ -234,11 +218,11 @@ bf_prim_eachword_classic (bf_state *state)	/* ( str strlen -- ) */
           value = *buf;
 	  data  = value.char_ptr;
 
-	  if (data[0] & BF_WORD_ALLTIME)
+	  if (data[0] & immediate_word)
 	    bf_prim_execute (state);
 	  else
 	    {
-	      if (state->state)
+	      if (state->flags & flag_compiling)
 		bf_prim_inlinecell (state);
 	      else
 		bf_prim_execute (state);

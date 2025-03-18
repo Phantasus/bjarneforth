@@ -1,5 +1,37 @@
 # Journal
 
+## 18. March 2025
+
+Well, before the compiler, interpreter was broken and now it certainly is even more.
+I threw out the "clever" way of storing flags into the first byte of the name
+of a word field and also threw out the index based construction of a word
+entirely. That stuff was always confusing and in the end it was to just
+save some bytes when creating a new word in the dictionary.
+
+I currently try to understand how the behemoth, this internal interpreter
+actually works again. I mean it should be rather "easy" compared with
+all other interpreters of any other programming language out there.
+
+In forth there are words and they have fields. The real complication
+of everything is the `(does)` word, used for implementing `does>`.
+Which combines data and code, I try to remember how the memory layout
+was supposed to be in a forth system.
+
+Forth uses normally a treaded code technique in interpreting code,
+back then when I wrote this code I wanted to make it more conforming to
+this style. But I remember I had some troubles, which is why I chose to
+implement some "opcodes", which would not be there in a pure threaded code
+style.
+
+And here again I write down a little bit about word dictionaries in
+forth. I looked up https://wiki.forth-ev.de/lib/exe/fetch.php/projects:movingforth:brad_rodriguez-forth_v16_all_for_pictures_a4.pdf
+
+So, we have different kinds of words:
+
+- `link`, they execute other words inside.
+- `literal`, literals are constants, they put data on the stack when executed.
+- `does`, handles the behavior of a does word, where data and code are combined.
+
 ## 15. March 2025
 
 Ok, let's recapitulate shallowly what I did the last days. I refactored the

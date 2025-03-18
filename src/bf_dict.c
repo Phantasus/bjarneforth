@@ -82,7 +82,7 @@ bf_define_prim (bf_state *state, const char *name, bf_prim primitive)
 
   argfield.ptr_value = (void *)primitive;
   
-  return bf_define_word (state, name, BF_WORD_NORMAL, &bf_prim_doprim,
+  return bf_define_word (state, name, normal_word, &bf_prim_doprim,
                          argfield);
 }
 
@@ -90,7 +90,7 @@ bf_define_prim (bf_state *state, const char *name, bf_prim primitive)
 cell *
 bf_define_literal (bf_state *state, const char *name, cell value)
 {
-  return bf_define_word (state, name, BF_WORD_NORMAL, &bf_prim_doliteral, value);
+  return bf_define_word (state, name, normal_word, &bf_prim_doliteral, value);
 }
 
 /* DOC: defines an imediate primitive */
@@ -101,7 +101,7 @@ bf_define_iprim (bf_state *state, const char *name, bf_prim primitive)
 
   argfield.ptr_value = (void *)primitive;
   
-  return bf_define_word (state, name, BF_WORD_ALLTIME, &bf_prim_doprim,
+  return bf_define_word (state, name, immediate_word, &bf_prim_doprim,
                          argfield);
 }
 
@@ -109,5 +109,14 @@ bf_define_iprim (bf_state *state, const char *name, bf_prim primitive)
 cell *
 bf_define_iliteral (bf_state *state, const char *name, cell value)
 {
-  return bf_define_word (state, name, BF_WORD_NORMAL, &bf_prim_doliteral, value);
+  return bf_define_word (state, name, normal_word, &bf_prim_doliteral, value);
+}
+
+/* DOC: returns the address of the dofield with a bf_prim for the given opcode */
+cell
+bf_get_vmprimitive (bf_state *state, bf_opcode opcode)
+{
+  bf_word *word = &state->vmprims [opcode];
+
+  return (cell)&word->dofield;
 }

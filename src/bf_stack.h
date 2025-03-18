@@ -24,6 +24,7 @@
 #ifndef BF_STACKH
 #include <bf_types.h>
 
+#define BF_STACK_ITEMS 64
 
 struct bf_stack
 {

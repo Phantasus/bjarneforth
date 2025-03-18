@@ -40,7 +40,9 @@ streamtest: streamtest.c unittest.c bf_state.c bf_stream.c bf_stack.c bf_memory.
 memorytest: memorytest.c unittest.c bf_state.c bf_stream.c bf_stack.c bf_memory.c
 	$(CC) $^ $(CFLAGS) -o $@
 
-dict_test: dict_test.c unittest.c bf_state.c bf_stream.c bf_stack.c bf_memory.c bf_dict.c bf_stack_prim.c bf_compiler_prim.c bf_vm_prim.c
+dict_test: dict_test.c unittest.c bf_state.c bf_stream.c bf_stack.c bf_memory.c bf_dict.c \
+	bf_stack_prim.c bf_compiler_prim.c bf_vm_prim.c \
+	bf_strings_prim.c bf_compiler_prim.c bf_io_prim.c bf_interp_prim.c bf_dict_prim.c
 	$(CC) $^ $(CFLAGS) -o $@
 
 prim_tests: prim_stack_test

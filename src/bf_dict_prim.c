@@ -19,70 +19,75 @@
 
 #include "bf_state.h"
 #include "bf_prim.h"
-#include "xxx"
+#include "bf_dict.h"
+#include <stddef.h>
 
 /* DOC: converts a xt to a word token (wt) */
 void
 bf_prim_towordtoken (bf_state *state)	/* ( xt -- wt ) */
 {
-  cell top = bf_pop (&(state->dstack));
-  bf_push (&(state->dstack), top - (2 * sizeof (cell)));
+  cell top = bf_pop_dstack (state);
+  cell word_start;
+
+  word_start.char_ptr = top.char_ptr - offsetof(bf_word, dofield);
+  
+  bf_push_dstack (state, word_start);
 }
 
 /* DOC: lookups a word */
 void
 bf_prim_lookup (bf_state *state)	/* ( sadr sc -- xt ) */
 {
-  cell *word = state->vars.last;
-  cell strlength;
-  cell i = 0;
+  cell last;
+  cell lastwt;
+  cell word_prev;
+  cell value;
+  
+  bf_word *word;
+  size_t strlength;
 
   char *str;
-  char *sstr;
+  char *word_name;
 
-  strlength = bf_pop (&(state->dstack));
-  str = (char *) bf_pop (&(state->dstack));
+  strlength = bf_pop_dstack_uint (state);
+  str       = bf_pop_dstack_char_ptr (state);
 
-  if ((str != 0) && (strlength != 0))
+  last.cell_ptr = state->last;
+  word          = (bf_word *)last.cell_ptr;
+
+  if (str && strlength)
     {
-#ifdef DEBUG
-      printf ("\"");
-      for (i = 0; i < strlength; i++)
-	printf ("%c", str[i]);
-
-      printf ("\"");
-#endif
-
-      while (word != 0)
+      while (word)
 	{
-	  sstr = (char *) word[BF_WORD_NAME];	/* name ptr */
+	  word_name = (word->name).char_ptr;	/* name ptr */
 
-	  if (!(sstr[0] & BF_WORD_HIDDEN))
+	  if (!(word->flags.unsigned_value & hidden_word))
 	    {
-	      if ((sstr[0] & BF_WORD_LENMASK) == strlength)
+	      if (word->name_length.unsigned_value == strlength)
 		{
-		  sstr = &sstr[1];
-		  for (i = 0; i < strlength; i++)
+		  if (!strncmp (word_name, &str[1], strlength))
 		    {
-		      if (str[i] != sstr[i])
-			break;
-		    }
-		  if (i == strlength)
-		    {
-		      state->vars.lastwt = (cell *) BF_WORD_WT (word);
-		      bf_push (&(state->dstack), (cell) BF_WORD_XT (word));
+		      lastwt.char_ptr = BF_WORD_WT(word);
+                      state->lastwt = lastwt.cell_ptr;
+                      
+		      bf_push_dstack_char_ptr (state, BF_WORD_XT(word));
+                      
 		      return;
 		    }
 		}
 	    }
-	  word = (cell *) (word[BF_WORD_PREV]);	/* link ptr */
+          word_prev = word->prev;
+	  word = (bf_word *)word_prev.cell_ptr;
 	}
     }
   /* when word wasn't found */
-  for (i = 0; i < strlength; i++)
+  for (size_t i = 0; i < strlength; i++)
     {
-      bf_putc (&(state->output), (cell) str[i]);
+      value.signed_value = str[i];
+      
+      bf_putc (&(state->output), value);
     }
-  bf_putc (&(state->output), '?');
-  bf_push (&(state->dstack), (cell) 0);
+  value.unsigned_value = '?';
+  bf_putc (&(state->output), value);
+  bf_push_dstack_int (state,  0);
 }

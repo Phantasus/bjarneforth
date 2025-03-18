@@ -19,51 +19,47 @@
 
 #include "bf_state.h"
 #include "bf_prim.h"
+#include <stdarg.h>
+
+static int
+char_iswhitespace (bf_state *state, char value);
 
 /* DOC: evals a string */
 void
 bf_prim_eval (bf_state *state)	/* ( str strlen -- ) */
 {
-  cell count = bf_pop (&(state->dstack));
-  cell i = 0;
-  cell strc = 0;
-  char *str = (char *) bf_pop (&(state->dstack));
+  size_t count = bf_pop_dstack_uint (state);
+  char *str    = bf_pop_dstack_char_ptr (state);
+  size_t i     = 0;
+  size_t str_count; 
 
-#ifdef DEBUG_EVAL
-  printf ("EVAL: ");
-  for (i = 0; i < count; i++)
-    printf ("%c", str[i]);
-
-  printf ("\n");
-  i = 0;
-#endif
-
-  if ((str != 0) && (count > 0))
+  if (str)
     {
       while (i < count)
 	{
-	  if (char_isincluded (&state->vars.ws[1], state->vars.ws[0], str[i]))
+	  if (char_iswhitespace (state, str[i]))
 	    {
-	      if (strc > 0)
+	      if (str_count > 0)
 		{
-		  bf_push (&(state->dstack), (cell) strc);
-		  bf_push (&(state->dstack), (cell) state->vars.eachword);
+		  bf_push_dstack_uint (state, str_count);
+		  bf_push_dstack (state, state->eachword);
 		  bf_prim_execute (state);
 		}
-	      strc = 0;
+	      str_count = 0;
 	    }
 	  else
 	    {
-	      if (strc == 0)
-		bf_push (&(state->dstack), (cell) & str[i]);
-	      strc++;
+	      if (str_count == 0)
+		bf_push_dstack_int (state, (intptr_t)&str[i]);
+              
+	      str_count++;
 	    }
 	  i++;
 	}
-      if (strc > 0)
+      if (str_count > 0)
 	{
-	  bf_push (&(state->dstack), (cell) strc);
-	  bf_push (&(state->dstack), (cell) state->vars.eachword);
+	  bf_push_dstack_uint (state, str_count);
+	  bf_push_dstack_uint (state, (state->eachword).unsigned_value);
 	  bf_prim_execute (state);
 	}
     }
@@ -73,120 +69,97 @@ bf_prim_eval (bf_state *state)	/* ( str strlen -- ) */
 void
 bf_prim_include (bf_state *state)	/* ( str strlen -- ) */
 {
-  bf_stream buf;
+  bf_stream stream;
 
-  cell len = bf_pop (&(state->dstack));
-  char *str = (char *) bf_pop (&(state->dstack));
-  char *filen = (char *) malloc (len + 1);
-  FILE *file = 0;
+  cell strlen = bf_pop_dstack (state);
+  char *str   = bf_pop_dstack_char_ptr (state);
+  char *filen = (char *) malloc (strlen.unsigned_value + 1);
+  FILE *file  = 0;
 
-  if ((str != 0) && (len != 0))
+  if (str && strlen.unsigned_value)
     {
-      memcpy ((void *) filen, (void *) str, len);
-      filen[len] = '\0';
+      memcpy ((void *) filen, (void *) str, strlen.unsigned_value);
+      filen[strlen.unsigned_value] = '\0';
       file = fopen (filen, "r");
     }
 
-  if (file != 0)
+  if (file)
     {
-      memcpy ((void *) &buf, (void *) &(state->input), sizeof (bf_stream));
-      bf_filestream (&(state->input), file);
+      memcpy ((void *) &stream, (void *) &(state->input), sizeof (bf_stream));
+      bf_open_stdstream (&(state->input), file);
 
-      while (!feof ((FILE *) state->input.stream))
+      while (!feof ((FILE *) state->input.file_ptr))
 	{
-	  bf_prim_wsparse (state);
+	  bf_prim_parse_name (state);
 	  bf_prim_eval (state);
 	}
-      memcpy ((void *) &(state->input), (void *) &buf, sizeof (bf_stream));
+      memcpy ((void *) &(state->input), (void *) &stream, sizeof (bf_stream));
       fclose (file);
+      free ((void *) filen);
     }
-  free ((void *) filen);
 }
 
 /* DOC: executes a xt */
 void
 bf_prim_execute (bf_state *state)	/* ( xt -- ) */
 {
-  bf_prim *xts;
-  xts = (bf_prim *) bf_pop (&(state->dstack));
+  cell tos = bf_pop_dstack (state);
+  bf_prim code_proc;
 
-  if (xts != 0)
+  if (tos.cell_ptr)
     {
-      state->W = (cell *) xts;
-#ifdef DEBUG
-      printf ("XT: do %d arg %d\n", (int) xts[0], (int) xts[1]);
-#endif
+      state->W  = tos.cell_ptr;
+      code_proc = (*state->W).prim_ptr;
 
-      BF_INMEMORY (state, (cell *) xts[0])
-      {
-	bf_push (&(state->dstack), (cell) xts[0]);
-	bf_prim_execute (state);
-      }
-      else
-      xts[0] (state);
+      code_proc (state);
     }
-#ifdef DEBUG
-  bf_prim_dots (state);
-#endif
 }
 
 /* DOC: evaluates the given Forth source string, with cool C replacement */
 void
 bf_eval (bf_state *state, char *string, ...)
 {
-  bf_stream buf;
-  char *out = (char *) state->vars.tib;
-  va_list ap;
+  bf_stream stream;
+  va_list args;
+  char *out = (char *) state->tib;
+  size_t length;
 
-#ifdef DEBUG_EVAL
-  printf ("eval<# %s ", string);
-#endif
+  vsprintf (out, string, args);
 
-  va_start (ap, string);
-  vsprintf (out, string, ap);
-  va_end (ap);
+  memcpy ((void *) &stream, (void *) &(state->input), sizeof (bf_stream));
+  length = strlen (out);
+  bf_open_memstream (&(state->input), (char *) out, length);
 
-
-  memcpy ((void *) &buf, (void *) &(state->input), sizeof (bf_stream));
-  size_t len = (cell) strlen (out);
-  bf_open_memstream (&(state->input), (char *) out, len);
-
-  while (state->input.pos < len)
+  while (state->input.pos < length)
     {
-      bf_prim_wsparse (state);
+      bf_prim_parse_name (state);
       bf_prim_eval (state);
     }
 
-  memcpy ((void *) &(state->input), (void *) &buf, sizeof (bf_stream));
-
-#ifdef DEBUG_EVAL
-  printf ("#>\n");
-#endif
+  memcpy ((void *) &(state->input), (void *) &stream, sizeof (bf_stream));
 }
 
 /* DOC: reads a string from input to first occurence of delimiter */
 void
 bf_prim_parse (bf_state *state)	/* ( delimiter -- str strlen ) */
 {
-  cell end = bf_pop (&(state->dstack));
-  cell i = 0, buf;
+  cell end = bf_pop_dstack (state);
+  size_t i = 0;
+  cell buf;
 
-  bf_push (&(state->dstack), (cell) state->vars.tib);
-
-  if (state->vars.istate & BF_FLAG_EOL)
-    state->vars.istate = state->vars.istate & (~BF_FLAG_EOL);
+  bf_push_dstack (state, (cell) state->tib);
 
   buf = bf_getc (&(state->input));
-  while ((buf != end) && (i < state->vars.tibsize) && (buf != EOF))
+  while ((buf.unsigned_value != end.unsigned_value) &&
+         (i < state->tibsize) &&
+         (buf.signed_value != EOF))
     {
-      state->vars.tib[i] = (char) buf;
+      state->tib[i] = (char) buf.signed_value;
       i++;
       buf = bf_getc (&(state->input));
     }
-  if (buf == '\n')
-    state->vars.istate |= BF_FLAG_EOL;
 
-  bf_push (&(state->dstack), i);
+  bf_push_dstack_uint (state, i);
 }
 
 static int
@@ -199,4 +172,14 @@ char_isincluded (char *list, cell length, char value)
 	return 1;
     }
   return 0;
+}
+
+static int
+char_iswhitespace (bf_state *state, char value)
+{
+  cell length;
+
+  length.unsigned_value = state->whitespaces[0];
+  
+  return char_isincluded (&state->whitespaces[1], length, value);
 }

@@ -19,20 +19,12 @@
 
 #ifndef BF_DICTH
 
+#include "bf_state.h"
+
 /* this header is solely here for describing
    the memory structure of a dictionary entry */
 
-struct bf_word
-{
-  cell prev;
-  cell name_length;
-  cell name;
-  cell flags;
-  cell dofield;
-  cell argfield;
-};
-
-typedef struct bf_word bf_word;
+cell bf_get_vmprimitive (bf_state *state, bf_opcode opcode);
 
 cell *bf_inline_word (bf_state *state, bf_word *word);
 cell *bf_define_word (bf_state *state, const char *name, bf_word_flag flags,
@@ -40,6 +32,16 @@ cell *bf_define_word (bf_state *state, const char *name, bf_word_flag flags,
 cell *bf_define_literal (bf_state *state, const char *name, cell value);
 cell *bf_define_iprim (bf_state *state, const char *name, bf_prim primitive);
 cell *bf_define_iliteral (bf_state *state, const char *name, cell value);
+
+/* convenient macros */
+#define BF_STR_COUNT(string) string[0]
+#define BF_STR_ADR(string) &string[1]
+
+#define BF_WORD_XT(word_ptr) (char *)&(word_ptr->dofield)
+#define BF_WORD_WT(word_ptr) (char *)&(word_ptr->prev)	/* yes, could be simpler, but then
+						   it wouldn't comply with BF_WORD_XT */
+#define BF_VM_PRIM(state, prim) &state->vmprims[(BF_WORD_SIZE*prim)+BF_WORD_DOF]
+
 
 #define BF_DICTH
 #endif

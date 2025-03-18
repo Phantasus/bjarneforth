@@ -97,9 +97,6 @@ bf_prim_sparse (bf_state *state)	/* ( str strlen -- str strlen ) */
 
   bf_push_dstack_char_ptr (state, state->tib);
 
-  if (state->flags & flag_eol)
-    state->flags = state->flags & (~flag_eol);
-
   buf = bf_getc (&(state->input));
   while ((char_isexcluded (addr, count, buf)) &&
          (i < state->tibsize) &&
@@ -109,9 +106,6 @@ bf_prim_sparse (bf_state *state)	/* ( str strlen -- str strlen ) */
       i++;
       buf = bf_getc (&(state->input));
     }
-
-  if (buf.unsigned_value == '\n')
-    state->flags |= flag_eol;
 
   bf_push_dstack_uint (state, i);
 }

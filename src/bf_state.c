@@ -29,7 +29,6 @@ init_variables(bf_state *state)
   state->last = 0;
   state->tib = 0;
   state->here = 0;
-  state->state = 0;
   state->flags = flag_running;
   state->dhere = 0;
   state->tibsize = 0;

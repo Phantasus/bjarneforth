@@ -32,8 +32,8 @@ enum bf_vm_flag {
   flag_true       = 1,
   flag_negative   = 2,
   flag_running    = 4,
-  flag_eol        = 8, /* end of line */
-  flag_debug      = 16
+  flag_debug      = 8,
+  flag_compiling  = 32,
 };
 
 /* true/false values */
@@ -41,8 +41,9 @@ enum bf_vm_flag {
 #define BF_VALUE_FALSE 0
 
 /* virtual machine indexes */
-enum BF_VM_PRIMS
+typedef enum
 {
+  BF_VM_NOP    = 0,
   BF_VM_PUSHLIT,
   BF_VM_PUSHSLIT,
   BF_VM_JMP,
@@ -50,7 +51,7 @@ enum BF_VM_PRIMS
   BF_VM_JMPIFFALSE,
   BF_VM_EACHWORD,
   BF_VM_DOES
-};
+} bf_opcode;
 
 /* word offsets/indexes */
 enum BF_WORD_INDEXES
@@ -74,10 +75,10 @@ enum bf_stream_type
 /* word flags */
 typedef enum
 {
-  BF_WORD_NORMAL = 0,
-  BF_WORD_HIDDEN = 128,
-  BF_WORD_ALLTIME = 64,
-  BF_WORD_LENMASK = 63
+  unknown_word = 0,
+  normal_word = 1,
+  hidden_word = 2,
+  immediate_word = 4,
 } bf_word_flag;
 
 typedef intptr_t bf_int;
@@ -101,26 +102,27 @@ typedef union cell {
 
 typedef unsigned char byte;	/* a byte */
 
+/* defines the basic dictionary entry of a word
+ * it's less efficiently defined as it could be, but in the age of
+ * wasteful AI crap, some wastefulness for the sake of less errors
+ * based on bit-fiddling, is acceptable.
+ */
+struct bf_word
+{
+  cell prev;
+  cell name_length;
+  cell name;
+  cell flags;
+  cell dofield;
+  cell argfield;
+};
+
+typedef struct bf_word bf_word;
+
 /* -------------------------- macros ----------------------------------------------- */
 
 #define BF_CLEAR_CELL(cell_name) \
   memset(&cell_name, 0, sizeof(cell))
-
-/* stack related constants */
-#define BF_STACK_ITEMS 64
-
-/* character values */
-#define BF_CHAR_SPACE   ' '
-#define BF_CHAR_NEWLINE '\n'
-
-/* convenient macros */
-#define BF_STR_COUNT(string) string[0]
-#define BF_STR_ADR(string) &string[1]
-
-#define BF_WORD_XT(wptr) &wptr[BF_WORD_DOF]
-#define BF_WORD_WT(wptr) &wptr[BF_WORD_PREV]	/* yes, could be simpler, but then
-						   it wouldn't comply with BF_WORD_XT */
-#define BF_VM_PRIM(state, prim) &state->vmprims[(BF_WORD_SIZE*prim)+BF_WORD_DOF]
 
 #define BF_TYPESH
 #endif

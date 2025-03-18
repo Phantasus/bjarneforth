@@ -25,13 +25,12 @@
 void
 bf_prim_isnumber(bf_state *state)	/* ( str strlen -- str strlen ) */
 {
-  cell i;
   int count = bf_pop_dstack_int (state);
   int start;
   
   char *adr = bf_pop_dstack_char_ptr(state);
   char buf;
-  char bbuf = state->vars.base;
+  char bbuf = state->base;
 
   bf_push_dstack_char_ptr (state, adr);
   bf_push_dstack_int (state, count);
@@ -53,12 +52,14 @@ bf_prim_isnumber(bf_state *state)	/* ( str strlen -- str strlen ) */
       buf = adr[start];
       if ((buf == '-') || (buf == '+'))
 	start++;
+      
       if (start == count)
 	{
 	  bf_prim_setfalse (state);
 	  return;
 	}
-      for (i = start; i < count; i++)
+      
+      for (size_t i = start; i < count; i++)
 	{
 	  buf = adr[i];
 	  if (!((buf < 58) && (buf > 47)))
@@ -98,14 +99,14 @@ bf_prim_tonumber (bf_state *state)	/* ( str strlen -- num ) */
 {
   int number = 0;
   char *adr, buf;
-  cell count, i, start = 0, base, sign = 1;
+  int count, start = 0, base, sign = 1;
 
-  count = (cell) bf_pop (&(state->dstack));
-  adr = (char *) bf_pop (&(state->dstack));
+  count = bf_pop_dstack_int (state);
+  adr   = bf_pop_dstack_char_ptr (state);
 
-  base = state->vars.base;
-
-  buf = adr[start];
+  base = state->base;
+  buf  = adr[start];
+  
   switch (adr[start])
     {
     case '#':
@@ -128,7 +129,7 @@ bf_prim_tonumber (bf_state *state)	/* ( str strlen -- num ) */
       start++;
       sign = -1;
     }
-  for (i = start; i < count; i++)
+  for (size_t i = start; i < count; i++)
     {
       /* that's fucking disgusting code, 
        * I mean there must be a much better
@@ -142,5 +143,5 @@ bf_prim_tonumber (bf_state *state)	/* ( str strlen -- num ) */
       if ((adr[i] < 123) && (adr[i] > 96))
 	number += (adr[i] - 87);
     }
-  bf_push (&(state->dstack), (cell) (number * sign));
+  bf_push_dstack_int (state, number * sign);
 }
