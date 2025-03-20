@@ -220,6 +220,54 @@ test_looking_up_words ()
   END_TEST;
 }
 
+void
+test_executing_literals ()
+{
+  bf_state state;
+  
+  BEGIN_TEST;
+  
+  bf_init_state (&state);
+  bf_allot (&state, 1024);
+
+  bf_define_literal (&state, "one", 1);
+  bf_define_literal (&state, "two", 2);
+  bf_define_literal (&state, "three", 3);
+
+  char two_label[] = "two";
+  bf_push_dstack_char_ptr (&state, two_label);
+  bf_push_dstack_int (&state, sizeof (two_label) - 1);
+  bf_prim_lookup (&state);
+
+  bf_prim_execute (&state);
+
+  ASSERT_EQUAL (bf_size_dstack (&state), 1,"Should be one result on the stack");
+  ASSERT_EQUAL (bf_pop_dstack_int (&state), 2, "Should be two on TOS");
+  
+  char three_label[] = "three";
+  bf_push_dstack_char_ptr (&state, three_label);
+  bf_push_dstack_int (&state, sizeof (three_label) - 1);
+  bf_prim_lookup (&state);
+
+  bf_prim_execute (&state);
+
+  ASSERT_EQUAL (bf_size_dstack (&state), 1,"Should be one result on the stack");
+  ASSERT_EQUAL (bf_pop_dstack_int (&state), 3, "Should be three on TOS");
+  
+  char one_label[] = "one";
+  bf_push_dstack_char_ptr (&state, one_label);
+  bf_push_dstack_int (&state, sizeof (one_label) - 1);
+  bf_prim_lookup (&state);
+
+  bf_prim_execute (&state);
+
+  ASSERT_EQUAL (bf_size_dstack (&state), 1,"Should be one result on the stack");
+  ASSERT_EQUAL (bf_pop_dstack_int (&state), 1, "Should be oneon TOS");
+
+  bf_free_state (&state);
+  END_TEST;
+}
+
 int
 main ()
 {
@@ -229,6 +277,7 @@ main ()
   test_inlining_words ();
 
   test_looking_up_words ();
+  test_executing_literals ();
   
   return 0;
 }
