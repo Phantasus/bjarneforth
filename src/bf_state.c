@@ -30,9 +30,7 @@ init_variables(bf_state *state)
   state->tib = 0;
   state->here = 0;
   state->flags = flag_running;
-  state->dhere = 0;
   state->tibsize = 0;
-  state->strs = 0;
 
   state->whitespaces = default_whitespaces;
   state->base        = 10;
@@ -70,6 +68,24 @@ bf_inlinecell (bf_state *state, cell value)
 }
 
 void
+bf_inlineint (bf_state *state, int value)
+{
+  cell cell_value;
+
+  cell_value.signed_value = value;
+  bf_inlinecell (state, cell_value);
+}
+
+void
+bf_inlineuint (bf_state *state, unsigned int value)
+{
+  cell cell_value;
+
+  cell_value.unsigned_value = value;
+  bf_inlinecell (state, cell_value);
+}
+
+void
 bf_inlinebyte (bf_state *state, char value)
 {
   char *addr = (char *) state->here;
@@ -80,11 +96,39 @@ bf_inlinebyte (bf_state *state, char value)
 }
 
 void
+bf_inlinestring (bf_state *state, const char* str)
+{
+  size_t count;
+
+  if (str)
+    count = (strlen (str)) & 0xff;
+  else
+    count = 0;
+
+  /* two bytes count */
+  bf_inlinebyte (state, (char)count);
+
+  for (size_t i = 0; i < count; i++)
+    bf_inlinebyte (state, str[i]);
+}
+
+/* DOC: convenience function for allocating vm memory */
+void
 bf_allot (bf_state *state, size_t size)
 {
   bf_allot_memory (&state->memory, size);
   state->here  = state->memory.content;
-  state->dhere = state->memory.content;
+}
+
+/* DOC: aligns the data space pointer to cells again by inlining padding bytes */
+void
+bf_align (bf_state *state)
+{
+  char *here  = (char *)state->here;
+  size_t diff = sizeof (cell) - ((uintptr_t)here) % sizeof(cell);
+
+  for (size_t i = 0; i < diff; i++)
+    bf_inlinebyte (state, 0);
 }
 
 void

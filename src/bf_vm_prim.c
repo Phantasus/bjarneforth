@@ -230,3 +230,10 @@ bf_prim_eachword_classic (bf_state *state)	/* ( str strlen -- ) */
 	}
     }
 }
+
+/* DOC: exits the currently executed thread */
+void
+bf_prim_exitword (bf_state *state)
+{
+  return;
+}

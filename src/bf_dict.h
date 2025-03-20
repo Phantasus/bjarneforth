@@ -29,7 +29,7 @@ cell bf_get_vmprimitive (bf_state *state, bf_opcode opcode);
 cell *bf_inline_word (bf_state *state, bf_word *word);
 cell *bf_define_word (bf_state *state, const char *name, bf_word_flag flags,
                       bf_prim dofield, cell argfield);
-cell *bf_define_literal (bf_state *state, const char *name, cell value);
+cell *bf_define_literal (bf_state *state, const char *name, bf_int value);
 cell *bf_define_iprim (bf_state *state, const char *name, bf_prim primitive);
 cell *bf_define_iliteral (bf_state *state, const char *name, cell value);
 

@@ -37,8 +37,6 @@ struct bf_state
   /* memory areas */
   cell *last;			/* address of last defined word */
   cell *here;			/* address of current free heap cell */
-  cell *dhere;			/* next free cell in the dictionary */
-  char *strs;			/* a memory area for strings */
 
   char *tib;			/* text input buffer address */
   size_t tibsize;		/* size of the tib */
@@ -64,8 +62,13 @@ void bf_free_state (bf_state * state);
 
 /* convenient functions */
 void bf_inlinecell (bf_state * state, cell value);
+void bf_inlineint (bf_state * state, int value);
+void bf_inlineuint (bf_state * state, unsigned int value);
 void bf_inlinebyte (bf_state * state, char value);
+void bf_inlinestring (bf_state *state, const char *str);
+
 void bf_allot (bf_state * state, size_t size);
+void bf_align (bf_state * state);
 
 /* data stack manipulator functions */
 void bf_push_dstack(bf_state *state, cell value);

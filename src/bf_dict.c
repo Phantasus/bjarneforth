@@ -21,29 +21,17 @@
 #include "bf_dict.h"
 #include "bf_prim.h"
 
-/* DOC: creates a word stub in memory and returns the address to it */
+/* DOC: inlines a word body into memory */ 
 cell *
 bf_inline_word (bf_state *state, bf_word *word)
 {
-  cell *last, *here;
-
-  last = (cell *) state->dhere;
-  here = state->here;
-  state->here = state->dhere;
-
   bf_inlinecell (state, word->prev);
-  bf_inlinecell (state, word->name_length);
-  bf_inlinecell (state, word->name);
   bf_inlinecell (state, word->flags);
 
   bf_inlinecell (state, word->dofield);
   bf_inlinecell (state, word->argfield);
 
-  state->last  = last;
-  state->dhere = state->here;
-  state->here  = here;
-
-  return last;
+  return state->here;
 }
 
 /* DOC: defines a word with the given name, dofield value and argfield value */
@@ -51,27 +39,22 @@ cell *
 bf_define_word (bf_state *state, const char *name, bf_word_flag flags,
                 bf_prim dofield, cell argfield)
 {
-  char *string = (char *) state->here;
-
-  cell name_length;
   bf_word word;
+  cell *last;
 
-  name_length.unsigned_value = strlen (name);
+  last = state->here;
 
-  /* max word name length = 31 characters, that's for example
-   * eg. MrDishWasherWhoIsAGreatMoronPIG, to make room for the flags */
-  bf_inlinecell (state, name_length);
+  bf_inlinestring (state, name);
+  bf_align (state);
 
-  for (size_t i = 0; i < name_length.unsigned_value; i++)
-    bf_inlinebyte (state, name[i]);
-
-  word.name_length        = name_length;
   word.prev.ptr_value     = state->last;
-  word.name.ptr_value     = string;
   word.dofield.ptr_value  = dofield;
   word.argfield           = argfield;
 
-  return bf_inline_word (state, &word);
+  bf_inline_word (state, &word);
+  state->last = last;
+
+  return last;
 }
 
 /* DOC: defines a normal primitive */
@@ -88,9 +71,12 @@ bf_define_prim (bf_state *state, const char *name, bf_prim primitive)
 
 /* DOC: defines a normal literal */
 cell *
-bf_define_literal (bf_state *state, const char *name, cell value)
+bf_define_literal (bf_state *state, const char *name, bf_int value)
 {
-  return bf_define_word (state, name, normal_word, &bf_prim_doliteral, value);
+  cell cell_value;
+  cell_value.signed_value = value;
+  
+  return bf_define_word (state, name, normal_word, &bf_prim_doliteral, cell_value);
 }
 
 /* DOC: defines an imediate primitive */

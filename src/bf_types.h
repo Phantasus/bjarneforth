@@ -110,8 +110,6 @@ typedef unsigned char byte;	/* a byte */
 struct bf_word
 {
   cell prev;
-  cell name_length;
-  cell name;
   cell flags;
   cell dofield;
   cell argfield;

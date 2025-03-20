@@ -47,8 +47,6 @@ bf_prim_inlinestring (bf_state *state)	/* ( str strlen -- ) */
   bf_memory_inlinebyte (&state->memory, &here, (char)count.signed_value);
   for (size_t i = 0; i < count.unsigned_value; i++)
     bf_memory_inlinebyte (&state->memory, &here, addr[i]);
-
-  state->strs = (char *)here;
 }
 
 /* fnames: literal, lit, */
@@ -78,13 +76,10 @@ bf_prim_begin_compile (bf_state *state)	/* ( -- ) */
   bf_prim_parse_name (state);
   state->flags |= flag_compiling;
 
-  name = (char *) state->strs;
-
   bf_prim_inlinestring (state);
   
   newword.flags.unsigned_value = (normal_word | hidden_word);
   newword.prev.cell_ptr        = state->last;
-  newword.name.char_ptr        = name;
   newword.dofield.prim_ptr     = &bf_prim_dolink;
   newword.argfield.cell_ptr    = state->here;
 
@@ -95,12 +90,13 @@ bf_prim_begin_compile (bf_state *state)	/* ( -- ) */
 void
 bf_prim_newword (bf_state *state)	/* ( str-adr -- ) */
 {
-  char *name = bf_pop_dstack_char_ptr (state);
   bf_word newword;
+
+  bf_prim_inlinestring (state);
+  bf_align (state);
 
   newword.prev.cell_ptr        = state->last;
   newword.flags.unsigned_value = normal_word;
-  newword.name.char_ptr        = name;
   newword.dofield.prim_ptr     = &bf_prim_doliteral;
   newword.argfield.cell_ptr    = state->here;
   
@@ -112,12 +108,11 @@ void
 bf_prim_end_compile (bf_state *state)	/* ( -- ) */
 {
   bf_word *last_word = (bf_word *)state->last;
-  char *data = (last_word->name).char_ptr;
   cell value;
 
   if (state->flags & flag_compiling)
     {
-      value.unsigned_value = 0;
+      value.prim_ptr = &bf_prim_exitword;
       bf_inlinecell (state, value);
 
       last_word->flags.unsigned_value &= ~hidden_word;

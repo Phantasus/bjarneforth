@@ -36,7 +36,7 @@ bf_prim_towordtoken (bf_state *state)	/* ( xt -- wt ) */
 
 /* DOC: lookups a word */
 void
-bf_prim_lookup (bf_state *state)	/* ( sadr sc -- xt ) */
+bf_prim_lookup (bf_state *state) /* ( sadr sc -- xt ) */
 {
   cell last;
   cell lastwt;
@@ -45,45 +45,49 @@ bf_prim_lookup (bf_state *state)	/* ( sadr sc -- xt ) */
   
   bf_word *word;
   size_t strlength;
-
-  char *str;
+  size_t name_pad;
+  size_t name_end;
+  size_t i = 0;
+  
+  char *query;
   char *word_name;
+  unsigned char name_length;
 
-  strlength = bf_pop_dstack_uint (state);
-  str       = bf_pop_dstack_char_ptr (state);
+  strlength = bf_pop_dstack_int (state);
+  query     = bf_pop_dstack_char_ptr (state);
 
   last.cell_ptr = state->last;
-  word          = (bf_word *)last.cell_ptr;
+  word_name     = (char *)last.cell_ptr;
 
-  if (str && strlength)
+  if (query && strlength)
     {
-      while (word)
+      while (word_name)
 	{
-	  word_name = (word->name).char_ptr;	/* name ptr */
+          name_length = (unsigned int)word_name[0];
+          name_end    = (intptr_t)word_name + name_length;
+          name_pad    = sizeof (cell) - (name_end % sizeof (cell));
+          word        = (bf_word *)&word_name[name_length + name_pad];
 
 	  if (!(word->flags.unsigned_value & hidden_word))
 	    {
-	      if (word->name_length.unsigned_value == strlength)
+	      if (name_length == strlength)
 		{
-		  if (!strncmp (word_name, &str[1], strlength))
+		  if (!strncmp (&word_name[1], query, strlength))
 		    {
-		      lastwt.char_ptr = BF_WORD_WT(word);
-                      state->lastwt = lastwt.cell_ptr;
-                      
-		      bf_push_dstack_char_ptr (state, BF_WORD_XT(word));
+		      bf_push_dstack_char_ptr (state, (char *)&word->dofield);
                       
 		      return;
 		    }
 		}
 	    }
-          word_prev = word->prev;
-	  word = (bf_word *)word_prev.cell_ptr;
+	  word_name = word->prev.char_ptr;
+          i++;
 	}
     }
   /* when word wasn't found */
   for (size_t i = 0; i < strlength; i++)
     {
-      value.signed_value = str[i];
+      value.signed_value = query[i];
       
       bf_putc (&(state->output), value);
     }
