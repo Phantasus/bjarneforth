@@ -65,5 +65,10 @@ void bf_memory_restore (bf_memory *memory, FILE *file);
 /* sizing */
 void bf_memory_resize (bf_memory *memory, size_t size);
 
+/* debug helpers */
+void hexdump_string (char *bytes, const char *label);
+void hexdump_cstring (const char *cstring, const char *label);
+
+
 #define BF_MEMORYH
 #endif

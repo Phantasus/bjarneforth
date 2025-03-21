@@ -307,3 +307,42 @@ bf_memory_restore (bf_memory *memory, FILE *file)
       memcpy (&memory->content[i], &value, sizeof(cell));
     }
 }
+
+void
+hexdump_area (const char *bytes, size_t length, const char *label)
+{
+  printf ("%s MEM : ", label);
+  for (size_t i = 1; i < length; i++)
+    {
+      printf ("%02x ", (char)bytes[i - 1]);
+
+      if (i % sizeof (cell) == 0)
+        printf (" ");
+    }
+  printf ("| ");
+  for (size_t i = 0; i < length; i++)
+    {
+      char value = bytes[i];
+
+      if (value < 0x21)
+        putc ('.', stdout);
+      else
+        putc (value, stdout);
+    }
+
+  printf ("\n");
+}
+
+void
+hexdump_string (char *bytes, const char *label)
+{
+  size_t length = bytes[0];
+
+  hexdump_area (bytes, length + 1, label);
+}
+
+void
+hexdump_cstring (const char *str, const char *label)
+{
+  hexdump_area (str, strlen (str), label);
+}
