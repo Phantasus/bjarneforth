@@ -50,6 +50,9 @@ main ()
       if (i == stack.tos)
         count_in++;
     }
+
+  cell tos = bf_stack_tos (&stack);
+  ASSERT_EQUAL (tos.unsigned_value, BF_STACK_ITEMS - 1, "TOS should work");
   ASSERT_EQUAL (count_in, BF_STACK_ITEMS - 1, "Stack pushing works");
   ASSERT_EQUAL (count_in, bf_stack_size(&stack), "Getting stack size works");
 

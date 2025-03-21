@@ -133,7 +133,6 @@ void bf_prim_then (bf_state * state);
 void bf_prim_repeat (bf_state * state);
 void bf_prim_loop (bf_state * state);
 
-void bf_prim_exitword (bf_state * state);
 void bf_prim_does (bf_state * state);
 void bf_prim_compdoes (bf_state * state);
 

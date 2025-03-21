@@ -99,22 +99,6 @@ bf_prim_include (bf_state *state)	/* ( str strlen -- ) */
     }
 }
 
-/* DOC: executes a xt */
-void
-bf_prim_execute (bf_state *state)	/* ( xt -- ) */
-{
-  cell tos = bf_pop_dstack (state);
-  bf_prim code_proc;
-
-  if (tos.cell_ptr)
-    {
-      state->W  = tos.cell_ptr;
-      code_proc = (*state->W).prim_ptr;
-
-      code_proc (state);
-    }
-}
-
 /* DOC: evaluates the given Forth source string, with cool C replacement */
 void
 bf_eval (bf_state *state, char *string, ...)

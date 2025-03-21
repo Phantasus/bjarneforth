@@ -23,17 +23,15 @@
 void
 bf_init_stack (bf_stack *stack)
 {
-  int i;
-
   stack->tos = 0;
-  for (i = 0; i < BF_STACK_ITEMS; i++)
+  for (size_t i = 0; i < BF_STACK_ITEMS; i++)
     stack->items[i].unsigned_value = 0;
 }
 
 cell
 bf_stack_tos (bf_stack *stack)
 {
-  return (stack->items[stack->tos]);
+  return stack->items[stack->tos];
 }
 
 cell
@@ -129,4 +127,13 @@ bf_stack_get_at(bf_stack *stack, size_t index)
     return stack->items[index];
   else
     return empty_value;
+}
+
+void
+bf_stack_print (bf_stack *stack)
+{
+  for (size_t i = 0; i <= stack->tos; i++)
+    printf ("%u ", stack->items[i]);
+
+  printf ("(%d) \n", stack->tos);
 }

@@ -47,9 +47,10 @@ bf_define_word (bf_state *state, const char *name, bf_word_flag flags,
   bf_inlinestring (state, name);
   bf_align (state);
 
-  word.prev.ptr_value     = state->last;
-  word.dofield.ptr_value  = dofield;
-  word.argfield           = argfield;
+  word.prev.ptr_value       = state->last;
+  word.flags.unsigned_value = flags;
+  word.dofield.ptr_value    = dofield;
+  word.argfield             = argfield;
 
   bf_inline_word (state, &word);
   state->last = last;
@@ -62,10 +63,11 @@ cell *
 bf_define_prim (bf_state *state, const char *name, bf_prim primitive)
 {
   cell argfield;
+  cell *xt;
 
   argfield.ptr_value = (void *)primitive;
   
-  return bf_define_word (state, name, normal_word, &bf_prim_doprim,
+  bf_define_word (state, name, normal_word, &bf_prim_doprim,
                          argfield);
 }
 
@@ -75,7 +77,7 @@ bf_define_literal (bf_state *state, const char *name, bf_int value)
 {
   cell cell_value;
   cell_value.signed_value = value;
-  
+
   return bf_define_word (state, name, normal_word, &bf_prim_doliteral, cell_value);
 }
 
@@ -105,4 +107,24 @@ bf_get_vmprimitive (bf_state *state, bf_opcode opcode)
   bf_word *word = &state->vmprims [opcode];
 
   return (cell)&word->dofield;
+}
+
+/* DOC: looks up the execution token of a word */
+cell 
+bf_lookup_word_xt (bf_state *state, char *name)
+{
+  size_t length = strlen (name);
+  cell result;
+
+  bf_push_dstack_char_ptr (state, name);
+  bf_push_dstack_int (state, length);
+
+  bf_prim_lookup (state);
+
+  return bf_pop_dstack (state);
+}
+
+void
+bf_init_dict (bf_state *state)
+{
 }

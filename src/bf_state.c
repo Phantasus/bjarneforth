@@ -19,6 +19,7 @@
  * ------------------------------------------------------------------------- */
 
 #include "bf_state.h"
+#include "bf_prim.h"
 
 static char
 default_whitespaces[] = "\x04\n \t\v";
@@ -188,13 +189,17 @@ bf_tos_dstack(bf_state *state)
 int
 bf_tos_dstack_int(bf_state *state)
 {
-  return bf_tos_dstack(state).signed_value;
+  cell value = bf_tos_dstack(state);
+  
+  return value.signed_value;
 }
 
 unsigned int
 bf_tos_dstack_uint(bf_state *state)
 {
-  return bf_tos_dstack(state).unsigned_value;
+  cell value = bf_tos_dstack(state);
+
+  return value.unsigned_value;
 }
 
 size_t
@@ -287,4 +292,18 @@ void
 bf_set_positive (bf_state *state)	/* ( -- ) */
 {
   state->flags = state->flags & (~flag_negative);
+}
+
+void
+bf_print_dstack (bf_state *state)
+{
+  printf ("DStack: ");
+  bf_stack_print (&state->dstack);
+}
+
+void
+bf_print_rstack (bf_state *state)
+{
+  printf ("RStack: ");
+  bf_stack_print (&state->rstack);
 }

@@ -108,12 +108,10 @@ void
 bf_prim_end_compile (bf_state *state)	/* ( -- ) */
 {
   bf_word *last_word = (bf_word *)state->last;
-  cell value;
 
   if (state->flags & flag_compiling)
     {
-      value.prim_ptr = &bf_prim_exitword;
-      bf_inlinecell (state, value);
+      bf_inlineuint (state, 0); /* exit */
 
       last_word->flags.unsigned_value &= ~hidden_word;
       state->flags &= ~flag_compiling;

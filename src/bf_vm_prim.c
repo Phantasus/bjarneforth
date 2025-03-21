@@ -56,29 +56,38 @@ bf_prim_doprim (bf_state *state)	/* ( -- ) */
 void
 bf_prim_doliteral (bf_state *state)	/* ( -- ) */
 {
-  bf_push_dstack (state, (cell) state->W[1]);
+  cell argfield = state->W[1];
+  
+  bf_push_dstack (state, argfield);
 }
 
 /* DOC: just execute the link word */
 void
 bf_prim_dolink (bf_state *state)	/* ( -- ) */
 {
-  cell value;
-  
-  bf_push_rstack (state, (cell) state->IP);
+  cell argfield;
+  cell xt;
+  cell next_ip;
+  bf_prim code_prim;
 
-  value = state->W[1];
-  state->IP = value.cell_ptr;
+  state->IP = &state->W[1];
+  xt        = *state->IP;
 
-  while (((*state->IP).cell_ptr) != NULL)
+  while (xt.cell_ptr) 
     {
-      state->W = (*state->IP).cell_ptr;
-      state->IP++;
-      
-      bf_push_dstack (state, (cell) state->W);
-      bf_prim_execute (state);
+      state->W = xt.cell_ptr; /* set the work register */
+
+      next_ip.cell_ptr = state->IP + 1; /* prepare the return address */
+
+      bf_push_rstack (state, next_ip);
+      code_prim = (*state->W).prim_ptr; /* codefield prim */
+      code_prim (state);
+      next_ip = bf_pop_rstack (state);
+
+      state->IP = next_ip.cell_ptr;
+
+      xt  = *state->IP;
     }
-  state->IP = (cell *) bf_pop_rstack (state).cell_ptr;
 }
 
 /* fname: ] */
@@ -231,9 +240,18 @@ bf_prim_eachword_classic (bf_state *state)	/* ( str strlen -- ) */
     }
 }
 
-/* DOC: exits the currently executed thread */
+/* DOC: executes a xt */
 void
-bf_prim_exitword (bf_state *state)
+bf_prim_execute (bf_state *state)	/* ( xt -- ) */
 {
-  return;
+  cell xt = bf_pop_dstack (state);
+  bf_prim code_prim;
+
+  if (xt.cell_ptr)
+    {
+      state->W  = xt.cell_ptr;
+      code_prim = (*state->W).prim_ptr; /* codefield prim */
+
+      code_prim (state);
+    }
 }

@@ -170,6 +170,7 @@ test_looking_up_words ()
   
   bf_init_state (&state);
   bf_allot (&state, 1024);
+  bf_init_dict (&state);
 
   dstart = state.here;
 
@@ -268,6 +269,55 @@ test_executing_literals ()
   END_TEST;
 }
 
+void
+test_executing_dolink_word ()
+{
+  bf_state state;
+  cell xt1;
+  cell xt2;
+  cell xt3;
+  
+  BEGIN_TEST;
+  
+  bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_init_dict (&state);
+
+  bf_define_literal (&state, "one", 1);
+  bf_define_literal (&state, "two", 2);
+  bf_define_literal (&state, "three", 3);
+
+  xt1 = bf_lookup_word_xt (&state, "one");
+  xt2 = bf_lookup_word_xt (&state, "two");
+  xt3 = bf_lookup_word_xt (&state, "three");
+
+  bf_define_word (&state, "combined", normal_word, &bf_prim_dolink, xt1);
+
+  bf_inlinecell (&state, xt2);
+  bf_inlinecell (&state, xt3);
+  bf_inlineuint (&state, 0);
+
+  char word_label[] = "combined";
+  bf_push_dstack_char_ptr (&state, word_label);
+  bf_push_dstack_int (&state, sizeof (word_label) - 1);
+  bf_prim_lookup (&state);
+
+  ASSERT_EQUAL (bf_size_dstack (&state), 1, "Should have found the XT");
+
+  cell tos = bf_tos_dstack (&state);
+  ASSERT_UNEQUAL (tos.unsigned_value, 0, "Lookup should have succeeded");
+
+  bf_prim_execute (&state);
+
+  ASSERT_EQUAL (bf_size_dstack (&state), 3,"Should be three items on the dstack");
+  ASSERT_EQUAL (bf_pop_dstack_int (&state), 3, "Should be three");
+  ASSERT_EQUAL (bf_pop_dstack_int (&state), 2, "Should be two");
+  ASSERT_EQUAL (bf_pop_dstack_int (&state), 1, "Should be one");
+
+  bf_free_state (&state);
+  END_TEST;
+}
+
 int
 main ()
 {
@@ -278,6 +328,7 @@ main ()
 
   test_looking_up_words ();
   test_executing_literals ();
+  test_executing_dolink_word ();
   
   return 0;
 }

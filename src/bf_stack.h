@@ -52,5 +52,7 @@ int          bf_stack_pop_int(bf_stack *stack);
 unsigned int bf_stack_pop_uint(bf_stack *stack);
 char        *bf_stack_pop_char_ptr(bf_stack *stack);
 
+void bf_stack_print (bf_stack *stack);
+  
 #define BF_STACKH
 #endif

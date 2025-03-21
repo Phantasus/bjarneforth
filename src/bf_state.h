@@ -107,5 +107,9 @@ size_t  bf_size_rstack(bf_state *state);
 void bf_set_negative (bf_state *state);
 void bf_set_positive (bf_state *state);
 
+void bf_print_dstack (bf_state *state);
+void bf_print_rstack (bf_state *state);
+
+
 #define BF_STATEH
 #endif
