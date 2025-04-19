@@ -66,6 +66,23 @@ bf_prim_inlinesliteral (bf_state *state)	/* ( cstr --  ) */
   bf_prim_inlinecell (state);
 }
 
+/* DOC: new empty word with the given name */
+void
+bf_prim_newword (bf_state *state)	/* ( str-adr -- ) */
+{
+  bf_word newword;
+
+  bf_prim_inlinestring (state);
+  bf_align (state);
+
+  newword.prev.cell_ptr        = state->last;
+  newword.flags.unsigned_value = normal_word;
+  newword.dofield.prim_ptr     = &bf_prim_doliteral;
+  newword.argfield.cell_ptr    = state->here;
+  
+  bf_inline_word (state, &newword);
+}
+
 /* DOC: create a link word and start compilation */
 void
 bf_prim_begin_compile (bf_state *state)	/* ( -- ) */
@@ -83,23 +100,6 @@ bf_prim_begin_compile (bf_state *state)	/* ( -- ) */
   newword.dofield.prim_ptr     = &bf_prim_dolink;
   newword.argfield.cell_ptr    = state->here;
 
-  bf_inline_word (state, &newword);
-}
-
-/* DOC: new empty word with the given name */
-void
-bf_prim_newword (bf_state *state)	/* ( str-adr -- ) */
-{
-  bf_word newword;
-
-  bf_prim_inlinestring (state);
-  bf_align (state);
-
-  newword.prev.cell_ptr        = state->last;
-  newword.flags.unsigned_value = normal_word;
-  newword.dofield.prim_ptr     = &bf_prim_doliteral;
-  newword.argfield.cell_ptr    = state->here;
-  
   bf_inline_word (state, &newword);
 }
 

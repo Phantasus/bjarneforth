@@ -30,39 +30,19 @@ bf_prim_eval (bf_state *state)	/* ( str strlen -- ) */
 {
   size_t count = bf_pop_dstack_uint (state);
   char *str    = bf_pop_dstack_char_ptr (state);
-  size_t i     = 0;
-  size_t str_count; 
 
-  if (str)
+  if (!str)
+    return; /* or raise an error? avoid null string */
+
+  bf_prim_save_input (state);
+  for (size_t i = 0; i < count; i++)
     {
-      while (i < count)
-	{
-	  if (char_iswhitespace (state, str[i]))
-	    {
-	      if (str_count > 0)
-		{
-		  bf_push_dstack_uint (state, str_count);
-		  bf_push_dstack (state, state->eachword);
-		  bf_prim_execute (state);
-		}
-	      str_count = 0;
-	    }
-	  else
-	    {
-	      if (str_count == 0)
-		bf_push_dstack_int (state, (intptr_t)&str[i]);
-              
-	      str_count++;
-	    }
-	  i++;
-	}
-      if (str_count > 0)
-	{
-	  bf_push_dstack_uint (state, str_count);
-	  bf_push_dstack_uint (state, (state->eachword).unsigned_value);
-	  bf_prim_execute (state);
-	}
+      bf_prim_parse_word (state);
+      i = i + bf_tos_dstack_uint (state);
+      
+      bf_prim_eval_word (state);
     }
+  bf_prim_restore_input (state);
 }
 
 /* DOC: include the given file and evaluate it */
@@ -101,26 +81,29 @@ bf_prim_include (bf_state *state)	/* ( str strlen -- ) */
 
 /* DOC: evaluates the given Forth source string, with cool C replacement */
 void
-bf_eval (bf_state *state, char *string, ...)
+bf_eval (bf_state *state, char *format, ...)
 {
   bf_stream stream;
   va_list args;
-  char *out = (char *) state->tib;
-  size_t length;
 
-  vsprintf (out, string, args);
+  int length;
+  size_t tibsize = bf_size_source_buffer(state);
+  char *tib      = bf_get_source_buffer(state);
 
-  memcpy ((void *) &stream, (void *) &(state->input), sizeof (bf_stream));
-  length = strlen (out);
-  bf_open_memstream (&(state->input), (char *) out, length);
+  if (!tib)
+    return; /* don't write into NULL area, maybe raise an error here */
 
-  while (state->input.pos < length)
+  printf ("TIB %u (%d)\n", tib, bf_size_source_buffer (state));
+
+  length = vsnprintf (tib, tibsize, format, args);
+
+  if (length > 0)
     {
-      bf_prim_parse_name (state);
+      /* stuff was written to the TIB */
+      bf_push_dstack_char_ptr (state, tib);
+      bf_push_dstack_uint (state, tibsize);
       bf_prim_eval (state);
     }
-
-  memcpy ((void *) &(state->input), (void *) &stream, sizeof (bf_stream));
 }
 
 /* DOC: reads a string from input to first occurence of delimiter */
@@ -130,15 +113,16 @@ bf_prim_parse (bf_state *state)	/* ( delimiter -- str strlen ) */
   cell end = bf_pop_dstack (state);
   size_t i = 0;
   cell buf;
+  char *tib = bf_get_source_buffer (state);
 
-  bf_push_dstack (state, (cell) state->tib);
+  bf_push_dstack (state, (cell) state->source_buffer);
 
   buf = bf_getc (&(state->input));
   while ((buf.unsigned_value != end.unsigned_value) &&
-         (i < state->tibsize) &&
+         (i < bf_size_source_buffer(state)) &&
          (buf.signed_value != EOF))
     {
-      state->tib[i] = (char) buf.signed_value;
+      tib[i] = (char) buf.signed_value;
       i++;
       buf = bf_getc (&(state->input));
     }

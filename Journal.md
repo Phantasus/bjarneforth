@@ -1,5 +1,10 @@
 # Journal
 
+## 19. April 2025
+
+So.. getting back to this after a couple of weeks distraction in my real life.
+Today I added a couple of tests for testing parsing names.
+
 ## 18. March 2025
 
 Well, before the compiler, interpreter was broken and now it certainly is even more.

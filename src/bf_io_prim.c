@@ -56,9 +56,30 @@ bf_prim_getkey (bf_state *state)	/* ( -- keyvalue ) */
   bf_push_dstack (state, key);
 }
 
+/* DOC: reads a word from input */
+void
+bf_prim_parse_word (bf_state *state)
+{
+  /* parse word*/
+}
+
+/* DOC: save current input selection so that it can later be restored */
+void
+bf_prim_save_input (bf_state *state)
+{
+
+}
+
+/* DOC: save current input selection so that it can later be restored */
+void
+bf_prim_restore_input (bf_state *state)
+{
+
+}
+
 /* DOC: reads a string from input until it finds a whitespace character */
 void
-bf_prim_parse_name (bf_state *state)	/* ( -- ) */
+bf_prim_parse_name (bf_state *state)	/* ( -- str strlen ) */
 {
   cell value;
 
@@ -91,20 +112,28 @@ bf_prim_sparse (bf_state *state)	/* ( str strlen -- str strlen ) */
 {
   cell buf;
   cell count         = bf_pop_dstack (state);
+  int continue_parse = 1;
 
   unsigned int i     = 0;
   char *addr         = bf_pop_dstack_char_ptr (state);
+  char *tib          = bf_get_source_buffer (state);
 
-  bf_push_dstack_char_ptr (state, state->tib);
+  bf_push_dstack_char_ptr (state, tib);
 
-  buf = bf_getc (&(state->input));
-  while ((char_isexcluded (addr, count, buf)) &&
-         (i < state->tibsize) &&
-         (buf.unsigned_value != EOF))
+  while (continue_parse)
     {
-      state->tib[i] = (char) buf.unsigned_value;
-      i++;
       buf = bf_getc (&(state->input));
+      
+      continue_parse = continue_parse && (char_isexcluded (addr, count, buf));
+      continue_parse = continue_parse && (i < bf_size_source_buffer(state));
+      continue_parse = continue_parse && (buf.signed_value != EOF);
+      continue_parse = continue_parse && (buf.unsigned_value != 0);
+
+      if (continue_parse) 
+        {
+          tib[i] = (char) buf.unsigned_value;
+          i++;
+        }
     }
 
   bf_push_dstack_uint (state, i);

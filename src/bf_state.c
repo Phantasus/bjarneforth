@@ -28,10 +28,9 @@ static void
 init_variables(bf_state *state)
 {
   state->last = 0;
-  state->tib = 0;
+  state->source_buffer = 0;
   state->here = 0;
   state->flags = flag_running;
-  state->tibsize = 0;
 
   state->whitespaces = default_whitespaces;
   state->base        = 10;
@@ -306,4 +305,56 @@ bf_print_rstack (bf_state *state)
 {
   printf ("RStack: ");
   bf_stack_print (&state->rstack);
+}
+
+/* DOC: Returns the size of the source buffer */
+size_t
+bf_size_source_buffer (bf_state *state)
+{
+  cell value; 
+
+  if (state->source_buffer)
+    {
+      value = state->source_buffer[0];
+      
+      return value.unsigned_value;
+    }
+  else
+    return 0;
+}
+
+/* DOC: allocates in the state memory a given area of bytes, aligned to cell */
+cell *
+bf_allot_area (bf_state *state, size_t size)
+{
+  cell *area = state->here;
+  
+  for (size_t i = 0; i < size; i++)
+    bf_inlinebyte (state, 0);
+
+  bf_align (state);
+
+  return area;
+}
+
+/* DOC: Returns the address of the text source buffer */
+char *
+bf_get_source_buffer (bf_state *state)
+{
+  if (state->source_buffer)
+    return (char *)&state->source_buffer[1];
+  else
+    return NULL;
+}
+
+/* DOC: Reserves space in the allocated memory for the source buffer */
+void
+bf_allot_source_buffer (bf_state *state)
+{
+  size_t size = 1024;
+  
+  state->source_buffer = state->here;
+  
+  bf_inlineuint (state, size);
+  bf_allot_area (state, size);
 }

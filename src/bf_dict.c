@@ -127,4 +127,6 @@ bf_lookup_word_xt (bf_state *state, char *name)
 void
 bf_init_dict (bf_state *state)
 {
+  bf_define_iprim (state, ";", &bf_prim_end_compile);
+  bf_define_iprim (state, ":", &bf_prim_begin_compile);
 }

@@ -22,7 +22,7 @@
 #include "bf_dict.h"
 #include <stddef.h>
 
-/* DOC: converts a xt to a word token (wt) */
+/* DOC: converts a xt to a word token (wt) (defunct) */
 void
 bf_prim_towordtoken (bf_state *state)	/* ( xt -- wt ) */
 {

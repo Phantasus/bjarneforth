@@ -26,20 +26,9 @@
 void
 bf_init_vm (bf_state *state)
 {
-  /*
-  state->vmprims = bf_define_iprim (state, "pushliteral", &bf_prim_pushliteral);
+  bf_allot_source_buffer (state);
   
-  bf_define_iprim (state, "pushsliteral", &bf_prim_pushsliteral);
-  bf_define_iprim (state, "jmp",          &bf_prim_jmp);
-  bf_define_iprim (state, "jmpiftrue",    &bf_prim_jmpiftrue);
-  bf_define_iprim (state, "jmpiffalse",   &bf_prim_jmpiffalse);
-  bf_define_iprim (state, "eachword",     &bf_prim_eachword_classic);
-  bf_define_iprim (state, "(does)",       &bf_prim_does);
-  
-
-  state->eachword = (cell) BF_VM_PRIM (state, BF_VM_EACHWORD);
-  */
-  state->last = 0;		/* put it into their own vocabulary */
+  bf_init_dict (state);
 }
 
 /* DOC: executes the primitive */
@@ -191,17 +180,17 @@ bf_prim_bye (bf_state *state)	/* ( -- ) */
   state->flags = state->flags & (~flag_running);
 }
 
-/* DOC: classical Forth way of evaluating a word
-   using threaded code
+/* DOC: evaluates on forth word. depending on the mode of the system
  */
 void
-bf_prim_eachword_classic (bf_state *state)	/* ( str strlen -- ) */
+bf_prim_eval_word (bf_state *state)	/* ( str strlen -- ) */
 {
   cell value;
   cell *buf;
   char *data;
 
   bf_prim_isnumber (state);
+  
   if (state->flags & flag_true)
     {
       bf_prim_tonumber (state);
@@ -213,7 +202,6 @@ bf_prim_eachword_classic (bf_state *state)	/* ( str strlen -- ) */
     }
   else
     {
-      
       /* adding new word code */
       bf_prim_lookup (state);
       bf_prim_dup (state);

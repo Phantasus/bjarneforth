@@ -108,9 +108,14 @@ void bf_prim_include (bf_state * state);
 void bf_prim_towordtoken (bf_state * state);
 
 void bf_prim_eval (bf_state * state);
-void bf_prim_eachword_classic (bf_state * state);
+void bf_prim_eval_word (bf_state * state);
+
+/* input/output (io) */
+void bf_prim_save_input (bf_state *state);
+void bf_prim_restore_input (bf_state *state);
 
 /* parsing */
+void bf_prim_parse_word (bf_state *state);
 void bf_prim_parse (bf_state * state);
 void bf_prim_sparse (bf_state * state);
 void bf_prim_parse_name (bf_state * state);
@@ -122,9 +127,9 @@ void bf_prim_inlinestring (bf_state * state);
 void bf_prim_inlineliteral (bf_state * state);
 void bf_prim_inlinesliteral (bf_state * state);
 
-void bf_prim_compile (bf_state * state);
+void bf_prim_begin_compile (bf_state * state);
+void bf_prim_end_compile (bf_state * state);
 void bf_prim_newword (bf_state * state);
-void bf_prim_endcompile (bf_state * state);
 
 void bf_prim_if (bf_state * state);
 void bf_prim_else (bf_state * state);

@@ -32,15 +32,12 @@ struct bf_state
 
   /* -- used by words/primitives -- */
   size_t base;			/* current number base */
-  cell eachword;		/* XT which gets executed at each read word */
 
   /* memory areas */
   cell *last;			/* address of last defined word */
   cell *here;			/* address of current free heap cell */
 
-  char *tib;			/* text input buffer address */
-  size_t tibsize;		/* size of the tib */
-
+  cell *source_buffer;   	/* text input buffer address */
   char *whitespaces;     	/* current whitespace string */
   cell *lastwt;			/* word token of last looked up word */
 
@@ -109,6 +106,12 @@ void bf_set_positive (bf_state *state);
 
 void bf_print_dstack (bf_state *state);
 void bf_print_rstack (bf_state *state);
+
+cell* bf_allot_area (bf_state *state, size_t size);
+
+size_t bf_size_source_buffer (bf_state *state);
+char *bf_get_source_buffer (bf_state *state);
+void bf_allot_source_buffer (bf_state *state);
 
 
 #define BF_STATEH
