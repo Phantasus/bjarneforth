@@ -19,19 +19,49 @@
 
 
 #include <bf_stack.h>
+#include <bf_memory.h>
 
 void
 bf_init_stack (bf_stack *stack)
 {
-  stack->tos = 0;
-  for (size_t i = 0; i < BF_STACK_ITEMS; i++)
-    stack->items[i].unsigned_value = 0;
+  stack->tos   = NULL;
+  stack->items = NULL;
+  stack->size  = NULL;
+}
+
+void
+bf_allot_stack (bf_stack *stack, bf_memory *mem, cell **here_ptr, size_t size)
+{
+  stack->size = *here_ptr;
+  bf_memory_inlineuint (mem, here_ptr, size);
+
+  stack->tos = *here_ptr;
+  bf_memory_inlineint (mem, here_ptr, 0);
+
+  stack->items = *here_ptr;
+  for (size_t i = 0; i < size; i++)
+    bf_memory_inlineint (mem, here_ptr, 0);
+}
+
+bf_offset
+bf_stack_depth (bf_stack *stack)
+{
+  if (stack->tos)
+    {
+      cell value = *stack->tos;
+
+      return value.signed_value;
+    }
+
+  return 0;
 }
 
 cell
 bf_stack_tos (bf_stack *stack)
 {
-  return stack->items[stack->tos];
+  bf_offset tos = bf_stack_depth (stack);
+  
+  return stack->items[tos];
 }
 
 cell
@@ -41,12 +71,28 @@ bf_stack_pop (bf_stack *stack)
    * is really really useful. and I didn't found it myself.
    * BIG Thanks for your little code snippet, you are 
    * my hero of the day */
-  cell back = stack->items[stack->tos];
-  stack->items[stack->tos].unsigned_value = 0;
+  cell *tos        = stack->tos; 
+  size_t size      = bf_stack_size (stack);
+  
+  cell tos_value;
+  cell old;
 
-  stack->tos = (stack->tos - 1) % BF_STACK_ITEMS;
+  old.signed_value = 0;
+  
+  if (tos && size > 0)
+    {
+      tos_value = *tos;
+      old = stack->items[tos_value.signed_value];
+      stack->items[tos_value.signed_value].signed_value = 0;
 
-  return back;
+      if (tos_value.signed_value > 0)
+        {
+          tos_value.signed_value = (tos_value.signed_value - 1) % size;
+          *tos = tos_value;
+        }
+    }
+
+  return old;
 }
 
 int
@@ -76,8 +122,18 @@ bf_stack_pop_char_ptr (bf_stack *stack)
 void
 bf_stack_push (bf_stack *stack, cell value)
 {
-  stack->tos = (stack->tos + 1) % BF_STACK_ITEMS;
-  stack->items[stack->tos] = value;
+  size_t   size = bf_stack_size (stack);
+  
+  cell tos_value;
+
+  if (size > 0)
+    {
+      tos_value = *(stack->tos);
+      tos_value.signed_value = (tos_value.signed_value + 1) % size;
+
+      *(stack->tos) = tos_value;
+      stack->items[tos_value.signed_value] = value;
+    }
 }
 
 void
@@ -110,8 +166,11 @@ bf_stack_push_char_ptr (bf_stack *stack, char *value)
 size_t
 bf_stack_size (bf_stack *stack)
 {
-  if (stack->tos > 0)
-    return (size_t)stack->tos;
+  if (stack && stack->size)
+    {
+      cell value = *stack->size;
+      return (size_t)value.unsigned_value;
+    }
   
   return 0;
 }
@@ -132,8 +191,10 @@ bf_stack_get_at(bf_stack *stack, size_t index)
 void
 bf_stack_print (bf_stack *stack)
 {
-  for (size_t i = 0; i <= stack->tos; i++)
+  bf_offset tos = bf_stack_depth (stack);
+  
+  for (size_t i = 0; i <= tos; i++)
     printf ("%u ", stack->items[i]);
 
-  printf ("(%d) \n", stack->tos);
+  printf ("(%d) \n", tos);
 }

@@ -31,6 +31,9 @@ test_prim_add ()
   BEGIN_TEST;
 
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   bf_push_dstack_int(&state, 1);
   bf_push_dstack_int(&state, 1);
@@ -53,6 +56,9 @@ test_prim_sub ()
   BEGIN_TEST;
 
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   bf_push_dstack_int(&state, 10);
   bf_push_dstack_int(&state, 1);
@@ -81,6 +87,9 @@ test_prim_mul ()
   BEGIN_TEST;
 
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   bf_push_dstack_int(&state, 2);
   bf_push_dstack_int(&state, 3);
@@ -109,6 +118,9 @@ test_prim_div ()
   BEGIN_TEST;
 
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   bf_push_dstack_int(&state, 12);
   bf_push_dstack_int(&state, 3);

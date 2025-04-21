@@ -30,6 +30,9 @@ test_prim_tuck()
   BEGIN_TEST;
   
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   bf_push_dstack_int (&state, 1);
   bf_push_dstack_int (&state, 2);
@@ -53,6 +56,9 @@ test_prim_nip()
   BEGIN_TEST;
   
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   bf_push_dstack_int (&state, 1);
   bf_push_dstack_int (&state, 2);
@@ -74,6 +80,8 @@ test_prim_dup()
   BEGIN_TEST;
   
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
 
   ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be zero");
   bf_push_dstack_int (&state, 1);
@@ -95,6 +103,8 @@ test_prim_drop()
   BEGIN_TEST;
   
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
 
   ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be zero");
   bf_push_dstack_int (&state, 1);
@@ -116,6 +126,8 @@ test_prim_swap()
   BEGIN_TEST;
   
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
 
   ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be zero");
   bf_push_dstack_int (&state, 1);
@@ -139,6 +151,9 @@ test_prim_over()
   BEGIN_TEST;
   
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be zero");
   bf_push_dstack_int (&state, 1);
@@ -165,6 +180,10 @@ test_rstack ()
   BEGIN_TEST;
 
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
+
   ASSERT_EQUAL (bf_size_dstack(&state), 0, "Stack should be empty");
   ASSERT_EQUAL (bf_size_rstack(&state), 0, "Return Stack should be empty");
 

@@ -23,16 +23,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-struct bf_memory
-{
-  size_t size;			/* memory size */
-  
-  cell *content;		/* memory area */
-  cell *last_useable;		/* last writeable/readable address of cell */
-};
-
-typedef struct bf_memory bf_memory;
-
 #define BF_MEMORY_MAGIC 0x08090a0b0c0d0e0f
 
 /* BootForth's memory functions */
@@ -44,6 +34,7 @@ void bf_free_memory (bf_memory * memory);
 /* store/fetch functions */
 void bf_memory_store (bf_memory *memory, cell value, bf_offset pos);
 cell bf_memory_fetch (bf_memory *memory, bf_offset pos);
+cell *bf_memory_addr (bf_memory *memory, bf_offset pos);
 
 void   bf_memory_store_int (bf_memory *memory, bf_int value, bf_offset pos);
 bf_int bf_memory_fetch_int (bf_memory *memory, bf_offset pos);
@@ -53,6 +44,8 @@ char bf_memory_fetch_byte (bf_memory *memory, bf_offset pos);
 
 /* inline functions */
 void bf_memory_inlinecell (bf_memory *memory, cell **here_ptr, cell value);
+void bf_memory_inlineint (bf_memory *memory, cell **here_ptr, bf_int value);
+void bf_memory_inlineuint (bf_memory *memory, cell **here_ptr, bf_uint value);
 void bf_memory_inlinebyte (bf_memory *memory, cell **here_ptr, char value);
 
 /* comparing memories */

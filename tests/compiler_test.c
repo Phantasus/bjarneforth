@@ -26,6 +26,25 @@
 #include "unittest.h"
 
 void
+test_eval_empty ()
+{
+  bf_state state;
+  
+  BEGIN_TEST;
+  
+  bf_init_state (&state);
+  bf_allot (&state, 4048);
+  bf_init_vm (&state);
+
+  bf_eval(&state, "");
+  ASSERT_EQUAL (bf_size_dstack (&state), 0, "Should be empty dstack");
+  ASSERT_EQUAL (bf_size_rstack (&state), 0, "Should be empty rstack");
+  
+  bf_free_state (&state);
+  END_TEST;
+}
+
+void
 test_eval_putting_literals ()
 {
   bf_state state;
@@ -81,6 +100,7 @@ test_compiling_literals ()
 int
 main ()
 {
+  test_eval_empty ();
   test_eval_putting_literals ();
   test_compiling_literals ();
   

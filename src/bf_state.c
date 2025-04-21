@@ -204,7 +204,7 @@ bf_tos_dstack_uint(bf_state *state)
 size_t
 bf_size_dstack(bf_state *state)
 {
-  return bf_stack_size(&state->dstack);
+  return bf_stack_depth(&state->dstack);
 }
 
 void
@@ -276,7 +276,7 @@ bf_tos_rstack_uint(bf_state *state)
 size_t
 bf_size_rstack(bf_state *state)
 {
-  return bf_stack_size(&state->rstack);
+  return bf_stack_depth(&state->rstack);
 }
 
 /* DOC: sets the vm flag NEG  */
@@ -357,4 +357,16 @@ bf_allot_source_buffer (bf_state *state)
   
   bf_inlineuint (state, size);
   bf_allot_area (state, size);
+}
+
+void
+bf_allot_dstack (bf_state *state, size_t size)
+{
+  bf_allot_stack (&(state->dstack), &(state->memory), &(state->here), size);
+}
+
+void
+bf_allot_rstack (bf_state *state, size_t size)
+{
+  bf_allot_stack (&(state->rstack), &(state->memory), &(state->here), size);
 }

@@ -37,6 +37,9 @@ test_reading_words_without_input ()
 
   bf_init_state (&state);
   bf_allot (&state, 4048);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
+  
   bf_init_vm (&state);
   
   bf_open_memstream (&state.input, mybuffer, sizeof(mybuffer));
@@ -64,6 +67,9 @@ test_reading_words ()
 
   bf_init_state (&state);
   bf_allot (&state, 4048);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
+  
   bf_init_vm (&state);
   
   bf_open_memstream (&state.input, mybuffer, sizeof(mybuffer));

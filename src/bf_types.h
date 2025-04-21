@@ -72,6 +72,15 @@ enum bf_stream_type
   bf_stdio_stream
 };
 
+enum bf_variable
+{
+  var_here = 0,
+  var_last,
+  var_lastwt,
+  var_base,
+  var_source_buffer
+};
+
 /* word flags */
 typedef enum
 {
@@ -116,6 +125,16 @@ struct bf_word
 };
 
 typedef struct bf_word bf_word;
+
+struct bf_memory
+{
+  size_t size;			/* memory size */
+  
+  cell *content;		/* memory area */
+  cell *last_useable;		/* last writeable/readable address of cell */
+};
+
+typedef struct bf_memory bf_memory;
 
 /* -------------------------- macros ----------------------------------------------- */
 

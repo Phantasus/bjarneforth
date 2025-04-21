@@ -60,7 +60,8 @@ bf_prim_getkey (bf_state *state)	/* ( -- keyvalue ) */
 void
 bf_prim_parse_word (bf_state *state)
 {
-  /* parse word*/
+  /* parse word */
+  bf_prim_parse_name (state);
 }
 
 /* DOC: save current input selection so that it can later be restored */

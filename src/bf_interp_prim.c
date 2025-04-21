@@ -34,11 +34,15 @@ bf_prim_eval (bf_state *state)	/* ( str strlen -- ) */
   if (!str)
     return; /* or raise an error? avoid null string */
 
+  printf ("[%s] ( %d %d )\n", __FUNCTION__, str, count);
+
   bf_prim_save_input (state);
   for (size_t i = 0; i < count; i++)
     {
       bf_prim_parse_word (state);
       i = i + bf_tos_dstack_uint (state);
+
+      printf ("[%s] parse [%d]\n", __FUNCTION__, i);
       
       bf_prim_eval_word (state);
     }

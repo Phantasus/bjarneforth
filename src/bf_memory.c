@@ -52,10 +52,16 @@ bf_free_memory (bf_memory *memory)	/* DOC: frees memory */
   bf_init_memory (memory);
 }
 
+cell *
+bf_memory_addr (bf_memory *memory, bf_offset pos)
+{
+  return &memory->content[pos];
+}
+
 /* DOC: stores one cell at the given position (pos) */
 void bf_memory_store (bf_memory *memory, cell value, bf_offset pos)
 {
-  cell *addr = &memory->content[pos];
+  cell *addr = bf_memory_addr (memory, pos);
   
   if (addr <= memory->last_useable)
     *addr = value;
@@ -65,7 +71,7 @@ void bf_memory_store (bf_memory *memory, cell value, bf_offset pos)
 cell
 bf_memory_fetch (bf_memory *memory, bf_offset pos)
 {
-  cell *addr = &memory->content[pos];
+  cell *addr = bf_memory_addr (memory, pos);
   cell value;
 
   BF_CLEAR_CELL(value);
@@ -135,6 +141,24 @@ bf_memory_inlinecell (bf_memory *memory, cell **here_ptr, cell value)
   here[0] = value;
   if (here <= memory->last_useable)
     *here_ptr = (cell *) &here[1];
+}
+
+void
+bf_memory_inlineint (bf_memory *memory, cell **here_ptr, bf_int value)
+{
+  cell cell_value;
+  cell_value.signed_value = value;
+
+  bf_memory_inlinecell (memory, here_ptr, cell_value);
+}
+
+void
+bf_memory_inlineuint (bf_memory *memory, cell **here_ptr, bf_uint value)
+{
+  cell cell_value;
+  cell_value.unsigned_value = value;
+
+  bf_memory_inlinecell (memory, here_ptr, cell_value);
 }
 
 /* DOC: inlines one byte into memory and stores the new address into location at here ptr */

@@ -1,5 +1,22 @@
 # Journal
 
+## 21. April 2025
+
+Happy easter monday, for those who care about that stuff. Today
+I moved the stack into the memory, the idea is that when the stack
+is stored in memory it can be serialized out when dumping the
+memory to a file. For that case now stacks can be allocated with
+`bf_allot_stack` and with helpers for the `bf_state`
+like `bf_allot_dstack` and `bf_allot_rstack`.
+
+Previously I added `bf_read_stack` for reading a stack from a memory
+image, but discarded it as I have not yet written that part of reading
+back a `bf_state` from a memory dump.
+
+For this feature also one needs relocateable memory addresses, that
+means also slowed down memory access as everything is indirectly
+accessed.
+
 ## 19. April 2025
 
 So.. getting back to this after a couple of weeks distraction in my real life.

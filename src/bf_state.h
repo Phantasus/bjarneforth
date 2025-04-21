@@ -56,6 +56,8 @@ typedef void (*bf_prim) (bf_state * state);	/* pointer to primitives */
 
 void bf_init_state (bf_state * state);
 void bf_free_state (bf_state * state);
+void bf_allot_dstack (bf_state *state, size_t size);
+void bf_allot_rstack (bf_state *state, size_t size);
 
 /* convenient functions */
 void bf_inlinecell (bf_state * state, cell value);

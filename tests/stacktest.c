@@ -24,46 +24,120 @@
 
 
 #include <bf_stack.h>
+#include <bf_memory.h>
 #include <stdio.h>
 #include "unittest.h"
 
-int
-main ()
+#define STACK_SIZE 64
+
+void
+test_stack_init ()
+{
+  bf_memory mymemory;
+  bf_stack stack;
+
+  BEGIN_TEST;
+
+  bf_init_memory (&mymemory);
+  bf_init_stack (&stack);
+
+  ASSERT_EQUAL (stack.size, 0, "Should be zero");
+  ASSERT_EQUAL (stack.tos, NULL, "Should be zero");
+  ASSERT_EQUAL (stack.items, NULL, "Should be zero");
+
+  ASSERT_EQUAL (bf_stack_size(&stack), 0, "Should be the expected stack size");
+  ASSERT_EQUAL (bf_stack_depth(&stack), 0, "Should be zero depth");
+
+  END_TEST;
+}
+
+void
+test_stack_writing ()
+{
+  bf_memory mymemory;
+  bf_stack stack;
+  cell *here;
+
+  size_t stack_size = 10;
+
+  BEGIN_TEST;
+  
+  bf_init_memory (&mymemory);
+  bf_allot_memory (&mymemory, 1024);
+
+  here = mymemory.content;
+  
+  bf_init_stack (&stack);
+  bf_allot_stack (&stack, &mymemory, &here, stack_size);
+
+  ASSERT_EQUAL (bf_stack_size(&stack), stack_size, "Should be the expected stack size");
+  ASSERT_EQUAL (bf_stack_depth(&stack), 0, "Should be zero depth");
+
+  END_TEST;
+}
+
+void
+test_stack_operations ()
 {
   int i, last;
   int count_in = 0;
   int count_out = 0;
+  cell *here    = NULL;
   
+  bf_memory mymemory;
   bf_stack stack;
+
+  
+  BEGIN_TEST;
+  
+  bf_init_memory (&mymemory);
+  bf_allot_memory (&mymemory, 1024);
+
+  here = mymemory.content;
+
   bf_init_stack (&stack);
+  bf_allot_stack (&stack, &mymemory, &here, STACK_SIZE);
 
-  ASSERT_EQUAL (0, bf_stack_size(&stack), "Empty stack has size zero");
+  ASSERT_EQUAL (bf_stack_size(&stack), STACK_SIZE, "Empty stack has expected size");
+  ASSERT_EQUAL (bf_stack_depth(&stack), 0, "Empty stack has depth of zero");
   bf_stack_push_int (&stack, 13);
+  
+  ASSERT_EQUAL (bf_stack_depth(&stack), 1, "Stack after first push has size one");
+  ASSERT_EQUAL (bf_stack_pop_int (&stack), 13, "First element popped should be 13");
+  ASSERT_EQUAL (0, bf_stack_depth(&stack), "Stack after first pop should be zero");
 
-  ASSERT_EQUAL (1, bf_stack_size(&stack), "Stack after first push has size one");
-  ASSERT_EQUAL (13, bf_stack_pop_int (&stack), "First element popped should be 13");
-  ASSERT_EQUAL (0, bf_stack_size(&stack), "Stack after first pop should be zero");
-
-  for (i = 1; i < BF_STACK_ITEMS; i++)
+  for (i = 1; i < STACK_SIZE; i++)
     {
       bf_stack_push_int (&stack, i);
-      if (i == stack.tos)
+      if (i == bf_stack_depth(&stack))
         count_in++;
     }
 
   cell tos = bf_stack_tos (&stack);
-  ASSERT_EQUAL (tos.unsigned_value, BF_STACK_ITEMS - 1, "TOS should work");
-  ASSERT_EQUAL (count_in, BF_STACK_ITEMS - 1, "Stack pushing works");
-  ASSERT_EQUAL (count_in, bf_stack_size(&stack), "Getting stack size works");
+  ASSERT_EQUAL (tos.unsigned_value, STACK_SIZE - 1, "TOS should work");
+  ASSERT_EQUAL (count_in, STACK_SIZE - 1, "Stack pushing works");
+  ASSERT_EQUAL (count_in, bf_stack_depth(&stack), "Getting stack size works");
 
-  for (i = BF_STACK_ITEMS; i > 0; i--)
+  for (i = STACK_SIZE; i > 0; i--)
     {
       last = bf_stack_pop_int (&stack);
       if (last == (i - 1))
         count_out++;
     }
-  ASSERT_EQUAL (count_out, BF_STACK_ITEMS, "Stack popping works");
-  ASSERT_EQUAL (0, bf_stack_size(&stack), "After everything was popped stack has size zero");
+  ASSERT_EQUAL (count_out, STACK_SIZE, "Stack popping works");
+  ASSERT_EQUAL (0, bf_stack_depth(&stack), "After everything was popped stack has size zero");
 
+  bf_free_memory (&mymemory);
+
+  END_TEST;
+}
+
+int
+main ()
+{
+  test_stack_init ();
+  test_stack_writing ();
+  test_stack_operations ();
+  
   return 0;
 }

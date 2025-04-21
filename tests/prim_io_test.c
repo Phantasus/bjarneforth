@@ -34,9 +34,12 @@ test_prim_emit ()
   BEGIN_TEST;
   
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
+  
   bf_init_memory (&inmemory);
   bf_init_memory (&outmemory);
-  
   bf_allot_memory (&inmemory, 1024);
   bf_allot_memory (&outmemory, 1024);
 
@@ -79,6 +82,10 @@ test_prim_getkey ()
   BEGIN_TEST;
   
   bf_init_state (&state);
+  bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
+
   bf_init_memory (&inmemory);
   bf_init_memory (&outmemory);
   

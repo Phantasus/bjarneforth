@@ -36,6 +36,8 @@ test_aligning_data ()
   
   bf_init_state (&state);
   bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   memory = state.here;
   here = (char *)state.here;
@@ -68,6 +70,8 @@ test_inlining_empty_string ()
   BEGIN_TEST;
   bf_init_state (&state);
   bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   char *here = (char *)state.here;
 
@@ -89,6 +93,8 @@ test_inlining_string ()
   BEGIN_TEST;
   bf_init_state (&state);
   bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   char *here = (char *)state.here;
 
@@ -118,6 +124,8 @@ test_inlining_words ()
   
   bf_init_state (&state);
   bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   dstart = state.here;
   
@@ -170,6 +178,9 @@ test_looking_up_words ()
   
   bf_init_state (&state);
   bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
+  
   bf_init_dict (&state);
 
   dstart = state.here;
@@ -230,6 +241,8 @@ test_executing_literals ()
   
   bf_init_state (&state);
   bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
 
   bf_define_literal (&state, "one", 1);
   bf_define_literal (&state, "two", 2);
@@ -281,6 +294,9 @@ test_executing_dolink_word ()
   
   bf_init_state (&state);
   bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
+
   bf_init_dict (&state);
 
   bf_define_literal (&state, "one", 1);
@@ -332,6 +348,9 @@ test_executing_nested_dolink_word ()
   
   bf_init_state (&state);
   bf_allot (&state, 1024);
+  bf_allot_dstack (&state, 64);
+  bf_allot_rstack (&state, 64);
+  
   bf_init_dict (&state);
 
   bf_define_literal (&state, "one", 1);

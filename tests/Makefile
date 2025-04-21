@@ -15,8 +15,8 @@ all: unittest_selftest stacktest memorytest streamtest dict_test \
 
 check: all
 	./unittest_selftest
-	./stacktest
 	./memorytest
+	./stacktest
 	./streamtest
 	./prim_stack_test
 	./prim_io_test
@@ -33,7 +33,7 @@ check: all
 unittest_selftest: unittest_selftest.c unittest.c 
 	$(CC) $^ $(CFLAGS) -o $@
 
-stacktest: stacktest.c unittest.c bf_stack.c
+stacktest: stacktest.c unittest.c bf_stack.c bf_memory.c
 	$(CC) $^ $(CFLAGS) -o $@
 
 streamtest: streamtest.c unittest.c bf_state.c bf_stream.c bf_stack.c bf_memory.c

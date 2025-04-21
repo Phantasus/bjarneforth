@@ -24,33 +24,35 @@
 #ifndef BF_STACKH
 #include <bf_types.h>
 
-#define BF_STACK_ITEMS 64
-
 struct bf_stack
 {
-  cell items[BF_STACK_ITEMS];
-  int  tos;			/* index for current tos */
+  cell *items; /* location in memory of start of stack */
+  cell *size;  /* location in memory which contains the stack size */
+  cell *tos;   /* location in memory which contains the index of the TOS (top of stack) */
 };
 typedef struct bf_stack bf_stack;
 
-
-/* atom stack operators */
+/* setup functions */
 void bf_init_stack (bf_stack *stack);
 
+void bf_allot_stack (bf_stack *stack, bf_memory *mem, cell **here_ptr, size_t size);
+
+/* atom stack operators */
 cell bf_stack_tos (bf_stack *stack);
 cell bf_stack_pop (bf_stack *stack);
 void bf_stack_push (bf_stack *stack, cell value);
+bf_offset bf_stack_depth (bf_stack *stack);
 
-void bf_stack_push_int(bf_stack *stack, int value);
-void bf_stack_push_uint(bf_stack *stack, unsigned int value);
-void bf_stack_push_char_ptr(bf_stack *stack, char *ptr);
+void bf_stack_push_int (bf_stack *stack, int value);
+void bf_stack_push_uint (bf_stack *stack, unsigned int value);
+void bf_stack_push_char_ptr (bf_stack *stack, char *ptr);
 
-size_t       bf_stack_size(bf_stack *stack);
-cell         bf_stack_get_at(bf_stack *stack, size_t index);
+size_t       bf_stack_size (bf_stack *stack);
+cell         bf_stack_get_at (bf_stack *stack, size_t index);
 
-int          bf_stack_pop_int(bf_stack *stack);
-unsigned int bf_stack_pop_uint(bf_stack *stack);
-char        *bf_stack_pop_char_ptr(bf_stack *stack);
+int          bf_stack_pop_int (bf_stack *stack);
+unsigned int bf_stack_pop_uint (bf_stack *stack);
+char        *bf_stack_pop_char_ptr (bf_stack *stack);
 
 void bf_stack_print (bf_stack *stack);
   
