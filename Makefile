@@ -22,8 +22,8 @@ SRC=src
 LIB=lib/libbootforth.so
 
 # GCC 4.8.2, C99 STD
-CFLAGS=-I$(SRC) -pedantic -std=c99 -Wall -Wextra -Werror
-CC=gcc $(CFLAGS)
+CFLAGS=-I$(SRC) -pedantic -std=c++23 -Wall -Wextra -Werror
+CC=g++ $(CFLAGS)
 
 .PHONY: all doc lib
 

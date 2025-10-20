@@ -1,12 +1,11 @@
 .PHONY: all
 
-CC=gcc # gcc compilation
+CC=g++ # gcc compilation
 #CC=tcc # tcc compilation 
 
 
-CFLAGS=-I../src 
+CFLAGS= -I../src -pedantic -std=c++23 -Wall -Wextra -Werror
 PRE=bf_
-#CFLAGS=-I..
 
 VPATH=../src:.
 
