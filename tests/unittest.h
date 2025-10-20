@@ -1,20 +1,20 @@
 /* ------------------------------------------------------------------------- */
-/* Copyright 2007 -- 2024 Josef Philip Bernhart
+/* Copyright 2007 -- 2025 Josef Philip Bernhart
  *
- * This file is part of BootForth.
+ * This file is part of bjarneforth.
  *
- * BootForth is free software: you can redistribute it and/or modify
+ * bjarneforth is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * any later version.
  *
- * BootForth is distributed in the hope that it will be useful,
+ * bjarneforth is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with BootForth.  If not, see <http://www.gnu.org/licenses/>.
+ * along with bjarneforth.  If not, see <http://www.gnu.org/licenses/>.
  *                                                                           
  * ------------------------------------------------------------------------- */
 
@@ -22,51 +22,39 @@
  * This file describes a minimal unittesting framework
  */
 
-#ifndef BF_UNITTESTH
+#ifndef BF_UNITTEST_H
 
 #include <stdio.h>
+#include <string>
+#include <format>
+#include <iostream>
 
+namespace unittest {
 
-int __unittest_pass (const char *message);
-int __unittest_fail (const char *message);
-const char *__unittest_cast_message (const char *message, va_list args);
+  int pass (std::string message);
+  int fail (std::string message);
 
-void __unittest_assert_equal_int (long long int value_a,
-				  long long int value_b,
-				  long unsigned int line, const char *message,
-				  ...);
+  void begin_testcase (std::string name);
+  void end_testcase (std::string name);
 
-void __unittest_assert_equal_char_ptr (char *value_a,
-                                       char *value_b,
-                                       long unsigned int line, const char *message,
-                                       ...);
+  std::string cast_message (std::string message, va_list args);
 
-void __unittest_assert_unequal_int (long long int value_a,
-				    long long int value_b,
-				    long unsigned int line,
-				    const char *message, ...);
-
-void __unittest_assert_unequal_char_ptr (char *value_a,
-                                         char *value_b,
-                                         long unsigned int line,
-                                         const char *message, ...);
-
-#define ASSERT_STR_EQUAL(actual, expected, ...) \
-  __unittest_assert_equal_char_ptr((char *)actual, (char *)expected, __LINE__, __VA_ARGS__)
-
-#define ASSERT_STR_UNEQUAL(actual, expected, ...) \
-  __unittest_assert_unequal_char_ptr((char *)actual, (char *)expected, __LINE__, __VA_ARGS__)
-
-#define ASSERT_EQUAL(actual, expected, ...) \
-  __unittest_assert_equal_int((long long)actual, (long long)expected, __LINE__, __VA_ARGS__)
-
-#define ASSERT_UNEQUAL(actual, expected, ...)            \
-  __unittest_assert_unequal_int((long long)actual, (long long)expected, __LINE__, __VA_ARGS__)
+  /* templates */
+  #include "unittest_templates.h"
+}
 
 #define BEGIN_TEST \
-  printf ("----------------------- %s -----------------------\n", __FUNCTION__)
+  begin_testcase (__FUNCTION__)
 
-#define END_TEST
+#define END_TEST \
+  end_testcase (__FUNCTION__)
 
-#define BF_UNITTESTH
+#define ASSERT_EQUAL(actual, expected, ...) \
+  unittest::assert_equal(actual, expected, __LINE__, __VA_ARGS__)
+
+#define ASSERT_UNEQUAL(actual, expected, ...)            \
+  unittest::assert_unequal(actual, expected, __LINE__, __VA_ARGS__)
+
+
+#define BF_UNITTEST_H
 #endif
